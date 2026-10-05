@@ -1,0 +1,6 @@
+{
+  "name": "CampusMart - Student Marketplace & Entrepreneurship Platform",
+  "description": "A modern campus e-commerce marketplace and entrepreneurship hub where university students buy, sell, build brands, and launch student businesses.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

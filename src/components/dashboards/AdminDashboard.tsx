@@ -34,6 +34,8 @@ export const AdminDashboard: React.FC = () => {
   const [usersList, setUsersList] = useState<UserProfile[]>(() => StorageService.getUsers());
   const [userSearch, setUserSearch] = useState('');
 
+  if (currentUser?.role !== 'admin') return null;
+
   // Total GMV & Platform stats
   const totalGMV = orders.reduce((sum, o) => sum + o.total_amount, 0);
   const totalCompletedOrders = orders.filter((o) => o.order_status === 'delivered').length;

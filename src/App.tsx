@@ -76,6 +76,12 @@ function CampusMartApp() {
 
   // Navigation Handler
   const handleNavigate = (view: string, param?: string) => {
+    if (view === 'admin-dashboard' && currentRole !== 'admin') {
+      setCurrentView('home');
+      setViewParam(undefined);
+      return;
+    }
+
     setCurrentView(view);
     setViewParam(param);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -172,9 +178,11 @@ function CampusMartApp() {
   return (
     <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900">
       {/* 1. Fast Role Switcher Test Bar */}
-      <RoleSwitcherBar
-        onOpenDashboard={(tab) => handleNavigate(`${currentRole}-dashboard`, tab)}
-      />
+      {import.meta.env.DEV && (
+        <RoleSwitcherBar
+          onOpenDashboard={(tab) => handleNavigate(`${currentRole}-dashboard`, tab)}
+        />
+      )}
 
       {/* 2. Top Promotional / Campus Notification Bar */}
       {bannerVisible && (
@@ -581,7 +589,7 @@ function CampusMartApp() {
         {currentView === 'author-dashboard' && <AuthorDashboard />}
 
         {/* VIEW: ADMIN DASHBOARD */}
-        {currentView === 'admin-dashboard' && <AdminDashboard />}
+        {currentView === 'admin-dashboard' && currentRole === 'admin' && <AdminDashboard />}
       </main>
 
       {/* 5. Drawers & Modals */}

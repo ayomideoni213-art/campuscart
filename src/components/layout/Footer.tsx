@@ -1,11 +1,14 @@
 import React from 'react';
 import { ShieldCheck, Truck, Sparkles, Heart } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 interface FooterProps {
   onNavigate: (view: string) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+  const { currentRole } = useAuth();
+
   return (
     <footer className="bg-stone-900 text-stone-400 text-xs border-t border-stone-800 mt-20">
       {/* Value Pillars */}
@@ -110,11 +113,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 Author Content Studio
               </button>
             </li>
-            <li>
-              <button onClick={() => onNavigate('admin-dashboard')} className="hover:text-white transition-colors">
-                Platform Administrator
-              </button>
-            </li>
+            {currentRole === 'admin' && (
+              <li>
+                <button onClick={() => onNavigate('admin-dashboard')} className="hover:text-white transition-colors">
+                  Platform Administrator
+                </button>
+              </li>
+            )}
           </ul>
         </div>
 

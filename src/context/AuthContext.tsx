@@ -18,6 +18,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+async function applyAdminAuthorization(profile: UserProfile): Promise<UserProfile> {
+  const { data: isAdmin, error } = await supabase.rpc('is_admin');
+  if (error) {
+    console.error('Could not verify administrator access:', error);
+    return profile.role === 'admin' ? { ...profile, role: 'customer' } : profile;
+  }
+
+  return {
+    ...profile,
+    role: isAdmin ? 'admin' : profile.role === 'admin' ? 'customer' : profile.role,
+  };
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
 
@@ -39,13 +52,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const profile = data as UserProfile | null;
+      const authorizedProfile = profile ? await applyAdminAuthorization(profile) : null;
       if (profile?.is_suspended) {
         setCurrentUser(null);
         void supabase.auth.signOut();
         return;
       }
 
-      setCurrentUser(profile);
+      setCurrentUser(authorizedProfile);
     };
 
     void supabase.auth.getSession().then(({ data, error }) => {
@@ -85,6 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const switchUserRole = (role: UserRole) => {
+    if (!import.meta.env.DEV && (role === 'admin' || role === 'editor' || role === 'author')) return;
     const matchingDemo = DEMO_USERS.find((u) => u.role === role);
     if (matchingDemo) {
       setCurrentUser(matchingDemo);
@@ -94,6 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginAsDemoUser = (userId: string) => {
+    if (!import.meta.env.DEV) return;
     const found = DEMO_USERS.find((u) => u.id === userId);
     if (found) {
       setCurrentUser(found);
@@ -121,7 +137,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
 
-    const userProfile = profile as UserProfile;
+    const userProfile = await applyAdminAuthorization(profile as UserProfile);
     if (userProfile.is_suspended) {
       await supabase.auth.signOut();
       return { success: false, error: 'This student account has been suspended by campus moderators.' };

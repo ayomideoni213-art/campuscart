@@ -97,8 +97,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultRo
           </button>
         </div>
 
-        {/* Demo Fast Login Box */}
-        <div className="bg-amber-50/70 p-4 border-b border-amber-200/70 text-xs">
+        {/* Demo sign-in is available only during local development. */}
+        {import.meta.env.DEV && <div className="bg-amber-50/70 p-4 border-b border-amber-200/70 text-xs">
           <div className="flex items-center gap-1.5 font-bold text-amber-900 mb-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-600" />
             <span>Quick Demo Sign-In (Instant Evaluation)</span>
@@ -122,7 +122,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultRo
               </button>
             ))}
           </div>
-        </div>
+        </div>}
 
         {/* Form Body */}
         <div className="p-6">

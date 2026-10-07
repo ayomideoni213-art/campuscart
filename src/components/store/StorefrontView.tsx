@@ -68,14 +68,14 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* Back button */}
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 transition-colors"
+        className="flex items-center gap-1.5 text-xs font-semibold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Marketplace</span>
       </button>
 
       {/* Brand Header Banner */}
-      <div className="relative rounded-2xl overflow-hidden border border-stone-200 bg-stone-900">
+      <div className="relative rounded-2xl overflow-hidden border border-stone-200 dark:border-[#262e3d] bg-stone-900">
         <div className="h-48 sm:h-64 w-full overflow-hidden">
           <img
             src={store.banner_url}
@@ -86,36 +86,36 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         </div>
 
         {/* Store Profile Info Overlay */}
-        <div className="bg-white px-6 py-6 border-t border-stone-200">
+        <div className="bg-white dark:bg-[#151921] px-6 py-6 border-t border-stone-200 dark:border-[#262e3d]">
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 -mt-16 sm:-mt-20">
             <div className="flex items-end gap-4">
               <img
                 src={store.logo_url}
                 alt={store.name}
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-white shadow-md bg-white"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-white dark:border-[#151921] shadow-md bg-white dark:bg-[#151921]"
                 referrerPolicy="no-referrer"
               />
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-black text-stone-900">{store.name}</h1>
+                  <h1 className="text-xl sm:text-2xl font-black text-stone-900 dark:text-white">{store.name}</h1>
                   {store.verified_student && (
-                    <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-800 text-[11px] font-bold rounded-md border border-emerald-200">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold rounded-md border border-emerald-200 dark:border-emerald-800/40">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                       Verified Student Brand
                     </span>
                   )}
                 </div>
-                <p className="text-xs sm:text-sm text-stone-600 font-medium">{store.tagline}</p>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-stone-500 pt-1">
+                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-medium">{store.tagline}</p>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-stone-500 dark:text-stone-400 pt-1">
                   <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-stone-400" />
+                    <MapPin className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500" />
                     {store.campus_location}
                   </span>
                   <span>·</span>
                   <span className="flex items-center gap-1">
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    <span className="font-semibold text-stone-800">{store.rating.toFixed(1)}</span>
-                    <span>({store.reviews_count} reviews)</span>
+                    <span className="font-semibold text-stone-800 dark:text-stone-200">{store.rating.toFixed(1)}</span>
+                    <span className="text-stone-400 dark:text-stone-500">({store.reviews_count} reviews)</span>
                   </span>
                   <span>·</span>
                   <span className="font-mono tabular-nums">{store.total_sales} total orders</span>
@@ -127,7 +127,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             <div className="flex items-center gap-2 w-full sm:w-auto pt-2 sm:pt-0">
               <button
                 onClick={() => onOpenMessage(store.seller_id, store.id)}
-                className="flex-1 sm:flex-initial px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                className="flex-1 sm:flex-initial px-4 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
                 <span>Message Seller</span>
@@ -138,7 +138,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                   href={`https://instagram.com`}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 border border-stone-300 rounded-xl text-stone-700 hover:bg-stone-50 transition-colors"
+                  className="p-2 border border-stone-300 dark:border-[#2a3445] rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#1c222e] transition-colors"
                   title={store.instagram_handle}
                 >
                   <Instagram className="w-4 h-4" />
@@ -148,21 +148,21 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           </div>
 
           {/* Description & Campus Pickup Hub */}
-          <div className="mt-6 pt-6 border-t border-stone-100 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-stone-600">
+          <div className="mt-6 pt-6 border-t border-stone-100 dark:border-[#262e3d] grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-stone-600 dark:text-stone-300">
             <div className="md:col-span-2 space-y-2">
-              <h4 className="font-bold text-stone-900 uppercase tracking-wider text-[11px]">
+              <h4 className="font-bold text-stone-900 dark:text-white uppercase tracking-wider text-[11px]">
                 Brand Story & Mission
               </h4>
               <p className="leading-relaxed whitespace-pre-line">{store.description}</p>
             </div>
 
-            <div className="p-4 bg-stone-50 rounded-xl border border-stone-200/80 space-y-2">
-              <h4 className="font-bold text-stone-900 uppercase tracking-wider text-[11px] flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-amber-600" />
+            <div className="p-4 bg-stone-50 dark:bg-[#1c222e] rounded-xl border border-stone-200/80 dark:border-[#262e3d] space-y-2">
+              <h4 className="font-bold text-stone-900 dark:text-white uppercase tracking-wider text-[11px] flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 <span>Standard Pickup Location</span>
               </h4>
-              <p className="text-stone-700 font-medium">{store.pickup_point}</p>
-              <div className="text-[11px] text-stone-500 pt-1 border-t border-stone-200">
+              <p className="text-stone-700 dark:text-stone-200 font-medium">{store.pickup_point}</p>
+              <div className="text-[11px] text-stone-500 dark:text-stone-400 pt-1 border-t border-stone-200 dark:border-[#262e3d]">
                 Operating since {new Date(store.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
               </div>
             </div>
@@ -172,10 +172,10 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
 
       {/* Store Products Section */}
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 dark:border-[#262e3d] pb-4">
           <div>
-            <h2 className="text-lg font-black text-stone-900">Available Products</h2>
-            <p className="text-xs text-stone-500">
+            <h2 className="text-lg font-black text-stone-900 dark:text-white">Available Products</h2>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
               Showing {filteredProducts.length} items curated by {store.name}
             </p>
           </div>
@@ -185,10 +185,10 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             <div className="flex items-center gap-1 overflow-x-auto pb-1">
               <button
                 onClick={() => setActiveCategory('all')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   activeCategory === 'all'
-                    ? 'bg-stone-900 text-white'
-                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                    ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950'
+                    : 'bg-stone-100 dark:bg-[#1c222e] text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-[#252c3b]'
                 }`}
               >
                 All Items ({storeProducts.length})
@@ -197,10 +197,10 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                 <button
                   key={c.id}
                   onClick={() => setActiveCategory(c.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                     activeCategory === c.id
-                      ? 'bg-stone-900 text-white'
-                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                      ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950'
+                      : 'bg-stone-100 dark:bg-[#1c222e] text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-[#252c3b]'
                   }`}
                 >
                   {c.name}
@@ -212,7 +212,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
 
         {/* Product Grid */}
         {filteredProducts.length === 0 ? (
-          <div className="py-12 text-center text-xs text-stone-500">
+          <div className="py-12 text-center text-xs text-stone-500 dark:text-stone-400 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d]">
             No products found in this category.
           </div>
         ) : (
@@ -226,11 +226,11 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
 
       {/* Customer Reviews for this Store */}
       {storeReviews.length > 0 && (
-        <div className="pt-8 border-t border-stone-200 space-y-4">
-          <h3 className="text-base font-bold text-stone-900">Student Reviews for {store.name}</h3>
+        <div className="pt-8 border-t border-stone-200 dark:border-[#262e3d] space-y-4">
+          <h3 className="text-base font-bold text-stone-900 dark:text-white">Student Reviews for {store.name}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {storeReviews.map((rev) => (
-              <div key={rev.id} className="p-4 bg-white border border-stone-200 rounded-xl space-y-2">
+              <div key={rev.id} className="p-4 bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-xl space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img
@@ -240,8 +240,8 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                       referrerPolicy="no-referrer"
                     />
                     <div>
-                      <p className="text-xs font-bold text-stone-900">{rev.user_name}</p>
-                      <p className="text-[10px] text-stone-400">{rev.product_name}</p>
+                      <p className="text-xs font-bold text-stone-900 dark:text-white">{rev.user_name}</p>
+                      <p className="text-[10px] text-stone-400 dark:text-stone-500">{rev.product_name}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-0.5">
@@ -249,13 +249,13 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                       <Star
                         key={i}
                         className={`w-3 h-3 ${
-                          i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-200'
+                          i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-200 dark:text-stone-700'
                         }`}
                       />
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-stone-600 leading-relaxed">{rev.comment}</p>
+                <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">{rev.comment}</p>
               </div>
             ))}
           </div>

@@ -1,16 +1,86 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     --font-display: 'Cabinet Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
+
+    /* Theme Tokens - Light Mode */
+    --background: #fafaf9;          /* stone-50 */
+    --foreground: #1c1917;          /* stone-900 */
+    --card: #ffffff;
+    --card-foreground: #1c1917;
+    --card-muted: #f5f5f4;          /* stone-100 */
+    --border: #e7e5e4;              /* stone-200 */
+    --border-subtle: #f5f5f4;       /* stone-100 */
+    --primary: #1c1917;             /* stone-900 */
+    --primary-foreground: #ffffff;
+    --secondary: #f5f5f4;           /* stone-100 */
+    --secondary-foreground: #292524;/* stone-800 */
+    --muted: #78716c;               /* stone-500 */
+    --muted-foreground: #a8a29e;    /* stone-400 */
+    --accent: #f59e0b;              /* amber-500 */
+    --accent-hover: #d97706;        /* amber-600 */
+    --accent-foreground: #1c1917;
+    --input: #f5f5f4;
+    --input-border: #d6d3d1;        /* stone-300 */
+    --input-focus: #1c1917;
+    --navigation: rgba(255, 255, 255, 0.95);
+    --navigation-border: #e7e5e4;
+    --dropdown: #ffffff;
+    --modal: #ffffff;
+    --modal-overlay: rgba(12, 14, 18, 0.65);
+    --success: #059669;             /* emerald-600 */
+    --success-bg: #ecfdf5;
+    --warning: #d97706;             /* amber-600 */
+    --warning-bg: #fffbeb;
+    --error: #e11d48;               /* rose-600 */
+    --error-bg: #fff1f2;
+  }
+
+  .dark {
+    /* Theme Tokens - Dark Mode */
+    --background: #0c0e12;          /* Obsidian tone - comfortable, not pitch black */
+    --foreground: #f2f4f8;          /* Crisp high-contrast white */
+    --card: #151921;                /* Elevated dark slate surface */
+    --card-foreground: #f2f4f8;
+    --card-muted: #1c222e;          /* Muted card header / inner panel */
+    --border: #262e3d;              /* Visible, refined border */
+    --border-subtle: #1c222e;
+    --primary: #f8fafc;
+    --primary-foreground: #0c0e12;
+    --secondary: #1c222e;
+    --secondary-foreground: #e2e8f0;
+    --muted: #94a3b8;               /* slate-400 for high readability */
+    --muted-foreground: #64748b;    /* slate-500 */
+    --accent: #fbbf24;              /* amber-400 CampusMart brand gold */
+    --accent-hover: #f59e0b;        /* amber-500 */
+    --accent-foreground: #0c0e12;
+    --input: #151921;
+    --input-border: #2b3545;
+    --input-focus: #fbbf24;
+    --navigation: rgba(15, 19, 27, 0.95);
+    --navigation-border: #222936;
+    --dropdown: #171d27;
+    --modal: #151921;
+    --modal-overlay: rgba(5, 7, 10, 0.8);
+    --success: #34d399;             /* emerald-400 */
+    --success-bg: rgba(16, 185, 129, 0.15);
+    --warning: #fbbf24;             /* amber-400 */
+    --warning-bg: rgba(245, 158, 11, 0.15);
+    --error: #f87171;               /* rose-400 */
+    --error-bg: rgba(239, 68, 68, 0.15);
   }
 
   body {
     font-family: var(--font-sans);
-    color: #1c1917;
-    background-color: #fafaf9;
+    color: var(--foreground);
+    background-color: var(--background);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
 
   h1, h2, h3, h4, .font-display {
@@ -19,18 +89,29 @@
   }
 }
 
-/* Custom scrollbars for clean look */
+/* Custom scrollbars for clean look in both themes */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f5f5f4;
+  background: var(--card-muted);
 }
 ::-webkit-scrollbar-thumb {
-  background: #d6d3d1;
+  background: var(--muted-foreground);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a29e;
+  background: var(--muted);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #11151c;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #2b3545;
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3e4c63;
 }

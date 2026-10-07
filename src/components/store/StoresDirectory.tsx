@@ -16,22 +16,22 @@ export const StoresDirectory: React.FC<StoresDirectoryProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-200 pb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-[#262e3d] pb-6">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-amber-700">
+          <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
             Campus Brands & Student Ventures
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-white tracking-tight mt-1">
             Student Store Directory
           </h1>
-          <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-xl">
+          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1 max-w-xl">
             Discover independent student-founded businesses across your campus—from dorm bakeries and custom tech peripherals to curated vintage streetwear.
           </p>
         </div>
 
         <button
           onClick={onOpenCreateStore}
-          className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-semibold shadow-xs"
+          className="px-4 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 rounded-xl text-xs font-semibold shadow-xs cursor-pointer"
         >
           Open Your Store
         </button>
@@ -43,11 +43,11 @@ export const StoresDirectory: React.FC<StoresDirectoryProps> = ({
           <div
             key={store.id}
             onClick={() => onSelectStore(store.id)}
-            className="group cursor-pointer bg-white rounded-2xl border border-stone-200 overflow-hidden hover:shadow-md transition-all flex flex-col justify-between"
+            className="group cursor-pointer bg-white dark:bg-[#151921] rounded-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden hover:shadow-md dark:hover:border-amber-400/50 transition-all flex flex-col justify-between"
           >
             <div>
               {/* Cover Banner */}
-              <div className="h-32 w-full bg-stone-100 overflow-hidden relative">
+              <div className="h-32 w-full bg-stone-100 dark:bg-[#1c222e] overflow-hidden relative">
                 <img
                   src={store.banner_url}
                   alt={store.name}
@@ -62,48 +62,48 @@ export const StoresDirectory: React.FC<StoresDirectoryProps> = ({
                   <img
                     src={store.logo_url}
                     alt={store.name}
-                    className="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-xs bg-white"
+                    className="w-16 h-16 rounded-xl object-cover border-2 border-white dark:border-[#151921] shadow-xs bg-white dark:bg-[#151921]"
                     referrerPolicy="no-referrer"
                   />
-                  <span className="text-[11px] font-mono text-stone-500 font-semibold">
+                  <span className="text-[11px] font-mono text-stone-500 dark:text-stone-400 font-semibold">
                     {store.total_sales} campus orders
                   </span>
                 </div>
 
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h3 className="text-base font-bold text-stone-900 group-hover:text-amber-800 transition-colors">
+                    <h3 className="text-base font-bold text-stone-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
                       {store.name}
                     </h3>
                     {store.verified_student && (
                       <span title="Verified Student Founder" className="inline-flex shrink-0">
-                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-medium text-stone-700 mt-0.5">{store.tagline}</p>
+                  <p className="text-xs font-medium text-stone-700 dark:text-stone-300 mt-0.5">{store.tagline}</p>
                 </div>
 
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2 leading-relaxed">
                   {store.description}
                 </p>
 
-                <div className="flex flex-wrap items-center gap-3 text-xs text-stone-500 pt-2 border-t border-stone-100">
-                  <div className="flex items-center gap-1 text-amber-700 font-semibold">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-stone-500 dark:text-stone-400 pt-2 border-t border-stone-100 dark:border-[#262e3d]">
+                  <div className="flex items-center gap-1 text-amber-700 dark:text-amber-400 font-semibold">
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     <span>{store.rating.toFixed(1)}</span>
-                    <span className="text-stone-400 font-normal">({store.reviews_count})</span>
+                    <span className="text-stone-400 dark:text-stone-500 font-normal">({store.reviews_count})</span>
                   </div>
                   <span>·</span>
                   <div className="flex items-center gap-1 truncate">
-                    <MapPin className="w-3.5 h-3.5 text-stone-400" />
+                    <MapPin className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500" />
                     <span className="truncate">{store.pickup_point}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="px-5 py-3 bg-stone-50 border-t border-stone-100 flex items-center justify-between text-xs text-stone-700 font-semibold group-hover:bg-amber-50/50 transition-colors">
+            <div className="px-5 py-3 bg-stone-50 dark:bg-[#11141b] border-t border-stone-100 dark:border-[#262e3d] flex items-center justify-between text-xs text-stone-700 dark:text-stone-300 font-semibold group-hover:bg-amber-50/50 dark:group-hover:bg-[#1c222e] transition-colors">
               <span>View Store Catalog & Handoff Info</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { MarketplaceProvider, useMarketplace } from './context/MarketplaceContext';
@@ -176,7 +177,7 @@ function CampusMartApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900">
+    <div className="min-h-screen flex flex-col bg-stone-50 dark:bg-[#0c0e12] text-stone-900 dark:text-stone-100 transition-colors">
       {/* 1. Fast Role Switcher Test Bar */}
       {import.meta.env.DEV && (
         <RoleSwitcherBar
@@ -186,7 +187,7 @@ function CampusMartApp() {
 
       {/* 2. Top Promotional / Campus Notification Bar */}
       {bannerVisible && (
-        <div className="bg-amber-400 text-stone-950 text-xs py-2 px-4 border-b border-amber-500/30 flex items-center justify-between">
+        <div className="bg-amber-400 dark:bg-amber-500 text-stone-950 text-xs py-2 px-4 border-b border-amber-500/30 dark:border-amber-600/30 flex items-center justify-between">
           <div className="max-w-7xl mx-auto flex items-center gap-2 text-center w-full justify-center font-medium">
             <span className="font-bold">🎒 Fall 2026 Semester Hub:</span>
             <span>Free zero-fee physical handoff points active at Student Union & Quad tables.</span>
@@ -199,7 +200,8 @@ function CampusMartApp() {
           </div>
           <button
             onClick={() => setBannerVisible(false)}
-            className="text-stone-900/60 hover:text-stone-900 text-sm font-bold pl-2"
+            aria-label="Dismiss banner"
+            className="text-stone-900/60 hover:text-stone-900 text-sm font-bold pl-2 cursor-pointer"
           >
             &times;
           </button>
@@ -301,16 +303,16 @@ function CampusMartApp() {
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
+                  <h2 className="text-xl sm:text-2xl font-black text-stone-900 dark:text-white tracking-tight">
                     Featured Student Stores
                   </h2>
-                  <p className="text-xs text-stone-500 mt-0.5">
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                     Independent brands founded and operated by current undergraduate students.
                   </p>
                 </div>
                 <button
                   onClick={() => handleNavigate('stores')}
-                  className="text-xs font-semibold text-stone-700 hover:text-stone-900 flex items-center gap-1 group"
+                  className="text-xs font-semibold text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-amber-400 flex items-center gap-1 group cursor-pointer"
                 >
                   <span>View All Stores</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -322,33 +324,33 @@ function CampusMartApp() {
                   <div
                     key={store.id}
                     onClick={() => handleOpenStore(store.id)}
-                    className="group cursor-pointer bg-white rounded-xl border border-stone-200 p-4 hover:shadow-md transition-all space-y-3"
+                    className="group cursor-pointer bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] p-4 hover:shadow-md dark:hover:border-amber-400/40 transition-all space-y-3"
                   >
                     <div className="flex items-center gap-3">
                       <img
                         src={store.logo_url}
                         alt={store.name}
-                        className="w-12 h-12 rounded-xl object-cover border border-stone-200"
+                        className="w-12 h-12 rounded-xl object-cover border border-stone-200 dark:border-[#262e3d]"
                         referrerPolicy="no-referrer"
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1">
-                          <h3 className="text-sm font-bold text-stone-900 truncate group-hover:text-amber-800 transition-colors">
+                          <h3 className="text-sm font-bold text-stone-900 dark:text-white truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                             {store.name}
                           </h3>
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                         </div>
-                        <p className="text-[11px] text-stone-500 truncate">{store.tagline}</p>
+                        <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate">{store.tagline}</p>
                       </div>
                     </div>
 
-                    <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+                    <div className="pt-2 border-t border-stone-100 dark:border-[#262e3d] flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
                       <div className="flex items-center gap-1">
                         <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        <span className="font-semibold text-stone-800">{store.rating.toFixed(1)}</span>
-                        <span className="text-stone-400">({store.reviews_count})</span>
+                        <span className="font-semibold text-stone-800 dark:text-stone-200">{store.rating.toFixed(1)}</span>
+                        <span className="text-stone-400 dark:text-stone-500">({store.reviews_count})</span>
                       </div>
-                      <span className="font-mono text-[11px] text-stone-600">
+                      <span className="font-mono text-[11px] text-stone-600 dark:text-stone-400">
                         {store.total_sales} sales
                       </span>
                     </div>
@@ -362,10 +364,10 @@ function CampusMartApp() {
               <div className="flex items-center gap-2 overflow-x-auto pb-2">
                 <button
                   onClick={() => setSelectedCategory('all')}
-                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-2 ${
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-2 cursor-pointer ${
                     selectedCategory === 'all'
-                      ? 'bg-stone-900 text-white shadow-xs'
-                      : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'
+                      ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 shadow-xs'
+                      : 'bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#1c222e]'
                   }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
@@ -375,16 +377,16 @@ function CampusMartApp() {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                    className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
                       selectedCategory === cat.id
-                        ? 'bg-stone-900 text-white shadow-xs'
-                        : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'
+                        ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 shadow-xs'
+                        : 'bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#1c222e]'
                     }`}
                   >
                     <span>{cat.name}</span>
                     <span
                       className={`text-[10px] ${
-                        selectedCategory === cat.id ? 'text-stone-300' : 'text-stone-400'
+                        selectedCategory === cat.id ? 'text-stone-300 dark:text-stone-800' : 'text-stone-400 dark:text-stone-500'
                       }`}
                     >
                       ({cat.product_count})
@@ -417,32 +419,32 @@ function CampusMartApp() {
 
                 {/* Right: Product Grid */}
                 <div className="flex-1 w-full space-y-4">
-                  <div className="flex items-center justify-between text-xs text-stone-500 pb-2 border-b border-stone-200">
+                  <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 pb-2 border-b border-stone-200 dark:border-[#262e3d]">
                     <div>
-                      Showing <span className="font-bold text-stone-900">{sortedProducts.length}</span> campus listings
+                      Showing <span className="font-bold text-stone-900 dark:text-white">{sortedProducts.length}</span> campus listings
                       {searchQuery && (
-                        <span> matching "<strong className="text-stone-800">{searchQuery}</strong>"</span>
+                        <span> matching "<strong className="text-stone-800 dark:text-stone-200">{searchQuery}</strong>"</span>
                       )}
                     </div>
                     {sortedProducts.length > 0 && (
-                      <span className="font-mono text-stone-400">
+                      <span className="font-mono text-stone-400 dark:text-stone-500">
                         {selectedCampus.split(' ')[0]} Hub
                       </span>
                     )}
                   </div>
 
                   {sortedProducts.length === 0 ? (
-                    <div className="py-20 text-center bg-white rounded-2xl border border-stone-200 p-8 space-y-3">
-                      <div className="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mx-auto text-stone-400">
+                    <div className="py-20 text-center bg-white dark:bg-[#151921] rounded-2xl border border-stone-200 dark:border-[#262e3d] p-8 space-y-3">
+                      <div className="w-12 h-12 bg-stone-100 dark:bg-[#1c222e] rounded-full flex items-center justify-center mx-auto text-stone-400 dark:text-stone-500">
                         <ShoppingBag className="w-6 h-6" />
                       </div>
-                      <h3 className="text-base font-bold text-stone-900">No matching campus products</h3>
-                      <p className="text-xs text-stone-500 max-w-sm mx-auto">
+                      <h3 className="text-base font-bold text-stone-900 dark:text-white">No matching campus products</h3>
+                      <p className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto">
                         Try adjusting your filters, selecting a different category, or resetting your price range.
                       </p>
                       <button
                         onClick={resetFilters}
-                        className="px-4 py-2 bg-stone-900 text-white rounded-lg text-xs font-semibold hover:bg-stone-800"
+                        className="px-4 py-2 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 rounded-lg text-xs font-semibold hover:bg-stone-800 dark:hover:bg-amber-300 cursor-pointer"
                       >
                         Reset All Filters
                       </button>
@@ -464,57 +466,57 @@ function CampusMartApp() {
             </section>
 
             {/* How CampusMart Works */}
-            <section className="bg-stone-100 py-16 border-y border-stone-200">
+            <section className="bg-stone-100 dark:bg-[#13171f] py-16 border-y border-stone-200 dark:border-[#262e3d]">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                 <div className="text-center max-w-2xl mx-auto space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-700">
+                  <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
                     Simple & Safe
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
+                  <h2 className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-white tracking-tight">
                     How CampusMart Works
                   </h2>
-                  <p className="text-xs sm:text-sm text-stone-600">
+                  <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400">
                     Designed around physical campus density, student schedules, and verified identity.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-xs">
-                  <div className="bg-white p-5 rounded-2xl border border-stone-200 space-y-2 shadow-2xs">
-                    <span className="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
+                  <div className="bg-white dark:bg-[#181e28] p-5 rounded-2xl border border-stone-200 dark:border-[#262e3d] space-y-2 shadow-2xs">
+                    <span className="w-7 h-7 rounded-full bg-stone-900 dark:bg-stone-800 text-white flex items-center justify-center font-bold text-xs">
                       1
                     </span>
-                    <h3 className="text-sm font-bold text-stone-900">Sign Up with .EDU</h3>
-                    <p className="text-stone-500 leading-relaxed">
+                    <h3 className="text-sm font-bold text-stone-900 dark:text-white">Sign Up with .EDU</h3>
+                    <p className="text-stone-500 dark:text-stone-400 leading-relaxed">
                       Register with your university email and campus student ID for verified badge access.
                     </p>
                   </div>
 
-                  <div className="bg-white p-5 rounded-2xl border border-stone-200 space-y-2 shadow-2xs">
-                    <span className="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
+                  <div className="bg-white dark:bg-[#181e28] p-5 rounded-2xl border border-stone-200 dark:border-[#262e3d] space-y-2 shadow-2xs">
+                    <span className="w-7 h-7 rounded-full bg-stone-900 dark:bg-stone-800 text-white flex items-center justify-center font-bold text-xs">
                       2
                     </span>
-                    <h3 className="text-sm font-bold text-stone-900">Discover Peer Finds</h3>
-                    <p className="text-stone-500 leading-relaxed">
+                    <h3 className="text-sm font-bold text-stone-900 dark:text-white">Discover Peer Finds</h3>
+                    <p className="text-stone-500 dark:text-stone-400 leading-relaxed">
                       Browse tech gadgets, textbooks, vintage apparel, and dorm-baked treats sold by classmates.
                     </p>
                   </div>
 
-                  <div className="bg-white p-5 rounded-2xl border border-stone-200 space-y-2 shadow-2xs">
-                    <span className="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
+                  <div className="bg-white dark:bg-[#181e28] p-5 rounded-2xl border border-stone-200 dark:border-[#262e3d] space-y-2 shadow-2xs">
+                    <span className="w-7 h-7 rounded-full bg-stone-900 dark:bg-stone-800 text-white flex items-center justify-center font-bold text-xs">
                       3
                     </span>
-                    <h3 className="text-sm font-bold text-stone-900">Zero-Fee Quad Handoff</h3>
-                    <p className="text-stone-500 leading-relaxed">
+                    <h3 className="text-sm font-bold text-stone-900 dark:text-white">Zero-Fee Quad Handoff</h3>
+                    <p className="text-stone-500 dark:text-stone-400 leading-relaxed">
                       Order through secure escrow or cash-on-pickup and meet right at library or quad tables.
                     </p>
                   </div>
 
-                  <div className="bg-white p-5 rounded-2xl border border-stone-200 space-y-2 shadow-2xs">
+                  <div className="bg-white dark:bg-[#181e28] p-5 rounded-2xl border border-stone-200 dark:border-[#262e3d] space-y-2 shadow-2xs">
                     <span className="w-7 h-7 rounded-full bg-amber-400 text-stone-950 flex items-center justify-center font-bold text-xs">
                       4
                     </span>
-                    <h3 className="text-sm font-bold text-stone-900">Build Your Brand</h3>
-                    <p className="text-stone-500 leading-relaxed">
+                    <h3 className="text-sm font-bold text-stone-900 dark:text-white">Build Your Brand</h3>
+                    <p className="text-stone-500 dark:text-stone-400 leading-relaxed">
                       Transition from buyer to business owner in 2 minutes and launch your student storefront.
                     </p>
                   </div>
@@ -647,12 +649,14 @@ function CampusMartApp() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <MarketplaceProvider>
-          <CampusMartApp />
-        </MarketplaceProvider>
-      </CartProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <CartProvider>
+          <MarketplaceProvider>
+            <CampusMartApp />
+          </MarketplaceProvider>
+        </CartProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

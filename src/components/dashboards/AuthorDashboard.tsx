@@ -99,22 +99,22 @@ export const AuthorDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header Banner */}
-      <div className="bg-white rounded-2xl border border-stone-200 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#151921] rounded-2xl border border-stone-200 dark:border-[#262e3d] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-stone-900">Campus Stories & Journal Studio</h1>
-            <span className="px-2 py-0.5 bg-cyan-50 text-cyan-800 text-[11px] font-bold rounded">
+            <h1 className="text-xl font-bold text-stone-900 dark:text-white">Campus Stories & Journal Studio</h1>
+            <span className="px-2 py-0.5 bg-cyan-50 dark:bg-cyan-950/50 text-cyan-800 dark:text-cyan-300 text-[11px] font-bold rounded border border-cyan-200 dark:border-cyan-800/40">
               Author Portal
             </span>
           </div>
-          <p className="text-xs text-stone-500 mt-1">
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
             Writing stories that celebrate student founders, side-hustles, and campus entrepreneurship guides.
           </p>
         </div>
 
         <button
           onClick={handleOpenCreate}
-          className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+          className="px-4 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Write New Article</span>
@@ -123,27 +123,27 @@ export const AuthorDashboard: React.FC = () => {
 
       {/* Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <div className="p-4 bg-white rounded-xl border border-stone-200 shadow-2xs">
-          <span className="text-[11px] text-stone-500 font-semibold uppercase">Published Articles</span>
-          <p className="text-xl font-bold text-stone-900 font-mono mt-1">{authorPosts.length}</p>
+        <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
+          <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Published Articles</span>
+          <p className="text-xl font-bold text-stone-900 dark:text-white font-mono mt-1">{authorPosts.length}</p>
         </div>
-        <div className="p-4 bg-white rounded-xl border border-stone-200 shadow-2xs">
-          <span className="text-[11px] text-stone-500 font-semibold uppercase">Total Article Views</span>
-          <p className="text-xl font-bold text-stone-900 font-mono mt-1">{totalReads}</p>
+        <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
+          <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Total Article Views</span>
+          <p className="text-xl font-bold text-stone-900 dark:text-white font-mono mt-1">{totalReads}</p>
         </div>
-        <div className="p-4 bg-white rounded-xl border border-stone-200 shadow-2xs">
-          <span className="text-[11px] text-stone-500 font-semibold uppercase">Student Reactions</span>
-          <p className="text-xl font-bold text-stone-900 font-mono mt-1">{totalLikes}</p>
+        <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
+          <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Student Reactions</span>
+          <p className="text-xl font-bold text-stone-900 dark:text-white font-mono mt-1">{totalLikes}</p>
         </div>
       </div>
 
       {/* Articles Table */}
-      <div className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-stone-200 flex justify-between items-center">
-          <h3 className="text-sm font-bold text-stone-900">Your Campus Articles</h3>
+      <div className="bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] overflow-hidden shadow-2xs">
+        <div className="p-4 border-b border-stone-200 dark:border-[#262e3d] flex justify-between items-center">
+          <h3 className="text-sm font-bold text-stone-900 dark:text-white">Your Campus Articles</h3>
         </div>
 
-        <div className="divide-y divide-stone-100">
+        <div className="divide-y divide-stone-100 dark:divide-[#222936]">
           {authorPosts.map((post) => (
             <div key={post.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
               <div className="flex items-start gap-3">
@@ -154,19 +154,19 @@ export const AuthorDashboard: React.FC = () => {
                 />
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded">
                       {post.category}
                     </span>
-                    <span className="text-stone-400">·</span>
-                    <span className="text-stone-500">{post.read_time}</span>
+                    <span className="text-stone-400 dark:text-stone-500">·</span>
+                    <span className="text-stone-500 dark:text-stone-400">{post.read_time}</span>
                   </div>
-                  <h4 className="text-sm font-bold text-stone-900">{post.title}</h4>
-                  <p className="text-[11px] text-stone-500 line-clamp-1 max-w-lg">{post.summary}</p>
+                  <h4 className="text-sm font-bold text-stone-900 dark:text-white">{post.title}</h4>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 line-clamp-1 max-w-lg">{post.summary}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                <div className="flex items-center gap-3 text-stone-400 font-mono text-[11px]">
+                <div className="flex items-center gap-3 text-stone-400 dark:text-stone-500 font-mono text-[11px]">
                   <span className="flex items-center gap-1">
                     <Eye className="w-3.5 h-3.5" />
                     {post.views}
@@ -180,7 +180,7 @@ export const AuthorDashboard: React.FC = () => {
                 <div className="space-x-1">
                   <button
                     onClick={() => handleOpenEdit(post)}
-                    className="p-1.5 text-stone-500 hover:text-stone-900 rounded"
+                    className="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white rounded cursor-pointer"
                     title="Edit Story"
                   >
                     <Edit className="w-4 h-4" />
@@ -191,7 +191,7 @@ export const AuthorDashboard: React.FC = () => {
                         deleteBlogPost(post.id);
                       }
                     }}
-                    className="p-1.5 text-stone-400 hover:text-rose-600 rounded"
+                    className="p-1.5 text-stone-400 dark:text-stone-500 hover:text-rose-600 dark:hover:text-rose-400 rounded cursor-pointer"
                     title="Delete Story"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -205,32 +205,32 @@ export const AuthorDashboard: React.FC = () => {
 
       {/* Editor Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 my-8 shadow-2xl border border-stone-200 text-xs">
-            <h3 className="text-base font-bold text-stone-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#151921] rounded-2xl max-w-2xl w-full p-6 space-y-4 my-8 shadow-2xl border border-stone-200 dark:border-[#262e3d] text-xs">
+            <h3 className="text-base font-bold text-stone-900 dark:text-white">
               {editingPostId ? 'Edit Campus Article' : 'Draft New Campus Story'}
             </h3>
 
             <form onSubmit={handleSavePost} className="space-y-3">
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Article Headline</label>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Article Headline</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. How I Built a $2,000/mo Custom Keyboard Brand Between Midterms"
                   required
-                  className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none"
+                  className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Category</label>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Category</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400 cursor-pointer"
                   >
                     <option value="Founder Spotlights">Founder Spotlights</option>
                     <option value="Business Guides">Business Guides</option>
@@ -239,61 +239,61 @@ export const AuthorDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Estimated Read Time</label>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Estimated Read Time</label>
                   <input
                     type="text"
                     value={readTime}
                     onChange={(e) => setReadTime(e.target.value)}
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Summary / Lead-In</label>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Summary / Lead-In</label>
                 <textarea
                   rows={2}
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
                   placeholder="Brief synopsis for the card preview..."
                   required
-                  className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Cover Image URL</label>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Cover Image URL</label>
                 <input
                   type="text"
                   value={coverImage}
                   onChange={(e) => setCoverImage(e.target.value)}
-                  className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Full Article Body</label>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Full Article Body</label>
                 <textarea
                   rows={8}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Write the full editorial story here..."
                   required
-                  className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg leading-relaxed"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 leading-relaxed focus:outline-hidden focus:ring-2 focus:ring-amber-400"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-stone-200">
+              <div className="flex justify-end gap-2 pt-3 border-t border-stone-200 dark:border-[#262e3d]">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 text-stone-600 hover:text-stone-900"
+                  className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-stone-900 text-white rounded-xl font-semibold hover:bg-stone-800"
+                  className="px-5 py-2 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 rounded-xl font-semibold hover:bg-stone-800 dark:hover:bg-amber-300 cursor-pointer"
                 >
                   Publish Story
                 </button>

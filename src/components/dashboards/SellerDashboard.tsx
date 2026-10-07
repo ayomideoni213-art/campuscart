@@ -3,20 +3,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { Product, Store, OrderStatus } from '../../types';
 import {
-  Store as StoreIcon,
-  Package,
   Plus,
-  TrendingUp,
-  DollarSign,
   Star,
   Edit,
-  Trash2,
-  CheckCircle,
-  Truck,
-  Eye,
-  Sliders,
-  Image as ImageIcon,
-  Clock
+  Trash2
 } from 'lucide-react';
 
 export const SellerDashboard: React.FC = () => {
@@ -174,30 +164,30 @@ export const SellerDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header Banner */}
-      <div className="bg-white rounded-2xl border border-stone-200 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#151921] rounded-2xl border border-stone-200 dark:border-[#262e3d] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors">
         <div className="flex items-center gap-4">
           <img
             src={myStore.logo_url}
             alt={myStore.name}
-            className="w-16 h-16 rounded-2xl object-cover border border-stone-300"
+            className="w-16 h-16 rounded-2xl object-cover border border-stone-300 dark:border-stone-700"
             referrerPolicy="no-referrer"
           />
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-stone-900">{myStore.name}</h1>
-              <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[11px] font-bold rounded">
+              <h1 className="text-xl font-bold text-stone-900 dark:text-white">{myStore.name}</h1>
+              <span className="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold rounded border border-transparent dark:border-indigo-800/40">
                 Seller Studio
               </span>
             </div>
-            <p className="text-xs text-stone-500 mt-0.5">
-              Pickup Point: <span className="text-stone-700 font-medium">{myStore.pickup_point}</span>
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+              Pickup Point: <span className="text-stone-700 dark:text-stone-300 font-medium">{myStore.pickup_point}</span>
             </p>
           </div>
         </div>
 
         <button
           onClick={handleOpenAddProduct}
-          className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+          className="px-4 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Product</span>
@@ -205,43 +195,43 @@ export const SellerDashboard: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-stone-200 text-xs font-semibold gap-2">
+      <div className="flex border-b border-stone-200 dark:border-[#222936] text-xs font-semibold gap-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`pb-3 px-3 transition-colors border-b-2 ${
+          className={`pb-3 px-3 transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'overview'
-              ? 'border-stone-900 text-stone-900'
-              : 'border-transparent text-stone-500 hover:text-stone-800'
+              ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
+              : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
           Overview & Metrics
         </button>
         <button
           onClick={() => setActiveTab('products')}
-          className={`pb-3 px-3 transition-colors border-b-2 ${
+          className={`pb-3 px-3 transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'products'
-              ? 'border-stone-900 text-stone-900'
-              : 'border-transparent text-stone-500 hover:text-stone-800'
+              ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
+              : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
           Inventory & Products ({myProducts.length})
         </button>
         <button
           onClick={() => setActiveTab('orders')}
-          className={`pb-3 px-3 transition-colors border-b-2 ${
+          className={`pb-3 px-3 transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'orders'
-              ? 'border-stone-900 text-stone-900'
-              : 'border-transparent text-stone-500 hover:text-stone-800'
+              ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
+              : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
           Orders Fulfillment ({myOrders.length})
         </button>
         <button
           onClick={() => setActiveTab('store')}
-          className={`pb-3 px-3 transition-colors border-b-2 ${
+          className={`pb-3 px-3 transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'store'
-              ? 'border-stone-900 text-stone-900'
-              : 'border-transparent text-stone-500 hover:text-stone-800'
+              ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
+              : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
           Store Brand Settings
@@ -252,38 +242,38 @@ export const SellerDashboard: React.FC = () => {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-4 bg-white rounded-xl border border-stone-200 shadow-2xs">
-              <span className="text-[11px] text-stone-500 font-semibold uppercase">Total Revenue</span>
-              <p className="text-xl font-bold text-stone-900 font-mono mt-1">${totalRevenue.toFixed(2)}</p>
-              <span className="text-[10px] text-emerald-600 font-medium">Campus peer sales</span>
+            <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
+              <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Total Revenue</span>
+              <p className="text-xl font-bold text-stone-900 dark:text-amber-400 font-mono mt-1">${totalRevenue.toFixed(2)}</p>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Campus peer sales</span>
             </div>
 
-            <div className="p-4 bg-white rounded-xl border border-stone-200 shadow-2xs">
-              <span className="text-[11px] text-stone-500 font-semibold uppercase">Total Orders</span>
-              <p className="text-xl font-bold text-stone-900 font-mono mt-1">{myOrders.length}</p>
-              <span className="text-[10px] text-stone-400">{pendingOrdersCount} pending handoffs</span>
+            <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
+              <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Total Orders</span>
+              <p className="text-xl font-bold text-stone-900 dark:text-white font-mono mt-1">{myOrders.length}</p>
+              <span className="text-[10px] text-stone-400 dark:text-stone-500">{pendingOrdersCount} pending handoffs</span>
             </div>
 
-            <div className="p-4 bg-white rounded-xl border border-stone-200 shadow-2xs">
-              <span className="text-[11px] text-stone-500 font-semibold uppercase">Store Rating</span>
+            <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
+              <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Store Rating</span>
               <div className="flex items-center gap-1 mt-1">
                 <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                <span className="text-xl font-bold text-stone-900 font-mono">{myStore.rating.toFixed(1)}</span>
+                <span className="text-xl font-bold text-stone-900 dark:text-white font-mono">{myStore.rating.toFixed(1)}</span>
               </div>
-              <span className="text-[10px] text-stone-400">{myStore.reviews_count} reviews</span>
+              <span className="text-[10px] text-stone-400 dark:text-stone-500">{myStore.reviews_count} reviews</span>
             </div>
 
-            <div className="p-4 bg-white rounded-xl border border-stone-200 shadow-2xs">
-              <span className="text-[11px] text-stone-500 font-semibold uppercase">Active Listings</span>
-              <p className="text-xl font-bold text-stone-900 font-mono mt-1">{myProducts.length}</p>
-              <span className="text-[10px] text-amber-600 font-medium">{outOfStockCount} out of stock</span>
+            <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
+              <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Active Listings</span>
+              <p className="text-xl font-bold text-stone-900 dark:text-white font-mono mt-1">{myProducts.length}</p>
+              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">{outOfStockCount} out of stock</span>
             </div>
           </div>
 
           {/* Quick Handoff Tasks */}
-          <div className="bg-white rounded-xl border border-stone-200 p-5">
-            <h3 className="text-sm font-bold text-stone-900 mb-3">Campus Handoff Instructions</h3>
-            <p className="text-xs text-stone-600 leading-relaxed">
+          <div className="bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] p-5">
+            <h3 className="text-sm font-bold text-stone-900 dark:text-white mb-3">Campus Handoff Instructions</h3>
+            <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
               When orders arrive, message the buyer via Student Messages to agree on an exact 10-minute window between lectures at your designated pickup table. Once the student inspects the product in person, tap "Mark Delivered" to complete the transaction.
             </p>
           </div>
@@ -292,12 +282,12 @@ export const SellerDashboard: React.FC = () => {
 
       {/* Tab 2: Products */}
       {activeTab === 'products' && (
-        <div className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-2xs">
-          <div className="p-4 border-b border-stone-200 flex justify-between items-center">
-            <h3 className="text-sm font-bold text-stone-900">All Products in Your Store</h3>
+        <div className="bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] overflow-hidden shadow-2xs transition-colors">
+          <div className="p-4 border-b border-stone-200 dark:border-[#222936] flex justify-between items-center">
+            <h3 className="text-sm font-bold text-stone-900 dark:text-white">All Products in Your Store</h3>
             <button
               onClick={handleOpenAddProduct}
-              className="px-3 py-1.5 bg-stone-900 text-white rounded-lg text-xs font-semibold hover:bg-stone-800"
+              className="px-3 py-1.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-lg text-xs transition-colors"
             >
               Add Product
             </button>
@@ -305,7 +295,7 @@ export const SellerDashboard: React.FC = () => {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-stone-50 border-b border-stone-200 text-stone-600 uppercase font-semibold text-[10px]">
+              <thead className="bg-stone-50 dark:bg-[#11151c] border-b border-stone-200 dark:border-[#222936] text-stone-600 dark:text-stone-400 uppercase font-semibold text-[10px]">
                 <tr>
                   <th className="p-3">Product</th>
                   <th className="p-3">Category</th>
@@ -315,39 +305,41 @@ export const SellerDashboard: React.FC = () => {
                   <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100">
+              <tbody className="divide-y divide-stone-100 dark:divide-[#222936]">
                 {myProducts.map((p) => (
-                  <tr key={p.id} className="hover:bg-stone-50/50">
+                  <tr key={p.id} className="hover:bg-stone-50/50 dark:hover:bg-[#181f2c]">
                     <td className="p-3 flex items-center gap-2.5">
                       <img
                         src={p.images[0]}
                         alt={p.name}
-                        className="w-10 h-10 rounded-lg object-cover bg-stone-100 shrink-0"
+                        className="w-10 h-10 rounded-lg object-cover bg-stone-100 dark:bg-[#1c222e] shrink-0"
                       />
-                      <span className="font-semibold text-stone-900 max-w-xs truncate">{p.name}</span>
+                      <span className="font-semibold text-stone-900 dark:text-stone-100 max-w-xs truncate">{p.name}</span>
                     </td>
-                    <td className="p-3 text-stone-600">{p.category_name}</td>
-                    <td className="p-3 font-mono font-semibold text-stone-900 tabular-nums">
+                    <td className="p-3 text-stone-600 dark:text-stone-400">{p.category_name}</td>
+                    <td className="p-3 font-mono font-semibold text-stone-900 dark:text-amber-400 tabular-nums">
                       ${p.price.toFixed(2)}
                     </td>
                     <td className="p-3 font-mono">
                       <span
                         className={`px-2 py-0.5 rounded font-bold text-[10px] ${
-                          p.stock <= 0 ? 'bg-rose-100 text-rose-800' : 'bg-stone-100 text-stone-700'
+                          p.stock <= 0
+                            ? 'bg-rose-100 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300'
+                            : 'bg-stone-100 dark:bg-[#1f2736] text-stone-700 dark:text-stone-300'
                         }`}
                       >
                         {p.stock} units
                       </span>
                     </td>
                     <td className="p-3">
-                      <span className="capitalize px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 text-[10px] font-semibold">
+                      <span className="capitalize px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-transparent dark:border-emerald-800/40 text-[10px] font-semibold">
                         {p.status}
                       </span>
                     </td>
                     <td className="p-3 text-right space-x-2">
                       <button
                         onClick={() => handleOpenEditProduct(p)}
-                        className="p-1 text-stone-500 hover:text-stone-900"
+                        className="p-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
                         title="Edit Product"
                       >
                         <Edit className="w-4 h-4" />
@@ -358,7 +350,7 @@ export const SellerDashboard: React.FC = () => {
                             deleteProduct(p.id);
                           }
                         }}
-                        className="p-1 text-stone-400 hover:text-rose-600"
+                        className="p-1 text-stone-400 hover:text-rose-600 dark:hover:text-rose-400"
                         title="Delete Product"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -376,24 +368,24 @@ export const SellerDashboard: React.FC = () => {
       {activeTab === 'orders' && (
         <div className="space-y-4">
           {myOrders.length === 0 ? (
-            <div className="p-12 text-center bg-white rounded-xl border border-stone-200 text-xs text-stone-500">
+            <div className="p-12 text-center bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] text-xs text-stone-500 dark:text-stone-400">
               No orders received yet. Once students place an order for your items, they will appear here.
             </div>
           ) : (
             myOrders.map((ord) => (
-              <div key={ord.id} className="bg-white rounded-xl border border-stone-200 p-5 space-y-3 text-xs">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3">
+              <div key={ord.id} className="bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] p-5 space-y-3 text-xs transition-colors">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 dark:border-[#222936] pb-3">
                   <div>
-                    <span className="font-bold text-stone-900 font-mono text-sm">{ord.order_number}</span>
-                    <span className="text-stone-400 mx-2">·</span>
-                    <span className="text-stone-600">Buyer: {ord.customer_name} ({ord.delivery_info.student_id})</span>
+                    <span className="font-bold text-stone-900 dark:text-white font-mono text-sm">{ord.order_number}</span>
+                    <span className="text-stone-400 dark:text-stone-600 mx-2">·</span>
+                    <span className="text-stone-600 dark:text-stone-300">Buyer: {ord.customer_name} ({ord.delivery_info.student_id})</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-stone-500">Status:</span>
+                    <span className="text-stone-500 dark:text-stone-400">Status:</span>
                     <select
                       value={ord.order_status}
                       onChange={(e) => updateOrderStatus(ord.id, e.target.value as OrderStatus)}
-                      className="p-1 bg-stone-100 border border-stone-300 rounded font-semibold text-stone-900 capitalize focus:outline-none"
+                      className="p-1 bg-stone-100 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] rounded font-semibold text-stone-900 dark:text-stone-100 capitalize focus:outline-none"
                     >
                       <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
@@ -410,14 +402,14 @@ export const SellerDashboard: React.FC = () => {
                   {ord.items
                     .filter((item) => item.store_id === myStore.id)
                     .map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-stone-700">
+                      <div key={idx} className="flex justify-between items-center text-stone-700 dark:text-stone-300">
                         <span>{item.quantity}x {item.product_name}</span>
-                        <span className="font-mono font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-mono font-bold text-stone-900 dark:text-amber-400">${(item.price * item.quantity).toFixed(2)}</span>
                       </div>
                     ))}
                 </div>
 
-                <div className="p-2.5 bg-stone-50 rounded-lg text-[11px] text-stone-600 flex justify-between items-center">
+                <div className="p-2.5 bg-stone-50 dark:bg-[#11151c] rounded-lg text-[11px] text-stone-600 dark:text-stone-400 flex justify-between items-center">
                   <span>Handoff: {ord.delivery_info.campus} ({ord.delivery_info.location_detail})</span>
                   <span>Contact: {ord.delivery_info.phone}</span>
                 </div>
@@ -429,59 +421,59 @@ export const SellerDashboard: React.FC = () => {
 
       {/* Tab 4: Store Brand Settings */}
       {activeTab === 'store' && (
-        <div className="bg-white rounded-xl border border-stone-200 p-6 max-w-2xl text-xs">
-          <h3 className="text-sm font-bold text-stone-900 mb-4">Brand Profile & Campus Pickup</h3>
+        <div className="bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] p-6 max-w-2xl text-xs transition-colors">
+          <h3 className="text-sm font-bold text-stone-900 dark:text-white mb-4">Brand Profile & Campus Pickup</h3>
 
           {storeSaved && (
-            <div className="mb-4 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg">
+            <div className="mb-4 p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300 rounded-lg">
               Store branding updated!
             </div>
           )}
 
           <form onSubmit={handleSaveStore} className="space-y-4">
             <div>
-              <label className="block font-semibold text-stone-700 mb-1">Store Name</label>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Store Name</label>
               <input
                 type="text"
                 value={storeName}
                 onChange={(e) => setStoreName(e.target.value)}
-                className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-lg"
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-stone-700 mb-1">Tagline</label>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Tagline</label>
               <input
                 type="text"
                 value={storeTagline}
                 onChange={(e) => setStoreTagline(e.target.value)}
-                className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-lg"
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-stone-700 mb-1">Description / Story</label>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Description / Story</label>
               <textarea
                 rows={4}
                 value={storeDescription}
                 onChange={(e) => setStoreDescription(e.target.value)}
-                className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-lg"
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-stone-700 mb-1">Primary Campus Pickup Location</label>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Primary Campus Pickup Location</label>
               <input
                 type="text"
                 value={pickupPoint}
                 onChange={(e) => setPickupPoint(e.target.value)}
-                className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-lg"
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
               />
             </div>
 
             <button
               type="submit"
-              className="px-5 py-2.5 bg-stone-900 text-white rounded-xl font-semibold hover:bg-stone-800"
+              className="px-5 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors"
             >
               Update Store Information
             </button>
@@ -491,56 +483,56 @@ export const SellerDashboard: React.FC = () => {
 
       {/* Add / Edit Product Modal */}
       {productModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 my-8 shadow-2xl border border-stone-200 text-xs">
-            <h3 className="text-base font-bold text-stone-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#151921] rounded-2xl max-w-lg w-full p-6 space-y-4 my-8 shadow-2xl border border-stone-200 dark:border-[#262e3d] text-xs transition-colors">
+            <h3 className="text-base font-bold text-stone-900 dark:text-white">
               {editingProductId ? 'Edit Product Listing' : 'List New Campus Product'}
             </h3>
 
             <form onSubmit={handleSaveProduct} className="space-y-3">
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Product Title</label>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Product Title</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. 60W USB-C Fast Charger"
                   required
-                  className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Price ($)</label>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Price ($)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     required
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg font-mono focus:outline-none"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg font-mono focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Discount Price (Optional)</label>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Discount Price (Optional)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={discountPrice}
                     onChange={(e) => setDiscountPrice(e.target.value)}
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg font-mono focus:outline-none"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg font-mono focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Category</label>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Category</label>
                   <select
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg"
                   >
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -550,64 +542,78 @@ export const SellerDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Stock Units</label>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Stock Units</label>
                   <input
                     type="number"
                     value={stock}
                     onChange={(e) => setStock(e.target.value)}
                     required
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg font-mono"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg font-mono"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block font-semibold text-stone-700 mb-1">Condition</label>
-                <select
-                  value={condition}
-                  onChange={(e) => setCondition(e.target.value as Product['condition'])}
-                  className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg"
-                >
-                  <option value="Brand New">Brand New</option>
-                  <option value="Like New">Like New</option>
-                  <option value="Gently Used">Gently Used</option>
-                  <option value="Handmade / Custom">Handmade / Custom</option>
-                </select>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Condition</label>
+                  <select
+                    value={condition}
+                    onChange={(e) => setCondition(e.target.value as Product['condition'])}
+                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg"
+                  >
+                    <option value="Brand New">Brand New</option>
+                    <option value="Like New">Like New</option>
+                    <option value="Gently Used">Gently Used</option>
+                    <option value="Handmade / Custom">Handmade / Custom</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value as Product['status'])}
+                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg"
+                  >
+                    <option value="published">Published</option>
+                    <option value="draft">Draft</option>
+                    <option value="sold">Sold</option>
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Image URL / Preset</label>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Image URL / Asset</label>
                 <input
                   type="text"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Description</label>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Description</label>
                 <textarea
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Detail condition, specifications, and what is included..."
                   required
-                  className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-stone-200">
+              <div className="flex justify-end gap-2 pt-3 border-t border-stone-200 dark:border-[#222936]">
                 <button
                   type="button"
                   onClick={() => setProductModalOpen(false)}
-                  className="px-4 py-2 text-stone-600 hover:text-stone-900"
+                  className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-stone-900 text-white rounded-xl font-semibold hover:bg-stone-800"
+                  className="px-5 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors"
                 >
                   {editingProductId ? 'Save Changes' : 'Create Listing'}
                 </button>

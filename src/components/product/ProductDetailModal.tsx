@@ -77,18 +77,19 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-xs overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden my-8 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-8 max-h-[90vh] flex flex-col transition-colors">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200">
-          <div className="flex items-center gap-2 text-xs text-stone-500">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-[#222936]">
+          <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
             <span>{product.category_name}</span>
             <span>·</span>
             <span>{product.campus_name}</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-stone-400 hover:text-stone-900 hover:bg-stone-100 transition-colors"
+            className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -99,7 +100,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Gallery Column */}
             <div className="space-y-3">
-              <div className="aspect-4/3 w-full bg-stone-100 rounded-xl overflow-hidden border border-stone-200">
+              <div className="aspect-4/3 w-full bg-stone-100 dark:bg-[#1c222e] rounded-xl overflow-hidden border border-stone-200 dark:border-[#262e3d]">
                 <img
                   src={product.images[selectedImage] || product.images[0]}
                   alt={product.name}
@@ -115,7 +116,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
                       className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
-                        selectedImage === idx ? 'border-stone-900 shadow-xs' : 'border-stone-200 opacity-70 hover:opacity-100'
+                        selectedImage === idx
+                          ? 'border-stone-900 dark:border-amber-400 shadow-xs'
+                          : 'border-stone-200 dark:border-[#262e3d] opacity-70 hover:opacity-100'
                       }`}
                     >
                       <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
@@ -125,15 +128,15 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               )}
 
               {/* Campus Delivery / Pickup Details Box */}
-              <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200/80 text-xs space-y-2">
-                <div className="flex items-center gap-2 font-semibold text-stone-800">
-                  <MapPin className="w-4 h-4 text-amber-600 shrink-0" />
+              <div className="p-3.5 bg-stone-50 dark:bg-[#1a202c] rounded-xl border border-stone-200/80 dark:border-[#2b3545] text-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-stone-800 dark:text-stone-200">
+                  <MapPin className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                   <span>Verified Campus Pickup Point</span>
                 </div>
-                <p className="text-stone-600 pl-6 leading-relaxed">
+                <p className="text-stone-600 dark:text-stone-300 pl-6 leading-relaxed">
                   {store?.pickup_point || 'Student Union Lobby / Library Central Quad'}
                 </p>
-                <div className="flex items-center gap-2 text-stone-500 pl-6 pt-1 text-[11px]">
+                <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400 pl-6 pt-1 text-[11px]">
                   <Truck className="w-3.5 h-3.5" />
                   <span>Free zero-fee student handoff between classes</span>
                 </div>
@@ -143,53 +146,53 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             {/* Product Details & Purchase Module */}
             <div className="flex flex-col justify-between">
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-stone-900">{product.name}</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white">{product.name}</h1>
 
                 {/* Rating & Reviews */}
-                <div className="mt-2 flex items-center gap-3 text-xs text-stone-600">
+                <div className="mt-2 flex items-center gap-3 text-xs text-stone-600 dark:text-stone-400">
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    <span className="font-semibold text-stone-900">{product.rating.toFixed(1)}</span>
-                    <span className="text-stone-400">({product.reviews_count} reviews)</span>
+                    <span className="font-semibold text-stone-900 dark:text-stone-100">{product.rating.toFixed(1)}</span>
+                    <span className="text-stone-400 dark:text-stone-500">({product.reviews_count} reviews)</span>
                   </div>
                   <span>·</span>
-                  <span className="font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                  <span className="font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-transparent dark:border-emerald-800/40 px-2 py-0.5 rounded">
                     {product.condition}
                   </span>
                   <span>·</span>
-                  <span className="text-stone-500 font-mono tabular-nums">
+                  <span className="text-stone-500 dark:text-stone-400 font-mono tabular-nums">
                     {product.stock} units available
                   </span>
                 </div>
 
                 {/* Price */}
                 <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-stone-900 font-mono tabular-nums">
+                  <span className="text-2xl font-bold text-stone-900 dark:text-stone-100 font-mono tabular-nums">
                     ${(product.discount_price ?? product.price).toFixed(2)}
                   </span>
                   {product.discount_price && (
-                    <span className="text-sm text-stone-400 line-through font-mono tabular-nums">
+                    <span className="text-sm text-stone-400 dark:text-stone-500 line-through font-mono tabular-nums">
                       ${product.price.toFixed(2)}
                     </span>
                   )}
                 </div>
 
-                {/* Store Card Card */}
+                {/* Store Card */}
                 {store && (
-                  <div className="mt-5 p-3.5 bg-stone-50 rounded-xl border border-stone-200 flex items-center justify-between">
+                  <div className="mt-5 p-3.5 bg-stone-50 dark:bg-[#1a202c] rounded-xl border border-stone-200 dark:border-[#2b3545] flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <img
                         src={store.logo_url}
                         alt={store.name}
-                        className="w-10 h-10 rounded-lg object-cover border border-stone-300"
+                        className="w-10 h-10 rounded-lg object-cover border border-stone-300 dark:border-stone-700"
                         referrerPolicy="no-referrer"
                       />
                       <div>
                         <div className="flex items-center gap-1">
-                          <span className="text-xs font-bold text-stone-900">{store.name}</span>
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <span className="text-xs font-bold text-stone-900 dark:text-white">{store.name}</span>
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                         </div>
-                        <p className="text-[11px] text-stone-500 line-clamp-1">{store.tagline}</p>
+                        <p className="text-[11px] text-stone-500 dark:text-stone-400 line-clamp-1">{store.tagline}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -198,7 +201,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                           onClose();
                           onVisitStore(store.id);
                         }}
-                        className="px-2.5 py-1 text-xs font-semibold text-stone-800 bg-white border border-stone-200 rounded-lg hover:bg-stone-100 transition-colors"
+                        className="px-2.5 py-1 text-xs font-semibold text-stone-800 dark:text-stone-200 bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#2b3545] rounded-lg hover:bg-stone-100 dark:hover:bg-[#252c3c] transition-colors"
                       >
                         Visit Store
                       </button>
@@ -208,34 +211,34 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
                 {/* Description */}
                 <div className="mt-5">
-                  <h4 className="text-xs font-semibold text-stone-900 uppercase tracking-wider">
+                  <h4 className="text-xs font-semibold text-stone-900 dark:text-stone-200 uppercase tracking-wider">
                     About this Item
                   </h4>
-                  <p className="mt-2 text-xs sm:text-sm text-stone-600 leading-relaxed whitespace-pre-line">
+                  <p className="mt-2 text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed whitespace-pre-line">
                     {product.description}
                   </p>
                 </div>
               </div>
 
               {/* Purchase Actions */}
-              <div className="mt-6 pt-5 border-t border-stone-200 space-y-3">
+              <div className="mt-6 pt-5 border-t border-stone-200 dark:border-[#222936] space-y-3">
                 <div className="flex items-center gap-3">
                   {/* Quantity Stepper */}
-                  <div className="flex items-center border border-stone-300 rounded-lg">
+                  <div className="flex items-center border border-stone-300 dark:border-[#2b3545] bg-white dark:bg-[#1a202c] rounded-lg">
                     <button
                       disabled={quantity <= 1}
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      className="px-3 py-2 text-stone-600 hover:text-stone-900 disabled:opacity-30"
+                      className="px-3 py-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white disabled:opacity-30"
                     >
                       -
                     </button>
-                    <span className="px-3 py-2 text-xs font-semibold font-mono tabular-nums">
+                    <span className="px-3 py-2 text-xs font-semibold font-mono tabular-nums text-stone-900 dark:text-stone-100">
                       {quantity}
                     </span>
                     <button
                       disabled={quantity >= product.stock}
                       onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                      className="px-3 py-2 text-stone-600 hover:text-stone-900 disabled:opacity-30"
+                      className="px-3 py-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white disabled:opacity-30"
                     >
                       +
                     </button>
@@ -250,8 +253,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                       isOutOfStock
-                        ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
-                        : 'bg-stone-900 hover:bg-stone-800 text-white shadow-sm'
+                        ? 'bg-stone-200 dark:bg-[#1c222e] text-stone-400 dark:text-stone-500 cursor-not-allowed'
+                        : 'bg-stone-900 hover:bg-stone-800 text-white dark:bg-amber-400 dark:hover:bg-amber-300 dark:text-stone-950 font-bold shadow-sm'
                     }`}
                   >
                     <ShoppingBag className="w-4 h-4" />
@@ -261,12 +264,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   {/* Wishlist Button */}
                   <button
                     onClick={() => toggleWishlist(product.id)}
-                    className="p-2.5 rounded-xl border border-stone-300 hover:bg-stone-50 text-stone-700 transition-colors"
+                    className="p-2.5 rounded-xl border border-stone-300 dark:border-[#2b3545] hover:bg-stone-50 dark:hover:bg-[#1c222e] text-stone-700 dark:text-stone-300 transition-colors"
                     aria-label="Wishlist"
                   >
                     <Heart
                       className={`w-5 h-5 ${
-                        wishlisted ? 'fill-rose-500 text-rose-500' : 'text-stone-600'
+                        wishlisted ? 'fill-rose-500 text-rose-500' : 'text-stone-600 dark:text-stone-400'
                       }`}
                     />
                   </button>
@@ -279,15 +282,15 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       onClose();
                       onOpenMessage(product.seller_id, product.store_id, product.id);
                     }}
-                    className="text-stone-700 hover:text-stone-900 font-medium flex items-center gap-1.5 underline"
+                    className="text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white font-medium flex items-center gap-1.5 underline"
                   >
-                    <MessageSquare className="w-3.5 h-3.5 text-stone-500" />
+                    <MessageSquare className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
                     <span>Message Student Seller</span>
                   </button>
 
                   <button
                     onClick={() => setReportModalOpen(true)}
-                    className="text-stone-400 hover:text-stone-600 flex items-center gap-1 text-[11px]"
+                    className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 flex items-center gap-1 text-[11px]"
                   >
                     <Flag className="w-3 h-3" />
                     <span>Report Listing</span>
@@ -298,17 +301,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           </div>
 
           {/* Student Reviews Section */}
-          <div className="pt-6 border-t border-stone-200">
+          <div className="pt-6 border-t border-stone-200 dark:border-[#222936]">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-bold text-stone-900">Verified Campus Reviews</h3>
-                <p className="text-xs text-stone-500">From undergraduate peers who bought this item.</p>
+                <h3 className="text-base font-bold text-stone-900 dark:text-white">Verified Campus Reviews</h3>
+                <p className="text-xs text-stone-500 dark:text-stone-400">From undergraduate peers who bought this item.</p>
               </div>
 
               {currentUser && !showReviewForm && (
                 <button
                   onClick={() => setShowReviewForm(true)}
-                  className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg text-xs font-semibold transition-colors"
+                  className="px-3 py-1.5 bg-stone-100 dark:bg-[#1c222e] hover:bg-stone-200 dark:hover:bg-[#262e3d] text-stone-800 dark:text-stone-200 rounded-lg text-xs font-semibold transition-colors"
                 >
                   Write a Review
                 </button>
@@ -317,9 +320,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
             {/* Review Form */}
             {showReviewForm && (
-              <form onSubmit={handleAddReview} className="mb-6 p-4 bg-stone-50 border border-stone-200 rounded-xl space-y-3">
+              <form onSubmit={handleAddReview} className="mb-6 p-4 bg-stone-50 dark:bg-[#1a202c] border border-stone-200 dark:border-[#2b3545] rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-stone-900">Rate your experience:</span>
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-200">Rate your experience:</span>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -330,7 +333,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       >
                         <Star
                           className={`w-4 h-4 ${
-                            star <= newRating ? 'fill-amber-400 text-amber-400' : 'text-stone-300'
+                            star <= newRating ? 'fill-amber-400 text-amber-400' : 'text-stone-300 dark:text-stone-600'
                           }`}
                         />
                       </button>
@@ -343,7 +346,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Share details on product condition, meetup punctuality, or quality..."
-                  className="w-full p-2.5 text-xs bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900"
+                  className="w-full p-2.5 text-xs bg-white dark:bg-[#151921] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
                   required
                 />
 
@@ -351,13 +354,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowReviewForm(false)}
-                    className="px-3 py-1 text-xs text-stone-600 hover:text-stone-900"
+                    className="px-3 py-1 text-xs text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-stone-900 text-white rounded-lg text-xs font-semibold hover:bg-stone-800"
+                    className="px-4 py-1.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-semibold rounded-lg text-xs"
                   >
                     {reviewSubmitted ? 'Submitted!' : 'Post Review'}
                   </button>
@@ -367,23 +370,23 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
             {/* Reviews List */}
             {productReviews.length === 0 ? (
-              <p className="text-xs text-stone-500 py-4 text-center">
+              <p className="text-xs text-stone-500 dark:text-stone-400 py-4 text-center">
                 No reviews yet for this listing. Be the first student buyer to leave feedback!
               </p>
             ) : (
               <div className="space-y-4">
                 {productReviews.map((rev) => (
-                  <div key={rev.id} className="p-3.5 bg-stone-50/70 border border-stone-200/70 rounded-xl space-y-1.5">
+                  <div key={rev.id} className="p-3.5 bg-stone-50/70 dark:bg-[#181e2a] border border-stone-200/70 dark:border-[#262e3d] rounded-xl space-y-1.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <img
                           src={rev.user_avatar}
                           alt={rev.user_name}
-                          className="w-6 h-6 rounded-full object-cover"
+                          className="w-6 h-6 rounded-full object-cover border border-stone-300 dark:border-stone-700"
                           referrerPolicy="no-referrer"
                         />
-                        <span className="text-xs font-semibold text-stone-900">{rev.user_name}</span>
-                        <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded font-medium">
+                        <span className="text-xs font-semibold text-stone-900 dark:text-stone-100">{rev.user_name}</span>
+                        <span className="text-[10px] text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-transparent dark:border-emerald-800/40 px-1.5 py-0.2 rounded font-medium">
                           Verified Buyer
                         </span>
                       </div>
@@ -392,14 +395,14 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                           <Star
                             key={i}
                             className={`w-3 h-3 ${
-                              i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-300'
+                              i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-300 dark:text-stone-600'
                             }`}
                           />
                         ))}
                       </div>
                     </div>
-                    <p className="text-xs text-stone-600 leading-relaxed pl-8">{rev.comment}</p>
-                    <div className="text-[10px] text-stone-400 pl-8 pt-0.5">
+                    <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed pl-8">{rev.comment}</p>
+                    <div className="text-[10px] text-stone-400 dark:text-stone-500 pl-8 pt-0.5">
                       {new Date(rev.created_at).toLocaleDateString()}
                     </div>
                   </div>
@@ -412,30 +415,30 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
       {/* Report Modal */}
       {reportModalOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-950/70">
-          <div className="bg-white rounded-xl max-w-md w-full p-5 space-y-4 shadow-xl border border-stone-200">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#151921] rounded-xl max-w-md w-full p-5 space-y-4 shadow-xl border border-stone-200 dark:border-[#262e3d]">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-stone-900 flex items-center gap-1.5">
+              <h3 className="text-sm font-bold text-stone-900 dark:text-white flex items-center gap-1.5">
                 <Flag className="w-4 h-4 text-rose-500" />
                 Report Listing to Campus Moderators
               </h3>
               <button onClick={() => setReportModalOpen(false)}>
-                <X className="w-4 h-4 text-stone-400" />
+                <X className="w-4 h-4 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200" />
               </button>
             </div>
 
             {reportSubmitted ? (
-              <div className="py-6 text-center text-xs text-emerald-700 font-medium">
+              <div className="py-6 text-center text-xs text-emerald-700 dark:text-emerald-300 font-medium">
                 Thank you. Your report has been dispatched to student editors.
               </div>
             ) : (
               <form onSubmit={handleSendReport} className="space-y-3 text-xs">
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Reason</label>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Reason</label>
                   <select
                     value={reportReason}
                     onChange={(e) => setReportReason(e.target.value)}
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg text-xs"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#1a202c] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg text-xs"
                   >
                     <option value="Prohibited or Restricted Item">Prohibited or Restricted Item</option>
                     <option value="Counterfeit or Misleading">Counterfeit or Misleading</option>
@@ -446,13 +449,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Additional details</label>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Additional details</label>
                   <textarea
                     rows={3}
                     value={reportDetails}
                     onChange={(e) => setReportDetails(e.target.value)}
                     placeholder="Provide context for our editorial team..."
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg text-xs"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#1a202c] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg text-xs"
                     required
                   />
                 </div>
@@ -461,13 +464,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setReportModalOpen(false)}
-                    className="px-3 py-1.5 text-stone-600"
+                    className="px-3 py-1.5 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-rose-600 text-white font-semibold rounded-lg hover:bg-rose-700"
+                    className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-lg"
                   >
                     Submit Report
                   </button>

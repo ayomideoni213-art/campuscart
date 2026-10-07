@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { DEMO_USERS, CAMPUS_OPTIONS } from '../../services/storage';
 import { UserRole } from '../../types';
-import { ShieldCheck, Store, User, BookOpen, PenTool, ChevronDown, Sparkles, Building2 } from 'lucide-react';
+import { ShieldCheck, Store, User, BookOpen, PenTool, Sparkles, Building2 } from 'lucide-react';
 
 interface RoleSwitcherBarProps {
   onOpenDashboard: (tab?: string) => void;
@@ -10,7 +10,6 @@ interface RoleSwitcherBarProps {
 
 export const RoleSwitcherBar: React.FC<RoleSwitcherBarProps> = ({ onOpenDashboard }) => {
   const { currentUser, currentRole, switchUserRole, selectedCampus, setSelectedCampus } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
 
   const roleMeta: Record<UserRole, { label: string; icon: React.ReactNode; color: string; desc: string }> = {
     customer: {
@@ -46,14 +45,14 @@ export const RoleSwitcherBar: React.FC<RoleSwitcherBarProps> = ({ onOpenDashboar
   };
 
   return (
-    <div className="bg-stone-900 text-stone-200 text-xs border-b border-stone-800">
+    <div className="bg-stone-900 dark:bg-[#080a0e] text-stone-200 text-xs border-b border-stone-800 dark:border-[#1a202c] transition-colors">
       <div className="max-w-7xl mx-auto px-4 py-1.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1 font-semibold text-stone-300 tracking-wider text-[11px] uppercase">
+          <span className="flex items-center gap-1 font-semibold text-stone-300 dark:text-stone-300 tracking-wider text-[11px] uppercase">
             <Sparkles className="w-3 h-3 text-amber-400" />
             Testing Mode:
           </span>
-          <span className="hidden sm:inline text-stone-400">Switch role to test permissions:</span>
+          <span className="hidden sm:inline text-stone-400 dark:text-stone-400">Switch role to test permissions:</span>
           
           <div className="flex items-center gap-1 overflow-x-auto py-0.5">
             {DEMO_USERS.map((demo) => {
@@ -64,8 +63,8 @@ export const RoleSwitcherBar: React.FC<RoleSwitcherBarProps> = ({ onOpenDashboar
                   onClick={() => switchUserRole(demo.role)}
                   className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors flex items-center gap-1 whitespace-nowrap ${
                     active
-                      ? 'bg-stone-100 text-stone-900 shadow-sm'
-                      : 'text-stone-300 hover:text-white hover:bg-stone-800'
+                      ? 'bg-stone-100 text-stone-900 dark:bg-amber-400 dark:text-stone-950 font-bold shadow-sm'
+                      : 'text-stone-300 hover:text-white hover:bg-stone-800 dark:hover:bg-[#1a202c]'
                   }`}
                   title={`${demo.full_name} (${roleMeta[demo.role].label}): ${roleMeta[demo.role].desc}`}
                 >
@@ -84,7 +83,7 @@ export const RoleSwitcherBar: React.FC<RoleSwitcherBarProps> = ({ onOpenDashboar
             <select
               value={selectedCampus}
               onChange={(e) => setSelectedCampus(e.target.value)}
-              className="bg-stone-800 text-stone-200 text-[11px] border border-stone-700 rounded px-1.5 py-0.5 focus:outline-none focus:border-stone-500"
+              className="bg-stone-800 dark:bg-[#161c26] text-stone-200 text-[11px] border border-stone-700 dark:border-[#2b3545] rounded px-1.5 py-0.5 focus:outline-none focus:border-stone-500"
             >
               {CAMPUS_OPTIONS.map((c) => (
                 <option key={c.id} value={c.name}>
@@ -98,7 +97,7 @@ export const RoleSwitcherBar: React.FC<RoleSwitcherBarProps> = ({ onOpenDashboar
           {currentUser && (
             <button
               onClick={() => onOpenDashboard()}
-              className="text-[11px] text-amber-300 hover:text-amber-200 underline font-medium flex items-center gap-0.5"
+              className="text-[11px] text-amber-300 dark:text-amber-400 hover:text-amber-200 underline font-medium flex items-center gap-0.5"
             >
               Go to {roleMeta[currentRole].label.split('/')[0].trim()} Dashboard &rarr;
             </button>

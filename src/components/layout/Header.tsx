@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import { ThemeToggle } from '../common/ThemeToggle';
 import {
   ShoppingBag,
   Heart,
@@ -68,16 +69,17 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0f131b]/95 backdrop-blur-md border-b border-stone-200 dark:border-[#222936] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Zone 1: Single text element wordmark */}
           <div className="flex items-center gap-6">
             <button
               onClick={() => onNavigate('home')}
-              className="text-2xl font-black tracking-tight text-stone-900 flex items-center gap-1.5 focus:outline-none"
+              className="text-2xl font-black tracking-tight text-stone-900 dark:text-white flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-amber-400 rounded-lg"
+              aria-label="CampusMart Home"
             >
-              <span className="w-8 h-8 rounded-lg bg-stone-900 text-amber-400 flex items-center justify-center text-lg font-black shadow-sm">
+              <span className="w-8 h-8 rounded-lg bg-stone-900 dark:bg-amber-400 text-amber-400 dark:text-stone-950 flex items-center justify-center text-lg font-black shadow-sm transition-colors">
                 C
               </span>
               <span>CampusMart</span>
@@ -85,27 +87,27 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Zone 2: 4-6 clean text navigation links (Desktop) */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-stone-600">
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-stone-600 dark:text-stone-300">
             <button
               onClick={() => onNavigate('home')}
-              className={`hover:text-stone-900 transition-colors whitespace-nowrap ${
-                currentView === 'home' ? 'text-stone-900 font-semibold' : ''
+              className={`hover:text-stone-900 dark:hover:text-white transition-colors whitespace-nowrap ${
+                currentView === 'home' ? 'text-stone-900 dark:text-white font-semibold' : ''
               }`}
             >
               Marketplace
             </button>
             <button
               onClick={() => onNavigate('stores')}
-              className={`hover:text-stone-900 transition-colors whitespace-nowrap ${
-                currentView === 'stores' ? 'text-stone-900 font-semibold' : ''
+              className={`hover:text-stone-900 dark:hover:text-white transition-colors whitespace-nowrap ${
+                currentView === 'stores' ? 'text-stone-900 dark:text-white font-semibold' : ''
               }`}
             >
               Student Stores
             </button>
             <button
               onClick={() => onNavigate('blog')}
-              className={`hover:text-stone-900 transition-colors whitespace-nowrap ${
-                currentView === 'blog' ? 'text-stone-900 font-semibold' : ''
+              className={`hover:text-stone-900 dark:hover:text-white transition-colors whitespace-nowrap ${
+                currentView === 'blog' ? 'text-stone-900 dark:text-white font-semibold' : ''
               }`}
             >
               Campus Stories
@@ -118,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onNavigate('become-seller');
                 }
               }}
-              className="hover:text-amber-600 transition-colors whitespace-nowrap text-stone-700 font-medium"
+              className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors whitespace-nowrap text-stone-700 dark:text-stone-300 font-medium"
             >
               {currentRole === 'seller' ? 'My Store' : 'Sell on Campus'}
             </button>
@@ -126,30 +128,34 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Search Bar (Mid/Action area) */}
           <div className="hidden lg:flex items-center flex-1 max-w-xs relative">
-            <Search className="w-4 h-4 text-stone-400 absolute left-3 pointer-events-none" />
+            <Search className="w-4 h-4 text-stone-400 dark:text-stone-500 absolute left-3 pointer-events-none" />
             <input
               type="text"
               placeholder="Search products, textbooks, dorm gear..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-stone-100 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 focus:bg-white text-stone-900 placeholder:text-stone-400 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400 focus:bg-white dark:focus:bg-[#1a202c] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 text-xs text-stone-400 hover:text-stone-700"
+                className="absolute right-2.5 text-xs text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
+                aria-label="Clear search"
               >
                 &times;
               </button>
             )}
           </div>
 
-          {/* Zone 3: 1-2 primary actions & User controls */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Zone 3: Actions & User controls */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Theme Toggle Button */}
+            <ThemeToggle variant="icon" />
+
             {/* Wishlist Button */}
             <button
               onClick={() => onNavigate('customer-dashboard', 'wishlist')}
-              className="p-2 text-stone-600 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors relative"
+              className="p-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors relative"
               title="Saved Items"
               aria-label="Wishlist"
             >
@@ -165,7 +171,7 @@ export const Header: React.FC<HeaderProps> = ({
             {currentUser && (
               <button
                 onClick={onOpenMessages}
-                className="p-2 text-stone-600 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors relative"
+                className="p-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors relative"
                 title="Student Messages"
                 aria-label="Messages"
               >
@@ -182,7 +188,7 @@ export const Header: React.FC<HeaderProps> = ({
             {currentUser && (
               <button
                 onClick={onOpenNotifications}
-                className="p-2 text-stone-600 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors relative"
+                className="p-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors relative"
                 title="Notifications"
                 aria-label="Notifications"
               >
@@ -198,12 +204,12 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Cart Button */}
             <button
               onClick={onOpenCart}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-semibold shadow-sm transition-all whitespace-nowrap"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white dark:bg-amber-400 dark:hover:bg-amber-300 dark:text-stone-950 font-bold rounded-lg text-xs shadow-sm transition-all whitespace-nowrap ml-1"
               aria-label="Shopping Cart"
             >
               <ShoppingBag className="w-4 h-4" />
               <span className="hidden sm:inline">Bag</span>
-              <span className="bg-amber-400 text-stone-950 font-bold px-1.5 py-0.2 rounded text-[11px]">
+              <span className="bg-amber-400 text-stone-950 dark:bg-stone-900 dark:text-amber-300 font-bold px-1.5 py-0.2 rounded text-[11px]">
                 {cartCount}
               </span>
             </button>
@@ -213,29 +219,29 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 p-1 rounded-lg hover:bg-stone-100 transition-colors focus:outline-none"
+                  className="flex items-center gap-2 p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
                   aria-label="User Account Menu"
                 >
                   <img
                     src={currentUser.avatar_url}
                     alt={currentUser.full_name}
-                    className="w-8 h-8 rounded-full object-cover border border-stone-300"
+                    className="w-8 h-8 rounded-full object-cover border border-stone-300 dark:border-stone-700"
                     referrerPolicy="no-referrer"
                   />
                 </button>
 
                 {userMenuOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-56 bg-white border border-stone-200 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                    className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#171d27] border border-stone-200 dark:border-[#262e3d] rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
                     onClick={() => setUserMenuOpen(false)}
                   >
-                    <div className="px-4 py-2 border-b border-stone-100">
-                      <p className="text-xs font-semibold text-stone-900 truncate">
+                    <div className="px-4 py-2 border-b border-stone-100 dark:border-[#222936]">
+                      <p className="text-xs font-semibold text-stone-900 dark:text-white truncate">
                         {currentUser.full_name}
                       </p>
-                      <p className="text-[11px] text-stone-500 truncate">{currentUser.email}</p>
-                      <div className="mt-1 flex items-center gap-1.5 text-[10px] font-medium text-stone-600">
-                        <span className="capitalize px-1.5 py-0.5 bg-stone-100 rounded text-stone-700">
+                      <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate">{currentUser.email}</p>
+                      <div className="mt-1 flex items-center gap-1.5 text-[10px] font-medium text-stone-600 dark:text-stone-300">
+                        <span className="capitalize px-1.5 py-0.5 bg-stone-100 dark:bg-[#202736] rounded text-stone-700 dark:text-stone-300">
                           {currentUser.role}
                         </span>
                         <span>·</span>
@@ -245,16 +251,16 @@ export const Header: React.FC<HeaderProps> = ({
 
                     <button
                       onClick={() => onNavigate(`${currentRole}-dashboard`)}
-                      className="w-full text-left px-4 py-2 text-xs font-medium text-stone-700 hover:bg-stone-50 flex items-center gap-2"
+                      className="w-full text-left px-4 py-2 text-xs font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-[#1f2735] flex items-center gap-2 transition-colors"
                     >
-                      <LayoutDashboard className="w-4 h-4 text-stone-400" />
+                      <LayoutDashboard className="w-4 h-4 text-stone-400 dark:text-stone-400" />
                       {getDashboardLabel()}
                     </button>
 
                     {currentRole === 'customer' && (
                       <button
                         onClick={() => onNavigate('become-seller')}
-                        className="w-full text-left px-4 py-2 text-xs font-medium text-amber-700 hover:bg-amber-50 flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-[#232015] flex items-center gap-2 transition-colors"
                       >
                         <Store className="w-4 h-4 text-amber-500" />
                         Open a Student Store
@@ -263,17 +269,17 @@ export const Header: React.FC<HeaderProps> = ({
 
                     <button
                       onClick={() => onNavigate('customer-dashboard', 'orders')}
-                      className="w-full text-left px-4 py-2 text-xs font-medium text-stone-700 hover:bg-stone-50 flex items-center gap-2"
+                      className="w-full text-left px-4 py-2 text-xs font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-[#1f2735] flex items-center gap-2 transition-colors"
                     >
-                      <ShoppingBag className="w-4 h-4 text-stone-400" />
+                      <ShoppingBag className="w-4 h-4 text-stone-400 dark:text-stone-400" />
                       My Orders
                     </button>
 
-                    <div className="border-t border-stone-100 my-1"></div>
+                    <div className="border-t border-stone-100 dark:border-[#222936] my-1"></div>
 
                     <button
                       onClick={logout}
-                      className="w-full text-left px-4 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-2"
+                      className="w-full text-left px-4 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2 transition-colors"
                     >
                       <LogOut className="w-4 h-4 text-rose-400" />
                       Sign Out
@@ -284,7 +290,7 @@ export const Header: React.FC<HeaderProps> = ({
             ) : (
               <button
                 onClick={onOpenAuth}
-                className="px-3.5 py-1.5 text-xs font-semibold text-stone-900 border border-stone-300 rounded-lg hover:bg-stone-100 transition-colors whitespace-nowrap"
+                className="px-3.5 py-1.5 text-xs font-semibold text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-stone-700 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors whitespace-nowrap ml-1"
               >
                 Sign In
               </button>
@@ -293,7 +299,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-stone-600 hover:text-stone-900 rounded-lg hover:bg-stone-100"
+              className="md:hidden p-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors ml-1"
               aria-label="Toggle Navigation"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -304,14 +310,14 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-stone-200 bg-white px-4 pt-2 pb-4 space-y-2">
+        <div className="md:hidden border-t border-stone-200 dark:border-[#222936] bg-white dark:bg-[#0f131b] px-4 pt-2 pb-4 space-y-2">
           <div className="pt-2 pb-2">
             <input
               type="text"
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 text-xs bg-stone-100 border border-stone-200 rounded-lg focus:outline-none"
+              className="w-full px-3 py-2 text-xs bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none"
             />
           </div>
           <button
@@ -319,7 +325,7 @@ export const Header: React.FC<HeaderProps> = ({
               onNavigate('home');
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 text-sm font-medium text-stone-700"
+            className="w-full text-left py-2 text-sm font-medium text-stone-700 dark:text-stone-200 hover:text-stone-900 dark:hover:text-white"
           >
             Marketplace
           </button>
@@ -328,7 +334,7 @@ export const Header: React.FC<HeaderProps> = ({
               onNavigate('stores');
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 text-sm font-medium text-stone-700"
+            className="w-full text-left py-2 text-sm font-medium text-stone-700 dark:text-stone-200 hover:text-stone-900 dark:hover:text-white"
           >
             Student Stores
           </button>
@@ -337,7 +343,7 @@ export const Header: React.FC<HeaderProps> = ({
               onNavigate('blog');
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 text-sm font-medium text-stone-700"
+            className="w-full text-left py-2 text-sm font-medium text-stone-700 dark:text-stone-200 hover:text-stone-900 dark:hover:text-white"
           >
             Campus Stories
           </button>
@@ -346,10 +352,13 @@ export const Header: React.FC<HeaderProps> = ({
               onNavigate(currentRole === 'seller' ? 'seller-dashboard' : 'become-seller');
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 text-sm font-medium text-amber-700"
+            className="w-full text-left py-2 text-sm font-medium text-amber-700 dark:text-amber-400"
           >
             {currentRole === 'seller' ? 'Seller Studio' : 'Open a Store'}
           </button>
+
+          {/* Theme switcher integrated naturally into mobile menu */}
+          <ThemeToggle variant="mobile" />
         </div>
       )}
     </header>

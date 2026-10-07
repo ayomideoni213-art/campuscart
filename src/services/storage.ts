@@ -595,7 +595,7 @@ export const INITIAL_REPORTS: ReportItem[] = [
     reporter_id: 'user-customer-1',
     reporter_name: 'Maya Lin',
     target_type: 'product',
-    target_id: 'prod-sample-suspicious',
+    target_id: 'prod-flagged-item-1',
     target_name: 'Unofficial Campus Football Tickets',
     reason: 'Restricted Item Policy',
     details: 'User is attempting to resell event wristbands above face value without campus verification.',

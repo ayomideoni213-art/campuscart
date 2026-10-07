@@ -35,7 +35,7 @@ export const BlogPostDetail: React.FC<BlogPostDetailProps> = ({
       {/* Back Button */}
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 transition-colors"
+        className="flex items-center gap-1.5 text-xs font-semibold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Campus Stories</span>
@@ -44,51 +44,51 @@ export const BlogPostDetail: React.FC<BlogPostDetailProps> = ({
       {/* Article Header */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-xs">
-          <span className="font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded">
+          <span className="font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-0.5 rounded border border-amber-200 dark:border-amber-800/40">
             {post.category}
           </span>
-          <span className="text-stone-400">·</span>
-          <span className="text-stone-500">{post.read_time}</span>
-          <span className="text-stone-400">·</span>
-          <span className="text-stone-400 font-mono">
+          <span className="text-stone-400 dark:text-stone-500">·</span>
+          <span className="text-stone-500 dark:text-stone-400">{post.read_time}</span>
+          <span className="text-stone-400 dark:text-stone-500">·</span>
+          <span className="text-stone-400 dark:text-stone-500 font-mono">
             Published {new Date(post.created_at).toLocaleDateString()}
           </span>
         </div>
 
-        <h1 className="text-2xl sm:text-4xl font-black text-stone-900 leading-tight">
+        <h1 className="text-2xl sm:text-4xl font-black text-stone-900 dark:text-white leading-tight">
           {post.title}
         </h1>
 
-        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-medium">
+        <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed font-medium">
           {post.summary}
         </p>
 
         {/* Author Card */}
-        <div className="flex items-center justify-between border-y border-stone-200 py-3 text-xs">
+        <div className="flex items-center justify-between border-y border-stone-200 dark:border-[#262e3d] py-3 text-xs">
           <div className="flex items-center gap-3">
             <img
               src={post.author_avatar}
               alt={post.author_name}
-              className="w-10 h-10 rounded-full object-cover border border-stone-200"
+              className="w-10 h-10 rounded-full object-cover border border-stone-200 dark:border-[#262e3d]"
               referrerPolicy="no-referrer"
             />
             <div>
-              <p className="font-bold text-stone-900">{post.author_name}</p>
-              <p className="text-[11px] text-stone-500">{post.author_role}</p>
+              <p className="font-bold text-stone-900 dark:text-white">{post.author_name}</p>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400">{post.author_role}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-stone-500">
+          <div className="flex items-center gap-4 text-stone-500 dark:text-stone-400">
             <span className="flex items-center gap-1 font-mono text-[11px]">
               <Eye className="w-3.5 h-3.5" />
               {post.views} reads
             </span>
             <button
               onClick={handleLike}
-              className={`flex items-center gap-1 px-3 py-1 rounded-lg border text-xs font-semibold transition-colors ${
+              className={`flex items-center gap-1 px-3 py-1 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
                 liked
-                  ? 'bg-rose-50 border-rose-300 text-rose-600'
-                  : 'border-stone-300 hover:bg-stone-50 text-stone-700'
+                  ? 'bg-rose-50 dark:bg-rose-950/50 border-rose-300 dark:border-rose-800/40 text-rose-600 dark:text-rose-400'
+                  : 'border-stone-300 dark:border-[#2a3445] hover:bg-stone-50 dark:hover:bg-[#1c222e] text-stone-700 dark:text-stone-300'
               }`}
             >
               <Heart className={`w-3.5 h-3.5 ${liked ? 'fill-rose-500' : ''}`} />
@@ -99,7 +99,7 @@ export const BlogPostDetail: React.FC<BlogPostDetailProps> = ({
       </div>
 
       {/* Featured Image */}
-      <div className="aspect-16/9 w-full rounded-2xl overflow-hidden border border-stone-200">
+      <div className="aspect-16/9 w-full rounded-2xl overflow-hidden border border-stone-200 dark:border-[#262e3d]">
         <img
           src={post.cover_image}
           alt={post.title}
@@ -109,26 +109,26 @@ export const BlogPostDetail: React.FC<BlogPostDetailProps> = ({
       </div>
 
       {/* Article Body */}
-      <div className="prose prose-stone max-w-none text-stone-700 text-sm leading-relaxed whitespace-pre-line">
+      <div className="prose prose-stone dark:prose-invert max-w-none text-stone-700 dark:text-stone-300 text-sm leading-relaxed whitespace-pre-line">
         {post.content}
       </div>
 
       {/* Related Stories */}
       {relatedPosts.length > 0 && (
-        <div className="pt-10 border-t border-stone-200 space-y-4">
-          <h3 className="text-base font-bold text-stone-900">More from CampusMart Editorial</h3>
+        <div className="pt-10 border-t border-stone-200 dark:border-[#262e3d] space-y-4">
+          <h3 className="text-base font-bold text-stone-900 dark:text-white">More from CampusMart Editorial</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {relatedPosts.map((rel) => (
               <div
                 key={rel.id}
                 onClick={() => onSelectOtherPost(rel)}
-                className="p-4 bg-white border border-stone-200 rounded-xl hover:shadow-xs transition-all cursor-pointer space-y-2 text-xs"
+                className="p-4 bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-xl hover:shadow-xs dark:hover:border-amber-400/50 transition-all cursor-pointer space-y-2 text-xs"
               >
-                <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded">
+                <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/40">
                   {rel.category}
                 </span>
-                <h4 className="font-bold text-stone-900 line-clamp-1">{rel.title}</h4>
-                <p className="text-[11px] text-stone-500 line-clamp-2">{rel.summary}</p>
+                <h4 className="font-bold text-stone-900 dark:text-white line-clamp-1">{rel.title}</h4>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 line-clamp-2">{rel.summary}</p>
               </div>
             ))}
           </div>

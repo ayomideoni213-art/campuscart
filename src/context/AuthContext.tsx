@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserProfile, UserRole } from '../types';
 import { StorageService, DEMO_USERS } from '../services/storage';
+import { supabase } from '../lib/supabase';
 
 interface AuthContextType {
   currentUser: UserProfile | null;
@@ -9,8 +10,8 @@ interface AuthContextType {
   setSelectedCampus: (campus: string) => void;
   switchUserRole: (role: UserRole) => void;
   loginAsDemoUser: (userId: string) => void;
-  loginWithEmail: (email: string, password?: string) => { success: boolean; error?: string };
-  registerUser: (data: { email: string; full_name: string; campus_name: string; student_id: string; role: UserRole; bio?: string }) => { success: boolean; error?: string };
+  loginWithEmail: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  registerUser: (data: { email: string; password: string; full_name: string; campus_name: string; student_id: string; role: UserRole; bio?: string }) => Promise<{ success: boolean; error?: string; message?: string }>;
   logout: () => void;
   updateProfile: (updatedData: Partial<UserProfile>) => void;
 }
@@ -18,10 +19,61 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
-    // Default to the first demo user (Customer: Maya Lin)
-    return DEMO_USERS[0];
-  });
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    let disposed = false;
+
+    const loadProfile = async (userId: string) => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (disposed) return;
+      if (error) {
+        console.error('Could not load the signed-in profile:', error);
+        setCurrentUser(null);
+        return;
+      }
+
+      const profile = data as UserProfile | null;
+      if (profile?.is_suspended) {
+        setCurrentUser(null);
+        void supabase.auth.signOut();
+        return;
+      }
+
+      setCurrentUser(profile);
+    };
+
+    void supabase.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        console.error('Could not restore the Supabase session:', error);
+        return;
+      }
+      if (data.session) void loadProfile(data.session.user.id);
+      else if (!disposed) setCurrentUser(null);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        if (!disposed) setCurrentUser(null);
+        return;
+      }
+
+      // Defer the profile request until Supabase finishes its auth callback.
+      window.setTimeout(() => {
+        if (!disposed) void loadProfile(session.user.id);
+      }, 0);
+    });
+
+    return () => {
+      disposed = true;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   const [selectedCampus, setSelectedCampusState] = useState<string>(() => {
     return StorageService.getSelectedCampus();
@@ -48,59 +100,75 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loginWithEmail = (email: string): { success: boolean; error?: string } => {
-    const allUsers = StorageService.getUsers();
-    const found = allUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (found) {
-      if (found.is_suspended) {
-        return { success: false, error: 'This student account has been suspended by campus moderators.' };
-      }
-      setCurrentUser(found);
-      return { success: true };
+  const loginWithEmail = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { success: false, error: error.message };
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', data.user.id)
+      .maybeSingle();
+
+    if (profileError || !profile) {
+      await supabase.auth.signOut();
+      return {
+        success: false,
+        error: profileError?.message || 'Your account profile was not found. Please contact support.',
+      };
     }
-    // Also check demo users
-    const demo = DEMO_USERS.find((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (demo) {
-      setCurrentUser(demo);
-      return { success: true };
+
+    const userProfile = profile as UserProfile;
+    if (userProfile.is_suspended) {
+      await supabase.auth.signOut();
+      return { success: false, error: 'This student account has been suspended by campus moderators.' };
     }
-    return { success: false, error: 'No account found with this campus email. Please register below.' };
+
+    setCurrentUser(userProfile);
+    return { success: true };
   };
 
-  const registerUser = (data: {
+  const registerUser = async (data: {
     email: string;
+    password: string;
     full_name: string;
     campus_name: string;
     student_id: string;
     role: UserRole;
     bio?: string;
-  }): { success: boolean; error?: string } => {
-    const allUsers = StorageService.getUsers();
-    if (allUsers.some((u) => u.email.toLowerCase() === data.email.toLowerCase())) {
-      return { success: false, error: 'A student account with this email already exists.' };
+  }): Promise<{ success: boolean; error?: string; message?: string }> => {
+    const { data: result, error } = await supabase.auth.signUp({
+      email: data.email.trim(),
+      password: data.password,
+      options: {
+        data: {
+          full_name: data.full_name.trim(),
+          campus_name: data.campus_name || selectedCampus,
+          student_id: data.student_id.trim(),
+          role: data.role === 'seller' ? 'seller' : 'customer',
+          bio: data.bio?.trim() || '',
+        },
+      },
+    });
+
+    if (error) return { success: false, error: error.message };
+
+    if (!result.session) {
+      return {
+        success: true,
+        message: 'Account created. Check your email to confirm it, then sign in.',
+      };
     }
 
-    const newUser: UserProfile = {
-      id: `user-${Date.now()}`,
-      email: data.email,
-      full_name: data.full_name,
-      role: data.role,
-      avatar_url: `https://images.unsplash.com/photo-${1500000000000 + Math.floor(Math.random() * 500000)}?auto=format&fit=crop&w=300&q=80`,
-      campus_name: data.campus_name || selectedCampus,
-      student_id: data.student_id,
-      phone: '+1 (555) 000-1234',
-      bio: data.bio || 'CampusMart verified student member.',
-      created_at: new Date().toISOString()
-    };
-
-    const updated = [newUser, ...allUsers];
-    StorageService.setUsers(updated);
-    setCurrentUser(newUser);
     return { success: true };
   };
 
   const logout = () => {
     setCurrentUser(null);
+    void supabase.auth.signOut();
   };
 
   const updateProfile = (updatedData: Partial<UserProfile>) => {

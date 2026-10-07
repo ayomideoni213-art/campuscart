@@ -16,6 +16,7 @@ import {
   UserRole
 } from '../types';
 import { StorageService } from '../services/storage';
+import { getPublishedProducts } from '../services/supabasecatalog';
 import { useAuth } from './AuthContext';
 
 interface MarketplaceContextType {
@@ -93,6 +94,14 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => StorageService.getBlogPosts());
 
   // Save to persistent storage
+  useEffect(() => {
+  getPublishedProducts()
+    .then((data) => setProducts(data))
+    .catch((error) => {
+      console.error('Could not load products from Supabase:', error);
+    });
+}, []);
+
   useEffect(() => {
     StorageService.setProducts(products);
   }, [products]);

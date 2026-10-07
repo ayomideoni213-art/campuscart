@@ -22,15 +22,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultRo
   const [role, setRole] = useState<UserRole>(defaultRole);
   const [bio, setBio] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setNotice(null);
 
     if (mode === 'login') {
-      const res = loginWithEmail(email);
+      const res = await loginWithEmail(email, password);
       if (res.success) {
         onClose();
       } else {
@@ -41,8 +43,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultRo
         setError('Please provide your name and student ID.');
         return;
       }
-      const res = registerUser({
+      const res = await registerUser({
         email,
+        password,
         full_name: fullName.trim(),
         campus_name: campusName,
         student_id: studentId.trim(),
@@ -50,7 +53,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultRo
         bio: bio.trim()
       });
       if (res.success) {
-        onClose();
+        if (res.message) {
+          setNotice(res.message);
+          setMode('login');
+          setPassword('');
+        } else {
+          onClose();
+        }
       } else {
         setError(res.error || 'Failed to register.');
       }
@@ -146,6 +155,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultRo
           {error && (
             <div className="mb-4 p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg">
               {error}
+            </div>
+          )}
+
+          {notice && (
+            <div className="mb-4 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-lg">
+              {notice}
             </div>
           )}
 

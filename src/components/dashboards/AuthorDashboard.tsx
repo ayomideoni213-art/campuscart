@@ -218,7 +218,7 @@ export const AuthorDashboard: React.FC = () => {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. How I Built a $2,000/mo Custom Keyboard Brand Between Midterms"
+                  placeholder="e.g. How I Built a ₦250,000/mo Campus Brand Between Lectures"
                   required
                   className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
                 />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Category, CampusOption } from '../../types';
-import { CAMPUS_OPTIONS } from '../../services/storage';
+import { EKITI_CAMPUSES } from '../../data/campuses';
+import { formatNaira } from '../../lib/formatters';
 import { SlidersHorizontal, RotateCcw } from 'lucide-react';
 
 interface ProductFiltersProps {
@@ -43,7 +44,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         </div>
         <button
           onClick={onResetFilters}
-          className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 text-xs flex items-center gap-1 transition-colors"
+          className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 text-xs flex items-center gap-1 transition-colors cursor-pointer"
           title="Reset Filters"
         >
           <RotateCcw className="w-3 h-3" />
@@ -51,16 +52,18 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         </button>
       </div>
 
-      {/* Campus Filter */}
+      {/* Campus Filter (Ekiti State Universities) */}
       <div>
-        <label className="block text-xs font-semibold text-stone-900 dark:text-stone-200 mb-2">Campus Hub</label>
+        <label className="block text-xs font-semibold text-stone-900 dark:text-stone-200 mb-2">
+          Campus
+        </label>
         <select
           value={selectedCampus}
           onChange={(e) => onSelectCampus(e.target.value)}
-          className="w-full text-xs bg-stone-50 dark:bg-[#1a202c] border border-stone-200 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+          className="w-full text-xs bg-stone-50 dark:bg-[#1a202c] border border-stone-200 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400 cursor-pointer"
         >
-          <option value="All">All University Campuses</option>
-          {CAMPUS_OPTIONS.map((c) => (
+          <option value="All">All 5 Ekiti Universities</option>
+          {EKITI_CAMPUSES.map((c) => (
             <option key={c.id} value={c.name}>
               {c.name}
             </option>
@@ -74,7 +77,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         <div className="space-y-1">
           <button
             onClick={() => onSelectCategory('all')}
-            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between ${
+            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between cursor-pointer ${
               selectedCategory === 'all'
                 ? 'bg-stone-900 text-white dark:bg-amber-400 dark:text-stone-950 font-bold shadow-xs'
                 : 'text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#1c222e]'
@@ -86,7 +89,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
             <button
               key={cat.id}
               onClick={() => onSelectCategory(cat.id)}
-              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between ${
+              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between cursor-pointer ${
                 selectedCategory === cat.id
                   ? 'bg-stone-900 text-white dark:bg-amber-400 dark:text-stone-950 font-bold shadow-xs'
                   : 'text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#1c222e]'
@@ -109,7 +112,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
             <button
               key={cond}
               onClick={() => onSelectCondition(cond)}
-              className={`text-left px-2.5 py-1 rounded text-xs transition-colors ${
+              className={`text-left px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
                 selectedCondition === cond
                   ? 'font-semibold text-stone-900 dark:text-stone-100 bg-stone-100 dark:bg-[#1c222e]'
                   : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
@@ -121,25 +124,27 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         </div>
       </div>
 
-      {/* Price Ceiling Slider */}
+      {/* Price Ceiling Slider (in Naira) */}
       <div>
         <div className="flex items-center justify-between text-xs font-semibold text-stone-900 dark:text-stone-200 mb-1">
           <span>Max Price</span>
-          <span className="font-mono tabular-nums text-amber-700 dark:text-amber-400">${maxPrice}</span>
+          <span className="font-mono tabular-nums text-amber-700 dark:text-amber-400 font-bold">
+            {formatNaira(maxPrice)}
+          </span>
         </div>
         <input
           type="range"
-          min="10"
-          max="200"
-          step="5"
+          min="1000"
+          max="100000"
+          step="1000"
           value={maxPrice}
           onChange={(e) => onPriceChange(Number(e.target.value))}
           className="w-full accent-stone-900 dark:accent-amber-400 h-1.5 bg-stone-200 dark:bg-[#262e3d] rounded-lg cursor-pointer"
         />
         <div className="flex justify-between text-[10px] text-stone-400 dark:text-stone-500 mt-1 font-mono">
-          <span>$10</span>
-          <span>$100</span>
-          <span>$200+</span>
+          <span>₦1,000</span>
+          <span>₦50,000</span>
+          <span>₦100,000+</span>
         </div>
       </div>
 
@@ -149,7 +154,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         <select
           value={sortBy}
           onChange={(e) => onSelectSort(e.target.value)}
-          className="w-full text-xs bg-stone-50 dark:bg-[#1a202c] border border-stone-200 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+          className="w-full text-xs bg-stone-50 dark:bg-[#1a202c] border border-stone-200 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400 cursor-pointer"
         >
           <option value="featured">Featured First</option>
           <option value="newest">Newest Arrivals</option>

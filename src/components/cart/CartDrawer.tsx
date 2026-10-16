@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { X, Trash2, ShoppingBag, ArrowRight, Tag, ShieldCheck } from 'lucide-react';
+import { formatNaira } from '../../lib/formatters';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -135,7 +136,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
 
                         {/* Price */}
                         <span className="text-xs font-bold text-stone-900 dark:text-stone-100 font-mono tabular-nums">
-                          ${((item.product.discount_price ?? item.product.price) * item.quantity).toFixed(2)}
+                          {formatNaira((item.product.discount_price ?? item.product.price) * item.quantity)}
                         </span>
                       </div>
                     </div>
@@ -196,12 +197,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
               <div className="space-y-1.5 text-xs text-stone-600 dark:text-stone-400 pt-2 border-t border-stone-200 dark:border-[#222936]">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-mono tabular-nums text-stone-900 dark:text-stone-200">${subtotal.toFixed(2)}</span>
+                  <span className="font-mono tabular-nums text-stone-900 dark:text-stone-200">{formatNaira(subtotal)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
                     <span>Student Discount</span>
-                    <span className="font-mono tabular-nums">-${discount.toFixed(2)}</span>
+                    <span className="font-mono tabular-nums">-{formatNaira(discount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
@@ -210,7 +211,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                 </div>
                 <div className="flex justify-between text-sm font-bold text-stone-900 dark:text-white pt-2 border-t border-stone-200 dark:border-[#222936]">
                   <span>Total Due</span>
-                  <span className="font-mono tabular-nums text-stone-900 dark:text-amber-400">${total.toFixed(2)}</span>
+                  <span className="font-mono tabular-nums text-stone-900 dark:text-amber-400">{formatNaira(total)}</span>
                 </div>
               </div>
 

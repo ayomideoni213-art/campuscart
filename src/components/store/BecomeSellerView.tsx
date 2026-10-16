@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
-import { CAMPUS_OPTIONS } from '../../services/storage';
+import { EKITI_CAMPUSES, DEFAULT_CAMPUS } from '../../data/campuses';
+import { normalizeWhatsAppUrl, normalizeInstagramUrl } from '../../lib/formatters';
 import {
   Store,
   Sparkles,
   ShieldCheck,
   Truck,
-  DollarSign,
   ArrowRight,
-  CheckCircle,
+  Phone,
+  Instagram,
   Building
 } from 'lucide-react';
 
@@ -25,14 +26,30 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
   const [storeName, setStoreName] = useState('');
   const [tagline, setTagline] = useState('');
   const [description, setDescription] = useState('');
-  const [pickupPoint, setPickupPoint] = useState('Student Union Ground Floor Atrium');
+  const [pickupPoint, setPickupPoint] = useState('Student Union Building (SUB) Forecourt');
   const [campusLocation, setCampusLocation] = useState(
-    currentUser?.campus_name || CAMPUS_OPTIONS[0].name
+    currentUser?.campus_name || DEFAULT_CAMPUS
   );
+  const [campusesServed, setCampusesServed] = useState<string[]>([
+    currentUser?.campus_name || DEFAULT_CAMPUS
+  ]);
+  const [whatsAppUrl, setWhatsAppUrl] = useState(currentUser?.phone ? `https://wa.me/${currentUser.phone.replace(/[^0-9]/g, '')}` : '');
+  const [instagramUrl, setInstagramUrl] = useState('');
   const [logoUrl, setLogoUrl] = useState(
     'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=300&q=80'
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleToggleServedCampus = (campus: string) => {
+    setCampusesServed((prev) => {
+      if (prev.includes(campus)) {
+        if (prev.length === 1) return prev;
+        return prev.filter((c) => c !== campus);
+      } else {
+        return [...prev, campus];
+      }
+    });
+  };
 
   const handleCreateStore = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +62,10 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
 
     setTimeout(() => {
       // 1. Create store
-      const newStore = createStore({
+      const normalizedWA = whatsAppUrl ? normalizeWhatsAppUrl(whatsAppUrl) : '';
+      const normalizedIG = instagramUrl ? normalizeInstagramUrl(instagramUrl) : '';
+
+      createStore({
         seller_id: currentUser.id,
         name: storeName.trim(),
         slug: storeName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
@@ -54,14 +74,23 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
         logo_url: logoUrl,
         banner_url:
           'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80',
+        profile_thumbnail: currentUser.avatar_url,
         campus_location: campusLocation,
+        campuses_served: campusesServed,
         pickup_point: pickupPoint.trim(),
         status: 'active',
+        whatsapp_url: normalizedWA,
+        instagram_url: normalizedIG,
         verified_student: true
       });
 
       // 2. Promote current user to seller role
-      updateProfile({ role: 'seller' });
+      updateProfile({
+        role: 'seller',
+        campus_name: campusLocation,
+        campuses_served: campusesServed,
+        signup_intent: 'sell'
+      });
       switchUserRole('seller');
 
       setIsSubmitting(false);
@@ -75,13 +104,13 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
       <div className="text-center max-w-2xl mx-auto space-y-3">
         <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center justify-center gap-1">
           <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-          Campus Entrepreneurship Program
+          Ekiti Universities Entrepreneurship Program
         </span>
         <h1 className="text-3xl sm:text-4xl font-black text-stone-900 dark:text-white tracking-tight">
           Launch Your Student Store on Campus
         </h1>
         <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
-          Turn your skills, crafts, thrift curation, or baking passion into a recognized campus business. Zero setup fees, zero shipping logistics.
+          Turn your skills, crafts, thrift curation, baking passion, or tech gear into a recognized brand across Ekiti universities. Zero setup fees, zero shipping logistics.
         </p>
       </div>
 
@@ -91,9 +120,9 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
           <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold">
             0%
           </div>
-          <h4 className="font-bold text-stone-900 dark:text-white text-sm">No Commission Fees</h4>
+          <h4 className="font-bold text-stone-900 dark:text-white text-sm">Zero Platform Fees</h4>
           <p className="text-stone-500 dark:text-stone-400 leading-relaxed">
-            Keep 100% of your earnings. CampusMart is built by students to foster undergraduate innovation.
+            Keep 100% of your earnings. CampusMart is built by students to foster undergraduate innovation in Nigeria.
           </p>
         </div>
 
@@ -101,9 +130,9 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
           <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center">
             <Truck className="w-4 h-4" />
           </div>
-          <h4 className="font-bold text-stone-900 dark:text-white text-sm">Campus Quad Handoffs</h4>
+          <h4 className="font-bold text-stone-900 dark:text-white text-sm">Direct Campus Handoffs</h4>
           <p className="text-stone-500 dark:text-stone-400 leading-relaxed">
-            No packing slips or postage queues. Deliver directly to classmates between lecture periods.
+            No interstate delivery fees or waybill delays. Deliver directly to classmates at designated university hubs.
           </p>
         </div>
 
@@ -113,7 +142,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
           </div>
           <h4 className="font-bold text-stone-900 dark:text-white text-sm">Verified Student Trust</h4>
           <p className="text-stone-500 dark:text-stone-400 leading-relaxed">
-            Buyers know you are an active classmate. Build real campus brand recognition and customer loyalty.
+            Buyers know you are an active student. Build real brand recognition and customer loyalty across Ekiti.
           </p>
         </div>
       </div>
@@ -123,7 +152,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
         <div>
           <h3 className="text-lg font-bold text-stone-900 dark:text-white">Set Up Your Store Identity</h3>
           <p className="text-stone-500 dark:text-stone-400 mt-1">
-            Choose a memorable brand name and designate your preferred pickup spot.
+            Choose a memorable brand name, select the universities you sell to, and add your WhatsApp link.
           </p>
         </div>
 
@@ -132,7 +161,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
             <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Store / Brand Name</label>
             <input
               type="text"
-              placeholder="e.g. Quad Threads & Thrift, Dorm Bites Bakery"
+              placeholder="e.g. Ay's Tech Hub, Oye Treats, Ekiti Thrift"
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
               required
@@ -144,7 +173,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
             <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Short Tagline</label>
             <input
               type="text"
-              placeholder="e.g. Sustainable reworked college streetwear"
+              placeholder="e.g. Quality student gadgets & fast chargers in Ekiti"
               value={tagline}
               onChange={(e) => setTagline(e.target.value)}
               required
@@ -152,31 +181,103 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
             />
           </div>
 
-          <div>
-            <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Campus Location</label>
-            <select
-              value={campusLocation}
-              onChange={(e) => setCampusLocation(e.target.value)}
-              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400 cursor-pointer"
-            >
-              {CAMPUS_OPTIONS.map((c) => (
-                <option key={c.id} value={c.name}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Primary Campus</label>
+              <select
+                value={campusLocation}
+                onChange={(e) => {
+                  setCampusLocation(e.target.value);
+                  if (!campusesServed.includes(e.target.value)) {
+                    setCampusesServed((prev) => [...prev, e.target.value]);
+                  }
+                }}
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400 cursor-pointer"
+              >
+                {EKITI_CAMPUSES.map((c) => (
+                  <option key={c.id} value={c.name}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Designated Pickup Point</label>
+              <input
+                type="text"
+                placeholder="e.g. SUB Walkway, Main Library Gate"
+                value={pickupPoint}
+                onChange={(e) => setPickupPoint(e.target.value)}
+                required
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Designated Pickup Hub / Meeting Spot</label>
-            <input
-              type="text"
-              placeholder="e.g. Student Union Lobby Table 4, Library Courtyard"
-              value={pickupPoint}
-              onChange={(e) => setPickupPoint(e.target.value)}
-              required
-              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
-            />
+          {/* Campuses I sell to */}
+          <div className="p-3 bg-stone-50 dark:bg-[#181e28] rounded-xl border border-stone-200 dark:border-[#262e3d] space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="font-semibold text-stone-800 dark:text-stone-200">
+                Campuses I sell to
+              </label>
+              <button
+                type="button"
+                onClick={() => setCampusesServed(EKITI_CAMPUSES.map((c) => c.name))}
+                className="text-amber-700 dark:text-amber-400 hover:underline font-semibold text-[11px]"
+              >
+                Select All (5)
+              </button>
+            </div>
+            <div className="space-y-1.5 pt-1">
+              {EKITI_CAMPUSES.map((c) => {
+                const isSelected = campusesServed.includes(c.name);
+                return (
+                  <label
+                    key={c.id}
+                    className={`flex items-start gap-2 p-2 rounded-lg border text-xs cursor-pointer transition-colors ${
+                      isSelected
+                        ? 'bg-white dark:bg-[#202838] border-amber-400 dark:border-amber-500 font-medium text-stone-900 dark:text-white'
+                        : 'bg-stone-50/50 dark:bg-[#131720] border-stone-200 dark:border-[#262e3d] text-stone-600 dark:text-stone-400'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleToggleServedCampus(c.name)}
+                      className="mt-0.5 accent-amber-500"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <span className="font-semibold">{c.name}</span>
+                      <span className="block text-[10px] text-stone-400">{c.location}</span>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">WhatsApp Link</label>
+              <input
+                type="text"
+                placeholder="https://wa.me/234... or 080..."
+                value={whatsAppUrl}
+                onChange={(e) => setWhatsAppUrl(e.target.value)}
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Instagram Link</label>
+              <input
+                type="text"
+                placeholder="https://instagram.com/... or @handle"
+                value={instagramUrl}
+                onChange={(e) => setInstagramUrl(e.target.value)}
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
           </div>
 
           <div>
@@ -196,7 +297,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
             disabled={isSubmitting}
             className="w-full py-3 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 rounded-xl font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
           >
-            <span>{isSubmitting ? 'Provisioning Store...' : 'Launch Student Storefront'}</span>
+            <span>{isSubmitting ? 'Launching Store...' : 'Launch Student Storefront'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>

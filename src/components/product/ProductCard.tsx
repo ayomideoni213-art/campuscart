@@ -2,6 +2,7 @@ import React from 'react';
 import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { Heart, ShoppingBag, Star, ShieldCheck } from 'lucide-react';
+import { formatNaira } from '../../lib/formatters';
 
 interface ProductCardProps {
   product: Product;
@@ -112,11 +113,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect, onS
         <div className="mt-4 pt-3 border-t border-stone-100 dark:border-[#222936] flex items-center justify-between gap-2">
           <div className="flex items-baseline gap-1.5">
             <span className="text-base font-bold text-stone-900 dark:text-stone-100 font-mono tabular-nums">
-              ${(product.discount_price ?? product.price).toFixed(2)}
+              {formatNaira(product.discount_price ?? product.price)}
             </span>
             {product.discount_price && (
               <span className="text-xs text-stone-400 dark:text-stone-500 line-through font-mono tabular-nums">
-                ${product.price.toFixed(2)}
+                {formatNaira(product.price)}
               </span>
             )}
           </div>

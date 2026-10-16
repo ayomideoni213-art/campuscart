@@ -60,7 +60,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             Your Campus. Your Marketplace. Buy from peers, sell what you build, and grow student businesses.
           </p>
           <div className="mt-4 text-[11px] text-stone-500">
-            Current Term: Fall 2026 Academic Year
+            Current Term: 2025/2026 Academic Session
           </div>
         </div>
 
@@ -129,7 +129,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             Meet in well-lit campus zones. Verify item conditions before completing cash-on-pickup exchanges.
           </p>
           <div className="mt-4 pt-3 border-t border-stone-800 dark:border-[#1a202c] text-[11px] text-stone-500">
-            Emergency Security Liaison: <span className="text-stone-300">security@campus.edu</span>
+            Emergency Security Liaison: <span className="text-stone-300">support@campusmart.ng</span>
           </div>
         </div>
       </div>

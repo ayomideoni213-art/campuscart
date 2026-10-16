@@ -3,6 +3,7 @@ import { Product, Store, Review } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import { formatNaira } from '../../lib/formatters';
 import {
   X,
   Star,
@@ -168,11 +169,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 {/* Price */}
                 <div className="mt-4 flex items-baseline gap-2">
                   <span className="text-2xl font-bold text-stone-900 dark:text-stone-100 font-mono tabular-nums">
-                    ${(product.discount_price ?? product.price).toFixed(2)}
+                    {formatNaira(product.discount_price ?? product.price)}
                   </span>
                   {product.discount_price && (
                     <span className="text-sm text-stone-400 dark:text-stone-500 line-through font-mono tabular-nums">
-                      ${product.price.toFixed(2)}
+                      {formatNaira(product.price)}
                     </span>
                   )}
                 </div>

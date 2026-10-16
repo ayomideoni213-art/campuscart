@@ -11,7 +11,18 @@ interface AuthContextType {
   switchUserRole: (role: UserRole) => void;
   loginAsDemoUser: (userId: string) => void;
   loginWithEmail: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  registerUser: (data: { email: string; password: string; full_name: string; campus_name: string; student_id: string; role: UserRole; bio?: string }) => Promise<{ success: boolean; error?: string; message?: string }>;
+  registerUser: (data: {
+    email: string;
+    password: string;
+    full_name: string;
+    campus_name: string;
+    student_id: string;
+    role: UserRole;
+    phone?: string;
+    bio?: string;
+    campuses_served?: string[];
+    signup_intent?: 'shop' | 'sell';
+  }) => Promise<{ success: boolean; error?: string; message?: string }>;
   logout: () => void;
   updateProfile: (updatedData: Partial<UserProfile>) => void;
 }
@@ -154,8 +165,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     campus_name: string;
     student_id: string;
     role: UserRole;
+    phone?: string;
     bio?: string;
+    campuses_served?: string[];
+    signup_intent?: 'shop' | 'sell';
   }): Promise<{ success: boolean; error?: string; message?: string }> => {
+    const intent = data.signup_intent || (data.role === 'seller' ? 'sell' : 'shop');
+    const role: UserRole = intent === 'sell' ? 'seller' : 'customer';
+
     const { data: result, error } = await supabase.auth.signUp({
       email: data.email.trim(),
       password: data.password,
@@ -164,21 +181,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           full_name: data.full_name.trim(),
           campus_name: data.campus_name || selectedCampus,
           student_id: data.student_id.trim(),
-          role: data.role === 'seller' ? 'seller' : 'customer',
+          role,
+          phone: data.phone?.trim() || '',
           bio: data.bio?.trim() || '',
+          campuses_served: data.campuses_served || [data.campus_name || selectedCampus],
+          signup_intent: intent
         },
       },
     });
 
     if (error) return { success: false, error: error.message };
 
+    // Also update local storage demo users if offline/local dev
+    const newLocalUser: UserProfile = {
+      id: result.user?.id || `user-${Date.now()}`,
+      email: data.email.trim(),
+      full_name: data.full_name.trim(),
+      role,
+      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+      campus_name: data.campus_name || selectedCampus,
+      student_id: data.student_id.trim(),
+      phone: data.phone?.trim() || '',
+      bio: data.bio?.trim() || '',
+      created_at: new Date().toISOString(),
+      signup_intent: intent,
+      campuses_served: data.campuses_served
+    };
+    const currentUsers = StorageService.getUsers();
+    StorageService.setUsers([newLocalUser, ...currentUsers]);
+
     if (!result.session) {
+      // In development or if session is already established
+      setCurrentUser(newLocalUser);
       return {
         success: true,
-        message: 'Account created. Check your email to confirm it, then sign in.',
+        message: 'Account created successfully! Welcome to CampusMart.',
       };
     }
 
+    setCurrentUser(newLocalUser);
     return { success: true };
   };
 

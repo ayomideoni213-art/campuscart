@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { StorageService } from '../../services/storage';
 import { UserProfile, UserRole, OrderStatus } from '../../types';
+import { formatNaira } from '../../lib/formatters';
+import { EKITI_CAMPUSES } from '../../data/campuses';
 import {
   ShieldCheck,
   Users,
@@ -80,7 +82,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex items-center gap-2">
           <div className="px-3 py-2 bg-stone-800 dark:bg-[#1c222e] rounded-xl text-right border border-stone-700/50 dark:border-[#2a3445]">
             <p className="text-[10px] text-stone-400 uppercase font-bold">Platform GMV</p>
-            <p className="text-sm font-bold text-amber-400 font-mono">${totalGMV.toFixed(2)}</p>
+            <p className="text-sm font-bold text-amber-400 font-mono">{formatNaira(totalGMV)}</p>
           </div>
         </div>
       </div>
@@ -280,7 +282,7 @@ export const AdminDashboard: React.FC = () => {
                   <td className="p-3 font-mono font-bold text-stone-900 dark:text-white">{ord.order_number}</td>
                   <td className="p-3 text-stone-700 dark:text-stone-300">{ord.customer_name}</td>
                   <td className="p-3 text-stone-500 dark:text-stone-400 truncate max-w-xs">{ord.delivery_info.campus}</td>
-                  <td className="p-3 font-mono font-bold text-stone-900 dark:text-white">${ord.total_amount.toFixed(2)}</td>
+                  <td className="p-3 font-mono font-bold text-stone-900 dark:text-white">{formatNaira(ord.total_amount)}</td>
                   <td className="p-3">
                     <span className="capitalize px-2 py-0.5 rounded text-[10px] font-bold bg-stone-100 dark:bg-[#1c222e] text-stone-800 dark:text-stone-200">
                       {ord.order_status}
@@ -318,17 +320,20 @@ export const AdminDashboard: React.FC = () => {
             <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Security & Escrow Support Email</label>
             <input
               type="email"
-              defaultValue="support@campusmart.edu"
+              defaultValue="support@campusmart.ng"
               className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400"
             />
           </div>
 
           <div>
-            <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Active Multi-Campus Federation</label>
-            <div className="p-3 bg-stone-50 dark:bg-[#1c222e] rounded-lg border border-stone-200 dark:border-[#262e3d] space-y-1">
-              <p className="font-semibold text-stone-800 dark:text-stone-200">Metropolitan Central University (MCU)</p>
-              <p className="font-semibold text-stone-800 dark:text-stone-200">State Institute of Technology (SIT)</p>
-              <p className="font-semibold text-stone-800 dark:text-stone-200">Coastal University Campus (CUC)</p>
+            <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Active Ekiti Campus Network</label>
+            <div className="p-3 bg-stone-50 dark:bg-[#1c222e] rounded-lg border border-stone-200 dark:border-[#262e3d] space-y-1.5">
+              {EKITI_CAMPUSES.map((c) => (
+                <div key={c.id} className="flex justify-between items-center text-stone-800 dark:text-stone-200">
+                  <span className="font-semibold">{c.name} ({c.shortName})</span>
+                  <span className="text-[10px] text-stone-500">{c.location}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
-import { CAMPUS_OPTIONS } from '../../services/storage';
+import { EKITI_CAMPUSES } from '../../data/campuses';
+import { formatNaira } from '../../lib/formatters';
 import { DeliveryDetails, PaymentMethod } from '../../types';
 import confetti from 'canvas-confetti';
 import {
@@ -38,16 +39,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [createdOrderNumber, setCreatedOrderNumber] = useState('');
 
   // Step 1: Customer details
-  const [studentName, setStudentName] = useState(currentUser?.full_name || 'Maya Lin');
-  const [studentEmail, setStudentEmail] = useState(currentUser?.email || 'maya.buyer@campus.edu');
-  const [studentId, setStudentId] = useState(currentUser?.student_id || 'MCU-2024-8842');
-  const [phone, setPhone] = useState(currentUser?.phone || '+1 (555) 234-8901');
+  const [studentName, setStudentName] = useState(currentUser?.full_name || 'Bolanle Adeleke');
+  const [studentEmail, setStudentEmail] = useState(currentUser?.email || 'bolanle.adeleke@eksu.edu.ng');
+  const [studentId, setStudentId] = useState(currentUser?.student_id || 'EKSU/2023/4821');
+  const [phone, setPhone] = useState(currentUser?.phone || '+234 803 123 4567');
 
   // Step 2: Delivery / Pickup info
-  const [campus, setCampus] = useState(selectedCampus);
+  const [campus, setCampus] = useState(selectedCampus || EKITI_CAMPUSES[0].name);
   const [deliveryType, setDeliveryType] = useState<DeliveryDetails['delivery_type']>('campus_dorm');
-  const [locationDetail, setLocationDetail] = useState('East Residential Hall, Suite 304B');
-  const [notes, setNotes] = useState('Text when approaching the lobby desk.');
+  const [locationDetail, setLocationDetail] = useState('Hall 2, Room B12');
+  const [notes, setNotes] = useState('Call me when you reach the hostel gate.');
 
   // Step 4: Payment method
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('campus_pay');
@@ -239,15 +240,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
               <div className="pt-2 space-y-3">
                 <div>
-                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">University Campus</label>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Campus</label>
                   <select
                     value={campus}
                     onChange={(e) => setCampus(e.target.value)}
                     className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
                   >
-                    {CAMPUS_OPTIONS.map((c) => (
+                    {EKITI_CAMPUSES.map((c) => (
                       <option key={c.id} value={c.name}>
-                        {c.name}
+                        {c.name} ({c.shortName})
                       </option>
                     ))}
                   </select>
@@ -342,7 +343,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       </div>
                     </div>
                     <span className="font-mono font-bold text-stone-900 dark:text-stone-100 tabular-nums">
-                      ${((item.product.discount_price ?? item.product.price) * item.quantity).toFixed(2)}
+                      {formatNaira((item.product.discount_price ?? item.product.price) * item.quantity)}
                     </span>
                   </div>
                 ))}
@@ -359,21 +360,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <div className="pt-2 space-y-1.5 border-t border-stone-200 dark:border-[#222936]">
                 <div className="flex justify-between text-stone-600 dark:text-stone-400">
                   <span>Subtotal</span>
-                  <span className="font-mono tabular-nums text-stone-900 dark:text-stone-200">${subtotal.toFixed(2)}</span>
+                  <span className="font-mono tabular-nums text-stone-900 dark:text-stone-200">{formatNaira(subtotal)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
                     <span>Discount Applied</span>
-                    <span className="font-mono tabular-nums">-${discount.toFixed(2)}</span>
+                    <span className="font-mono tabular-nums">-{formatNaira(discount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-stone-600 dark:text-stone-400">
                   <span>Campus Handoff Fee</span>
-                  <span className="text-emerald-700 dark:text-emerald-400 font-semibold">Free ($0.00)</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-semibold">Free (₦0)</span>
                 </div>
                 <div className="flex justify-between font-bold text-sm text-stone-900 dark:text-white pt-2 border-t border-stone-200 dark:border-[#222936]">
                   <span>Total Amount</span>
-                  <span className="font-mono tabular-nums text-base text-stone-900 dark:text-amber-400">${total.toFixed(2)}</span>
+                  <span className="font-mono tabular-nums text-base text-stone-900 dark:text-amber-400">{formatNaira(total)}</span>
                 </div>
               </div>
 
@@ -475,7 +476,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     <span>Authorizing Escrow...</span>
                   ) : (
                     <>
-                      <span>Confirm & Place Order (${total.toFixed(2)})</span>
+                      <span>Confirm & Place Order ({formatNaira(total)})</span>
                       <CheckCircle className="w-4 h-4 text-emerald-400 dark:text-stone-950" />
                     </>
                   )}
@@ -515,7 +516,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
                 <div className="flex justify-between font-bold text-stone-900 dark:text-white pt-1 border-t border-stone-200 dark:border-[#222936]">
                   <span>Total Paid:</span>
-                  <span className="font-mono tabular-nums text-stone-900 dark:text-amber-400">${total.toFixed(2)}</span>
+                  <span className="font-mono tabular-nums text-stone-900 dark:text-amber-400">{formatNaira(total)}</span>
                 </div>
               </div>
 

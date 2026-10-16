@@ -12,6 +12,8 @@ export interface UserProfile {
   bio?: string;
   created_at: string;
   is_suspended?: boolean;
+  signup_intent?: 'shop' | 'sell';
+  campuses_served?: string[];
 }
 
 export interface Store {
@@ -23,7 +25,9 @@ export interface Store {
   description: string;
   logo_url: string;
   banner_url: string;
+  profile_thumbnail?: string;
   campus_location: string;
+  campuses_served?: string[];
   pickup_point: string;
   rating: number;
   reviews_count: number;
@@ -31,6 +35,8 @@ export interface Store {
   status: 'active' | 'pending' | 'suspended';
   created_at: string;
   instagram_handle?: string;
+  instagram_url?: string;
+  whatsapp_url?: string;
   verified_student: boolean;
 }
 
@@ -216,5 +222,6 @@ export interface CampusOption {
   id: string;
   name: string;
   short_code: string;
+  location?: string;
   pickup_hubs: string[];
 }

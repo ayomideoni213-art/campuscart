@@ -59,7 +59,7 @@ function CampusMartApp() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedCondition, setSelectedCondition] = useState<string>('All');
-  const [maxPrice, setMaxPrice] = useState<number>(150);
+  const [maxPrice, setMaxPrice] = useState<number>(150000);
   const [sortBy, setSortBy] = useState<string>('featured');
 
   // Modals & Drawers
@@ -171,7 +171,7 @@ function CampusMartApp() {
   const resetFilters = () => {
     setSelectedCategory('all');
     setSelectedCondition('All');
-    setMaxPrice(200);
+    setMaxPrice(150000);
     setSortBy('featured');
     setSearchQuery('');
   };
@@ -189,8 +189,8 @@ function CampusMartApp() {
       {bannerVisible && (
         <div className="bg-amber-400 dark:bg-amber-500 text-stone-950 text-xs py-2 px-4 border-b border-amber-500/30 dark:border-amber-600/30 flex items-center justify-between">
           <div className="max-w-7xl mx-auto flex items-center gap-2 text-center w-full justify-center font-medium">
-            <span className="font-bold">🎒 Fall 2026 Semester Hub:</span>
-            <span>Free zero-fee physical handoff points active at Student Union & Quad tables.</span>
+            <span className="font-bold">🎒 2025/2026 Academic Session:</span>
+            <span>Free zero-fee physical handoff points active across EKSU, FUOYE, ABUAD, BOUESTI & Venite University campuses.</span>
             <button
               onClick={() => handleNavigate('blog')}
               className="underline font-bold hover:text-stone-800 ml-1 hidden sm:inline"
@@ -250,7 +250,7 @@ function CampusMartApp() {
                   </h1>
 
                   <p className="text-stone-300 text-sm sm:text-base leading-relaxed max-w-xl">
-                    Buy directly from undergraduate peers. Sell products you build, bake, or curate. Meet safely between classes with zero shipping delays.
+                    Buy directly from fellow students across Ekiti universities. Sell products you build, bake, fashion, or curate. Meet safely between lectures with zero shipping delays.
                   </p>
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -285,11 +285,11 @@ function CampusMartApp() {
                 <div className="pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs text-stone-300 max-w-3xl">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Active .edu Student Verified</span>
+                    <span>Active Student Verified</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Truck className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Free Campus Quad Handoffs</span>
+                    <span>Free Campus & Hostel Handoffs</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-cyan-400 shrink-0" />
@@ -578,6 +578,7 @@ function CampusMartApp() {
               if (p) handleOpenProduct(p);
             }}
             onOpenStore={handleOpenStore}
+            onBecomeSeller={() => handleNavigate('become-seller')}
           />
         )}
 

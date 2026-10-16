@@ -3,26 +3,33 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { OrderStatus } from '../../types';
-import { ThemeToggle } from '../common/ThemeToggle';
+import { EKITI_CAMPUSES } from '../../data/campuses';
+import { formatNaira } from '../../lib/formatters';
 import {
   Package,
   Heart,
   Star,
   Settings,
   ShoppingBag,
-  Truck
+  Truck,
+  Store,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2
 } from 'lucide-react';
 
 interface CustomerDashboardProps {
   initialTab?: string;
   onSelectProduct: (productId: string) => void;
   onOpenStore: (storeId: string) => void;
+  onBecomeSeller?: () => void;
 }
 
 export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
   initialTab = 'orders',
   onSelectProduct,
-  onOpenStore
+  onOpenStore,
+  onBecomeSeller
 }) => {
   const { currentUser, updateProfile } = useAuth();
   const { wishlist, moveToCartFromWishlist } = useCart();
@@ -33,6 +40,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
   // Settings form
   const [name, setName] = useState(currentUser?.full_name || '');
   const [phone, setPhone] = useState(currentUser?.phone || '');
+  const [campusName, setCampusName] = useState(currentUser?.campus_name || EKITI_CAMPUSES[0].name);
   const [bio, setBio] = useState(currentUser?.bio || '');
   const [savedNotice, setSavedNotice] = useState(false);
 
@@ -52,7 +60,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile({ full_name: name, phone, bio });
+    updateProfile({ full_name: name, phone, bio, campus_name: campusName });
     setSavedNotice(true);
     setTimeout(() => setSavedNotice(false), 2000);
   };
@@ -76,9 +84,9 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
       <div className="bg-white dark:bg-[#151921] rounded-2xl border border-stone-200 dark:border-[#262e3d] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors">
         <div className="flex items-center gap-4">
           <img
-            src={currentUser.avatar_url}
+            src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'}
             alt={currentUser.full_name}
-            className="w-16 h-16 rounded-2xl object-cover border border-stone-300 dark:border-stone-700"
+            className="w-16 h-16 rounded-2xl object-cover border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-[#1c222e]"
             referrerPolicy="no-referrer"
           />
           <div>
@@ -104,12 +112,40 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
             <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">Saved Items</p>
             <p className="text-sm font-bold text-stone-900 dark:text-white font-mono">{wishlist.length}</p>
           </div>
-          <div className="p-3 bg-stone-50 dark:bg-[#181e2a] rounded-xl border border-stone-200 dark:border-[#262e3d] text-center min-w-[80px]">
+          <div className="p-3 bg-stone-50 dark:bg-[#181e2a] rounded-xl border border-stone-200 dark:border-[#262e3d] text-center min-w-[90px]">
             <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">Total Spent</p>
-            <p className="text-sm font-bold text-stone-900 dark:text-amber-400 font-mono">${totalSpent.toFixed(2)}</p>
+            <p className="text-sm font-bold text-stone-900 dark:text-amber-400 font-mono">
+              {formatNaira(totalSpent)}
+            </p>
           </div>
         </div>
       </div>
+
+      {/* "Start Selling" / "Open a Store" pathway for shoppers */}
+      {currentUser.role === 'customer' && onBecomeSeller && (
+        <div className="p-4 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-400/30 dark:border-amber-500/30 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-400 text-stone-950 flex items-center justify-center shrink-0">
+              <Store className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-stone-900 dark:text-white">
+                Turn your passion into a campus brand
+              </h3>
+              <p className="text-xs text-stone-600 dark:text-stone-400">
+                You can start selling to students across Ekiti universities without creating a new account.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onBecomeSeller}
+            className="px-4 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs whitespace-nowrap"
+          >
+            <span>Start Selling</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Navigation Tabs */}
       <div className="flex border-b border-stone-200 dark:border-[#222936] text-xs font-semibold gap-2 overflow-x-auto">
@@ -122,7 +158,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`pb-3 px-3 transition-colors flex items-center gap-1.5 whitespace-nowrap border-b-2 ${
+            className={`pb-3 px-3 transition-colors flex items-center gap-1.5 whitespace-nowrap border-b-2 cursor-pointer ${
               activeTab === tab.id
                 ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
                 : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
@@ -139,7 +175,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
         <div className="space-y-4">
           {customerOrders.length === 0 ? (
             <div className="p-12 text-center bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] text-xs text-stone-500 dark:text-stone-400">
-              No orders placed yet. Support a fellow student entrepreneur on campus!
+              No orders placed yet. Support a fellow student entrepreneur in Ekiti!
             </div>
           ) : (
             customerOrders.map((ord) => (
@@ -162,7 +198,9 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                   </div>
                   <div className="flex items-center gap-2">
                     {getStatusBadge(ord.order_status)}
-                    <span className="font-bold font-mono text-stone-900 dark:text-amber-400">${ord.total_amount.toFixed(2)}</span>
+                    <span className="font-bold font-mono text-stone-900 dark:text-amber-400">
+                      {formatNaira(ord.total_amount)}
+                    </span>
                   </div>
                 </div>
 
@@ -184,7 +222,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                         </div>
                       </div>
                       <span className="font-mono font-bold text-stone-800 dark:text-stone-200 tabular-nums">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatNaira(item.price * item.quantity)}
                       </span>
                     </div>
                   ))}
@@ -208,39 +246,26 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
 
       {/* Tab 2: Wishlist */}
       {activeTab === 'wishlist' && (
-        <div>
+        <div className="space-y-4">
           {wishlistedProducts.length === 0 ? (
             <div className="p-12 text-center bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] text-xs text-stone-500 dark:text-stone-400">
-              Your wishlist is currently empty. Click the heart icon on any listing to save items.
+              No saved items in your wishlist yet.
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {wishlistedProducts.map((p) => (
                 <div
                   key={p.id}
-                  className="bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-xl p-4 flex gap-3 text-xs"
+                  onClick={() => onSelectProduct(p.id)}
+                  className="p-3 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] flex gap-3 cursor-pointer hover:shadow-xs transition-shadow"
                 >
-                  <img
-                    src={p.images[0]}
-                    alt={p.name}
-                    className="w-20 h-20 rounded-lg object-cover bg-stone-100 dark:bg-[#1c222e]"
-                  />
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div>
-                      <h4 className="font-semibold text-stone-900 dark:text-stone-100 line-clamp-1">{p.name}</h4>
-                      <p className="text-[11px] text-stone-500 dark:text-stone-400">{p.store_name}</p>
-                      <p className="font-mono font-bold text-stone-900 dark:text-amber-400 mt-1">
-                        ${(p.discount_price ?? p.price).toFixed(2)}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => moveToCartFromWishlist(p)}
-                      className="mt-2 py-1 px-2.5 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1 hover:bg-stone-800 dark:hover:bg-amber-300 transition-colors"
-                    >
-                      <ShoppingBag className="w-3 h-3" />
-                      <span>Move to Bag</span>
-                    </button>
+                  <img src={p.images[0]} alt={p.name} className="w-16 h-16 rounded-lg object-cover" />
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <h4 className="font-semibold text-xs text-stone-900 dark:text-white truncate">{p.name}</h4>
+                    <p className="text-[11px] font-mono font-bold text-stone-900 dark:text-amber-400">
+                      {formatNaira(p.discount_price ?? p.price)}
+                    </p>
+                    <p className="text-[10px] text-stone-400 truncate">{p.campus_name}</p>
                   </div>
                 </div>
               ))}
@@ -254,55 +279,41 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
         <div className="space-y-3">
           {userReviews.length === 0 ? (
             <div className="p-12 text-center bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] text-xs text-stone-500 dark:text-stone-400">
-              You haven't posted any product reviews yet.
+              You haven't written any reviews yet.
             </div>
           ) : (
-            userReviews.map((rev) => (
-              <div key={rev.id} className="p-4 bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-xl text-xs space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-stone-900 dark:text-white">{rev.product_name}</span>
+            userReviews.map((r) => (
+              <div key={r.id} className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] text-xs space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-stone-900 dark:text-white">{r.product_name}</span>
                   <div className="flex items-center gap-0.5">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-3.5 h-3.5 ${
-                          i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-200 dark:text-stone-700'
+                        className={`w-3 h-3 ${
+                          i < r.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-200 dark:text-stone-700'
                         }`}
                       />
                     ))}
                   </div>
                 </div>
-                <p className="text-stone-600 dark:text-stone-300 leading-relaxed">{rev.comment}</p>
-                <p className="text-[10px] text-stone-400 dark:text-stone-500">
-                  {new Date(rev.created_at).toLocaleDateString()}
-                </p>
+                <p className="text-stone-600 dark:text-stone-300">{r.comment}</p>
               </div>
             ))
           )}
         </div>
       )}
 
-      {/* Tab 4: Account Settings & Preferences */}
+      {/* Tab 4: Account & Preferences */}
       {activeTab === 'settings' && (
-        <div className="space-y-6 max-w-xl">
-          {/* Appearance & Theme Preference Box */}
-          <div className="bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] p-6 space-y-3 transition-colors">
-            <h3 className="text-sm font-bold text-stone-900 dark:text-white">Appearance & Theme</h3>
-            <p className="text-xs text-stone-500 dark:text-stone-400">
-              Choose your interface color scheme. Preference is saved automatically across all pages and sessions.
-            </p>
-            <div className="pt-2">
-              <ThemeToggle variant="segmented" />
-            </div>
-          </div>
-
-          {/* Profile Form */}
+        <div className="max-w-2xl space-y-4">
           <div className="bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] p-6 transition-colors">
             <h3 className="text-sm font-bold text-stone-900 dark:text-white mb-4">Edit Profile & Campus Details</h3>
 
             {savedNotice && (
-              <div className="mb-4 p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300 text-xs rounded-lg">
-                Profile updated successfully!
+              <div className="mb-4 p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300 text-xs rounded-lg flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>Profile updated successfully!</span>
               </div>
             )}
 
@@ -318,11 +329,27 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
               </div>
 
               <div>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Campus</label>
+                <select
+                  value={campusName}
+                  onChange={(e) => setCampusName(e.target.value)}
+                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400 cursor-pointer"
+                >
+                  {EKITI_CAMPUSES.map((c) => (
+                    <option key={c.id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Mobile Phone (For Handoff Texts)</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. 08012345678 or +234..."
                   className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
                 />
               </div>
@@ -333,13 +360,14 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                   rows={3}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
+                  placeholder="Tell campus peers about your studies and interests..."
                   className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
                 />
               </div>
 
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors"
+                className="px-5 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors cursor-pointer"
               >
                 Save Profile Changes
               </button>

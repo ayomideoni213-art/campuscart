@@ -94,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
                 currentView === 'home' ? 'text-stone-900 dark:text-white font-semibold' : ''
               }`}
             >
-              Marketplace
+              Home
             </button>
             <button
               onClick={() => onNavigate('stores')}
@@ -327,7 +327,7 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="w-full text-left py-2 text-sm font-medium text-stone-700 dark:text-stone-200 hover:text-stone-900 dark:hover:text-white"
           >
-            Marketplace
+            Home
           </button>
           <button
             onClick={() => {

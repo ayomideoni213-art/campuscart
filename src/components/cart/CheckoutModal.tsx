@@ -150,7 +150,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <span
                   className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold ${
                     step === s.num
-                      ? 'bg-stone-900 text-white dark:bg-amber-400 dark:text-stone-950'
+                      ? 'bg-brand-600 text-white dark:bg-brand-400 dark:text-stone-950'
                       : step > s.num
                       ? 'bg-emerald-600 text-white'
                       : 'bg-stone-200 dark:bg-[#262e3d] text-stone-600 dark:text-stone-400'
@@ -181,7 +181,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     value={studentName}
                     onChange={(e) => setStudentName(e.target.value)}
                     required
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
 
@@ -192,7 +192,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     value={studentEmail}
                     onChange={(e) => setStudentEmail(e.target.value)}
                     required
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
 
@@ -203,7 +203,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     value={studentId}
                     onChange={(e) => setStudentId(e.target.value)}
                     required
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
 
@@ -214,7 +214,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
               </div>
@@ -222,7 +222,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
+                  className="px-5 py-2.5 bg-stone-900 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
                 >
                   <span>Continue to Pickup Point</span>
                   <ArrowRight className="w-4 h-4" />
@@ -244,7 +244,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <select
                     value={campus}
                     onChange={(e) => setCampus(e.target.value)}
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   >
                     {EKITI_CAMPUSES.map((c) => (
                       <option key={c.id} value={c.name}>
@@ -269,7 +269,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                         onClick={() => setDeliveryType(t.id as DeliveryDetails['delivery_type'])}
                         className={`p-2.5 border rounded-lg text-center transition-colors ${
                           deliveryType === t.id
-                            ? 'border-stone-900 dark:border-amber-400 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 font-bold'
+                            ? 'border-stone-900 dark:border-brand-400 bg-stone-900 dark:bg-brand-400 text-white dark:text-stone-950 font-bold'
                             : 'border-stone-200 dark:border-[#262e3d] bg-stone-50 dark:bg-[#181e2a] text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#222a3a]'
                         }`}
                       >
@@ -287,7 +287,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     onChange={(e) => setLocationDetail(e.target.value)}
                     placeholder="e.g. East Residence Hall Room 304B or Quad Bench near Oak Tree"
                     required
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
 
@@ -298,7 +298,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="e.g. I have class until 2 PM, can meet right after."
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
               </div>
@@ -314,7 +314,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
+                  className="px-5 py-2.5 bg-stone-900 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
                 >
                   <span>Review Order</span>
                   <ArrowRight className="w-4 h-4" />
@@ -374,7 +374,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
                 <div className="flex justify-between font-bold text-sm text-stone-900 dark:text-white pt-2 border-t border-stone-200 dark:border-[#222936]">
                   <span>Total Amount</span>
-                  <span className="font-mono tabular-nums text-base text-stone-900 dark:text-amber-400">{formatNaira(total)}</span>
+                  <span className="font-mono tabular-nums text-base text-stone-900 dark:text-brand-400">{formatNaira(total)}</span>
                 </div>
               </div>
 
@@ -389,7 +389,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </button>
                 <button
                   onClick={() => setStep(4)}
-                  className="px-5 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
+                  className="px-5 py-2.5 bg-stone-900 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
                 >
                   <span>Select Payment Method</span>
                   <ArrowRight className="w-4 h-4" />
@@ -417,7 +417,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     id: 'card',
                     title: 'Credit / Debit Card',
                     desc: 'Secured via standard student merchant gateway',
-                    icon: <CreditCard className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    icon: <CreditCard className="w-5 h-5 text-brand-600 dark:text-brand-400" />
                   },
                   {
                     id: 'cash_on_pickup',
@@ -438,7 +438,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     onClick={() => setPaymentMethod(m.id as PaymentMethod)}
                     className={`p-3.5 border rounded-xl text-left transition-all ${
                       paymentMethod === m.id
-                        ? 'border-stone-900 dark:border-amber-400 bg-stone-50 dark:bg-[#1a2230] ring-2 ring-stone-900/10 dark:ring-amber-400/20'
+                        ? 'border-stone-900 dark:border-brand-400 bg-stone-50 dark:bg-[#1a2230] ring-2 ring-stone-900/10 dark:ring-brand-400/20'
                         : 'border-stone-200 dark:border-[#262e3d] bg-white dark:bg-[#151921] hover:border-stone-300 dark:hover:border-[#384358]'
                     }`}
                   >
@@ -451,8 +451,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 ))}
               </div>
 
-              <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 rounded-xl flex items-center gap-2 text-amber-900 dark:text-amber-200">
-                <ShieldCheck className="w-5 h-5 text-amber-700 dark:text-amber-400 shrink-0" />
+              <div className="p-3 bg-brand-50 dark:bg-brand-950/30 border border-brand-200/80 dark:border-brand-800/40 rounded-xl flex items-center gap-2 text-brand-900 dark:text-brand-200">
+                <ShieldCheck className="w-5 h-5 text-brand-700 dark:text-brand-400 shrink-0" />
                 <p className="text-[11px]">
                   Funds are held in CampusMart Escrow and only released when both buyer and seller confirm physical meetup and item condition.
                 </p>
@@ -470,7 +470,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <button
                   disabled={isProcessing}
                   onClick={executeOrder}
-                  className="px-6 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 rounded-xl font-bold flex items-center gap-2 shadow-sm disabled:opacity-50 transition-colors"
+                  className="px-6 py-2.5 bg-stone-900 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 rounded-xl font-bold flex items-center gap-2 shadow-sm disabled:opacity-50 transition-colors"
                 >
                   {isProcessing ? (
                     <span>Authorizing Escrow...</span>
@@ -516,7 +516,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
                 <div className="flex justify-between font-bold text-stone-900 dark:text-white pt-1 border-t border-stone-200 dark:border-[#222936]">
                   <span>Total Paid:</span>
-                  <span className="font-mono tabular-nums text-stone-900 dark:text-amber-400">{formatNaira(total)}</span>
+                  <span className="font-mono tabular-nums text-stone-900 dark:text-brand-400">{formatNaira(total)}</span>
                 </div>
               </div>
 
@@ -526,7 +526,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     onClose();
                     onOrderComplete(createdOrderNumber);
                   }}
-                  className="px-5 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 rounded-xl text-xs font-semibold transition-colors"
+                  className="px-5 py-2.5 bg-stone-900 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 rounded-xl text-xs font-semibold transition-colors"
                 >
                   View Order in Buyer Portal
                 </button>

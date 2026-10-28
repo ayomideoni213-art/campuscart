@@ -102,8 +102,8 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
       {/* Hero Pitch */}
       <div className="text-center max-w-2xl mx-auto space-y-3">
-        <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center justify-center gap-1">
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+        <span className="text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-400 flex items-center justify-center gap-1">
+          <Sparkles className="w-3.5 h-3.5 text-brand-500" />
           Ekiti Universities Entrepreneurship Program
         </span>
         <h1 className="text-3xl sm:text-4xl font-black text-stone-900 dark:text-white tracking-tight">
@@ -127,7 +127,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
         </div>
 
         <div className="p-5 bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-2xl space-y-2">
-          <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 flex items-center justify-center">
             <Truck className="w-4 h-4" />
           </div>
           <h4 className="font-bold text-stone-900 dark:text-white text-sm">Direct Campus Handoffs</h4>
@@ -165,7 +165,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
               required
-              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-brand-400"
             />
           </div>
 
@@ -177,7 +177,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
               value={tagline}
               onChange={(e) => setTagline(e.target.value)}
               required
-              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-brand-400"
             />
           </div>
 
@@ -192,7 +192,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
                     setCampusesServed((prev) => [...prev, e.target.value]);
                   }
                 }}
-                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400 cursor-pointer"
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-400 cursor-pointer"
               >
                 {EKITI_CAMPUSES.map((c) => (
                   <option key={c.id} value={c.name}>
@@ -210,7 +210,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
                 value={pickupPoint}
                 onChange={(e) => setPickupPoint(e.target.value)}
                 required
-                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-brand-400"
               />
             </div>
           </div>
@@ -224,7 +224,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
               <button
                 type="button"
                 onClick={() => setCampusesServed(EKITI_CAMPUSES.map((c) => c.name))}
-                className="text-amber-700 dark:text-amber-400 hover:underline font-semibold text-[11px]"
+                className="text-brand-700 dark:text-brand-400 hover:underline font-semibold text-[11px]"
               >
                 Select All (5)
               </button>
@@ -237,7 +237,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
                     key={c.id}
                     className={`flex items-start gap-2 p-2 rounded-lg border text-xs cursor-pointer transition-colors ${
                       isSelected
-                        ? 'bg-white dark:bg-[#202838] border-amber-400 dark:border-amber-500 font-medium text-stone-900 dark:text-white'
+                        ? 'bg-white dark:bg-[#202838] border-brand-400 dark:border-brand-500 font-medium text-stone-900 dark:text-white'
                         : 'bg-stone-50/50 dark:bg-[#131720] border-stone-200 dark:border-[#262e3d] text-stone-600 dark:text-stone-400'
                     }`}
                   >
@@ -245,7 +245,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleToggleServedCampus(c.name)}
-                      className="mt-0.5 accent-amber-500"
+                      className="mt-0.5 accent-brand-500"
                     />
                     <div className="min-w-0 flex-1">
                       <span className="font-semibold">{c.name}</span>
@@ -265,7 +265,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
                 placeholder="https://wa.me/234... or 080..."
                 value={whatsAppUrl}
                 onChange={(e) => setWhatsAppUrl(e.target.value)}
-                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-brand-400"
               />
             </div>
             <div>
@@ -275,7 +275,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
                 placeholder="https://instagram.com/... or @handle"
                 value={instagramUrl}
                 onChange={(e) => setInstagramUrl(e.target.value)}
-                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-brand-400"
               />
             </div>
           </div>
@@ -288,14 +288,14 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-brand-400"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 rounded-xl font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+            className="w-full py-3 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 rounded-xl font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
           >
             <span>{isSubmitting ? 'Launching Store...' : 'Launch Student Storefront'}</span>
             <ArrowRight className="w-4 h-4" />

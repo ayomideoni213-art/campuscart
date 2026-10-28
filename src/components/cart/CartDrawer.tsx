@@ -50,7 +50,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
           {/* Header */}
           <div className="p-4 sm:p-6 border-b border-stone-200 dark:border-[#222936] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-stone-900 dark:text-amber-400" />
+              <ShoppingBag className="w-5 h-5 text-stone-900 dark:text-brand-400" />
               <h2 className="text-base font-bold text-stone-900 dark:text-white">Your Student Bag</h2>
               <span className="text-xs text-stone-500 dark:text-stone-400 font-mono">({cart.length} items)</span>
             </div>
@@ -76,7 +76,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                 </p>
                 <button
                   onClick={onClose}
-                  className="mt-2 px-4 py-2 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 font-semibold rounded-lg text-xs hover:bg-stone-800 dark:hover:bg-amber-300"
+                  className="mt-2 px-4 py-2 bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 font-semibold rounded-lg text-xs hover:bg-brand-700 dark:hover:bg-brand-300"
                 >
                   Explore Campus Market
                 </button>
@@ -171,7 +171,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                       placeholder="Promo code (e.g. CAMPUS10)"
                       value={inputCode}
                       onChange={(e) => setInputCode(e.target.value)}
-                      className="flex-1 px-3 py-1.5 bg-white dark:bg-[#161c26] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg text-xs uppercase placeholder:normal-case focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                      className="flex-1 px-3 py-1.5 bg-white dark:bg-[#161c26] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg text-xs uppercase placeholder:normal-case focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                     />
                     <button
                       type="submit"
@@ -211,7 +211,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                 </div>
                 <div className="flex justify-between text-sm font-bold text-stone-900 dark:text-white pt-2 border-t border-stone-200 dark:border-[#222936]">
                   <span>Total Due</span>
-                  <span className="font-mono tabular-nums text-stone-900 dark:text-amber-400">{formatNaira(total)}</span>
+                  <span className="font-mono tabular-nums text-stone-900 dark:text-brand-400">{formatNaira(total)}</span>
                 </div>
               </div>
 
@@ -221,7 +221,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                   onClose();
                   onProceedCheckout();
                 }}
-                className="w-full py-3 bg-stone-900 hover:bg-stone-800 text-white dark:bg-amber-400 dark:hover:bg-amber-300 dark:text-stone-950 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
+                className="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
               >
                 <span>Proceed to Campus Checkout</span>
                 <ArrowRight className="w-4 h-4" />

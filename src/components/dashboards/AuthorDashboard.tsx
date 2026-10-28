@@ -114,7 +114,7 @@ export const AuthorDashboard: React.FC = () => {
 
         <button
           onClick={handleOpenCreate}
-          className="px-4 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm cursor-pointer"
+          className="px-4 py-2 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Write New Article</span>
@@ -154,7 +154,7 @@ export const AuthorDashboard: React.FC = () => {
                 />
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold text-brand-800 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/50 px-2 py-0.5 rounded">
                       {post.category}
                     </span>
                     <span className="text-stone-400 dark:text-stone-500">·</span>
@@ -220,7 +220,7 @@ export const AuthorDashboard: React.FC = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. How I Built a ₦250,000/mo Campus Brand Between Lectures"
                   required
-                  className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                  className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-brand-400"
                 />
               </div>
 
@@ -230,7 +230,7 @@ export const AuthorDashboard: React.FC = () => {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400 cursor-pointer"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-400 cursor-pointer"
                   >
                     <option value="Founder Spotlights">Founder Spotlights</option>
                     <option value="Business Guides">Business Guides</option>
@@ -244,7 +244,7 @@ export const AuthorDashboard: React.FC = () => {
                     type="text"
                     value={readTime}
                     onChange={(e) => setReadTime(e.target.value)}
-                    className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-400"
                   />
                 </div>
               </div>
@@ -257,7 +257,7 @@ export const AuthorDashboard: React.FC = () => {
                   onChange={(e) => setSummary(e.target.value)}
                   placeholder="Brief synopsis for the card preview..."
                   required
-                  className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-brand-400"
                 />
               </div>
 
@@ -267,7 +267,7 @@ export const AuthorDashboard: React.FC = () => {
                   type="text"
                   value={coverImage}
                   onChange={(e) => setCoverImage(e.target.value)}
-                  className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-400"
                 />
               </div>
 
@@ -279,7 +279,7 @@ export const AuthorDashboard: React.FC = () => {
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Write the full editorial story here..."
                   required
-                  className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 leading-relaxed focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 leading-relaxed focus:outline-hidden focus:ring-2 focus:ring-brand-400"
                 />
               </div>
 
@@ -293,7 +293,7 @@ export const AuthorDashboard: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 rounded-xl font-semibold hover:bg-stone-800 dark:hover:bg-amber-300 cursor-pointer"
+                  className="px-5 py-2 bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 rounded-xl font-semibold hover:bg-brand-700 dark:hover:bg-brand-300 cursor-pointer"
                 >
                   Publish Story
                 </button>

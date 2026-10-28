@@ -72,7 +72,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
       case 'shipped':
         return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 dark:bg-blue-950/50 text-blue-800 dark:text-blue-300 border border-transparent dark:border-blue-800/40">In Transit</span>;
       case 'processing':
-        return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-transparent dark:border-amber-800/40">Preparing</span>;
+        return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-brand-100 dark:bg-brand-950/50 text-brand-800 dark:text-brand-300 border border-transparent dark:border-brand-800/40">Preparing</span>;
       default:
         return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-stone-100 dark:bg-[#1a2230] text-stone-700 dark:text-stone-300 capitalize">{status}</span>;
     }
@@ -114,7 +114,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
           </div>
           <div className="p-3 bg-stone-50 dark:bg-[#181e2a] rounded-xl border border-stone-200 dark:border-[#262e3d] text-center min-w-[90px]">
             <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">Total Spent</p>
-            <p className="text-sm font-bold text-stone-900 dark:text-amber-400 font-mono">
+            <p className="text-sm font-bold text-stone-900 dark:text-brand-400 font-mono">
               {formatNaira(totalSpent)}
             </p>
           </div>
@@ -123,9 +123,9 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
 
       {/* "Start Selling" / "Open a Store" pathway for shoppers */}
       {currentUser.role === 'customer' && onBecomeSeller && (
-        <div className="p-4 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-400/30 dark:border-amber-500/30 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-4 bg-gradient-to-r from-brand-500/10 via-brand-400/5 to-transparent border border-brand-400/30 dark:border-brand-500/30 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-400 text-stone-950 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-brand-400 text-stone-950 flex items-center justify-center shrink-0">
               <Store className="w-5 h-5" />
             </div>
             <div>
@@ -139,7 +139,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
           </div>
           <button
             onClick={onBecomeSeller}
-            className="px-4 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs whitespace-nowrap"
+            className="px-4 py-2 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs whitespace-nowrap"
           >
             <span>Start Selling</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -160,7 +160,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
             onClick={() => setActiveTab(tab.id)}
             className={`pb-3 px-3 transition-colors flex items-center gap-1.5 whitespace-nowrap border-b-2 cursor-pointer ${
               activeTab === tab.id
-                ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
+                ? 'border-stone-900 text-stone-900 dark:border-brand-400 dark:text-brand-400 font-bold'
                 : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
             }`}
           >
@@ -198,7 +198,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                   </div>
                   <div className="flex items-center gap-2">
                     {getStatusBadge(ord.order_status)}
-                    <span className="font-bold font-mono text-stone-900 dark:text-amber-400">
+                    <span className="font-bold font-mono text-stone-900 dark:text-brand-400">
                       {formatNaira(ord.total_amount)}
                     </span>
                   </div>
@@ -262,7 +262,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                   <img src={p.images[0]} alt={p.name} className="w-16 h-16 rounded-lg object-cover" />
                   <div className="min-w-0 flex-1 space-y-1">
                     <h4 className="font-semibold text-xs text-stone-900 dark:text-white truncate">{p.name}</h4>
-                    <p className="text-[11px] font-mono font-bold text-stone-900 dark:text-amber-400">
+                    <p className="text-[11px] font-mono font-bold text-stone-900 dark:text-brand-400">
                       {formatNaira(p.discount_price ?? p.price)}
                     </p>
                     <p className="text-[10px] text-stone-400 truncate">{p.campus_name}</p>
@@ -291,7 +291,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                       <Star
                         key={i}
                         className={`w-3 h-3 ${
-                          i < r.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-200 dark:text-stone-700'
+                          i < r.rating ? 'fill-brand-400 text-brand-400' : 'text-stone-200 dark:text-stone-700'
                         }`}
                       />
                     ))}
@@ -324,7 +324,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                 />
               </div>
 
@@ -333,7 +333,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                 <select
                   value={campusName}
                   onChange={(e) => setCampusName(e.target.value)}
-                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400 cursor-pointer"
+                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400 cursor-pointer"
                 >
                   {EKITI_CAMPUSES.map((c) => (
                     <option key={c.id} value={c.name}>
@@ -350,7 +350,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="e.g. 08012345678 or +234..."
-                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                 />
               </div>
 
@@ -361,13 +361,13 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Tell campus peers about your studies and interests..."
-                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                 />
               </div>
 
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors cursor-pointer"
+                className="px-5 py-2.5 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors cursor-pointer"
               >
                 Save Profile Changes
               </button>

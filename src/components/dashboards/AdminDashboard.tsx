@@ -82,7 +82,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex items-center gap-2">
           <div className="px-3 py-2 bg-stone-800 dark:bg-[#1c222e] rounded-xl text-right border border-stone-700/50 dark:border-[#2a3445]">
             <p className="text-[10px] text-stone-400 uppercase font-bold">Platform GMV</p>
-            <p className="text-sm font-bold text-amber-400 font-mono">{formatNaira(totalGMV)}</p>
+            <p className="text-sm font-bold text-brand-400 font-mono">{formatNaira(totalGMV)}</p>
           </div>
         </div>
       </div>
@@ -101,7 +101,7 @@ export const AdminDashboard: React.FC = () => {
             onClick={() => setActiveTab(tab.id as any)}
             className={`pb-3 px-3 transition-colors border-b-2 flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
               activeTab === tab.id
-                ? 'border-stone-900 dark:border-amber-400 text-stone-900 dark:text-amber-400'
+                ? 'border-stone-900 dark:border-brand-400 text-stone-900 dark:text-brand-400'
                 : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
             }`}
           >
@@ -161,7 +161,7 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Search user, email, ID..."
                 value={userSearch}
                 onChange={(e) => setUserSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-xs text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                className="w-full pl-8 pr-3 py-1.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-xs text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-2 focus:ring-brand-400"
               />
             </div>
           </div>
@@ -321,7 +321,7 @@ export const AdminDashboard: React.FC = () => {
             <input
               type="email"
               defaultValue="support@campusmart.ng"
-              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+              className="w-full p-2.5 bg-stone-50 dark:bg-[#1c222e] border border-stone-300 dark:border-[#2a3445] rounded-lg text-stone-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-400"
             />
           </div>
 

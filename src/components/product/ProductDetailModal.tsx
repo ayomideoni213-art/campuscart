@@ -118,7 +118,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       onClick={() => setSelectedImage(idx)}
                       className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
                         selectedImage === idx
-                          ? 'border-stone-900 dark:border-amber-400 shadow-xs'
+                          ? 'border-stone-900 dark:border-brand-400 shadow-xs'
                           : 'border-stone-200 dark:border-[#262e3d] opacity-70 hover:opacity-100'
                       }`}
                     >
@@ -131,7 +131,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               {/* Campus Delivery / Pickup Details Box */}
               <div className="p-3.5 bg-stone-50 dark:bg-[#1a202c] rounded-xl border border-stone-200/80 dark:border-[#2b3545] text-xs space-y-2">
                 <div className="flex items-center gap-2 font-semibold text-stone-800 dark:text-stone-200">
-                  <MapPin className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <MapPin className="w-4 h-4 text-brand-600 dark:text-brand-400 shrink-0" />
                   <span>Verified Campus Pickup Point</span>
                 </div>
                 <p className="text-stone-600 dark:text-stone-300 pl-6 leading-relaxed">
@@ -152,7 +152,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 {/* Rating & Reviews */}
                 <div className="mt-2 flex items-center gap-3 text-xs text-stone-600 dark:text-stone-400">
                   <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <Star className="w-4 h-4 fill-brand-400 text-brand-400" />
                     <span className="font-semibold text-stone-900 dark:text-stone-100">{product.rating.toFixed(1)}</span>
                     <span className="text-stone-400 dark:text-stone-500">({product.reviews_count} reviews)</span>
                   </div>
@@ -255,7 +255,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                       isOutOfStock
                         ? 'bg-stone-200 dark:bg-[#1c222e] text-stone-400 dark:text-stone-500 cursor-not-allowed'
-                        : 'bg-stone-900 hover:bg-stone-800 text-white dark:bg-amber-400 dark:hover:bg-amber-300 dark:text-stone-950 font-bold shadow-sm'
+                        : 'bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold shadow-sm'
                     }`}
                   >
                     <ShoppingBag className="w-4 h-4" />
@@ -334,7 +334,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       >
                         <Star
                           className={`w-4 h-4 ${
-                            star <= newRating ? 'fill-amber-400 text-amber-400' : 'text-stone-300 dark:text-stone-600'
+                            star <= newRating ? 'fill-brand-400 text-brand-400' : 'text-stone-300 dark:text-stone-600'
                           }`}
                         />
                       </button>
@@ -347,7 +347,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Share details on product condition, meetup punctuality, or quality..."
-                  className="w-full p-2.5 text-xs bg-white dark:bg-[#151921] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                  className="w-full p-2.5 text-xs bg-white dark:bg-[#151921] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   required
                 />
 
@@ -361,7 +361,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-semibold rounded-lg text-xs"
+                    className="px-4 py-1.5 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-semibold rounded-lg text-xs"
                   >
                     {reviewSubmitted ? 'Submitted!' : 'Post Review'}
                   </button>
@@ -396,7 +396,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                           <Star
                             key={i}
                             className={`w-3 h-3 ${
-                              i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-300 dark:text-stone-600'
+                              i < rev.rating ? 'fill-brand-400 text-brand-400' : 'text-stone-300 dark:text-stone-600'
                             }`}
                           />
                         ))}

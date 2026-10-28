@@ -166,7 +166,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const roleIcons: Record<UserRole, React.ReactNode> = {
     customer: <User className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />,
-    seller: <Store className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />,
+    seller: <Store className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />,
     editor: <PenTool className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />,
     author: <BookOpen className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />,
     admin: <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
@@ -208,7 +208,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1 shadow-xs border ${
                   intent === 'shop'
                     ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40'
-                    : 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/40'
+                    : 'bg-brand-50 dark:bg-brand-950/60 text-brand-800 dark:text-brand-300 border-brand-200 dark:border-brand-800/40'
                 }`}
               >
                 {intent === 'shop' ? (
@@ -218,7 +218,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </>
                 ) : (
                   <>
-                    <Store className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                    <Store className="w-3 h-3 text-brand-600 dark:text-brand-400" />
                     <span>I want to sell</span>
                   </>
                 )}
@@ -237,9 +237,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Development Mode: Fast Role Switcher */}
         {import.meta.env.DEV && (
-          <div className="bg-amber-50/70 dark:bg-amber-950/20 p-3 px-6 border-b border-amber-200/70 dark:border-amber-800/30 text-xs">
-            <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-300 mb-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+          <div className="bg-brand-50/70 dark:bg-brand-950/20 p-3 px-6 border-b border-brand-200/70 dark:border-brand-800/30 text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-brand-900 dark:text-brand-300 mb-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
               <span>Dev Quick Test Switch (Ekiti Universities)</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
@@ -251,7 +251,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     loginAsDemoUser(demo.id);
                     onClose();
                   }}
-                  className="px-2 py-1 bg-white dark:bg-[#181f2c] border border-amber-200 dark:border-amber-800/40 hover:border-amber-400 dark:hover:border-amber-500 rounded-lg text-left text-[10px] transition-colors"
+                  className="px-2 py-1 bg-white dark:bg-[#181f2c] border border-brand-200 dark:border-brand-800/40 hover:border-brand-400 dark:hover:border-brand-500 rounded-lg text-left text-[10px] transition-colors"
                 >
                   <div className="flex items-center gap-1 font-semibold text-stone-800 dark:text-stone-200 truncate">
                     {roleIcons[demo.role]}
@@ -351,18 +351,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   type="button"
                   onClick={() => handleSelectIntent('sell')}
-                  className="group relative flex flex-col items-start p-5 bg-stone-50 hover:bg-amber-50/50 dark:bg-[#181e28] dark:hover:bg-[#282216] border-2 border-stone-200 hover:border-amber-500 dark:border-[#262e3d] dark:hover:border-amber-500 rounded-2xl text-left transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="group relative flex flex-col items-start p-5 bg-stone-50 hover:bg-brand-50/50 dark:bg-[#181e28] dark:hover:bg-[#282216] border-2 border-stone-200 hover:border-brand-500 dark:border-[#262e3d] dark:hover:border-brand-500 rounded-2xl text-left transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-950/70 text-brand-700 dark:text-brand-300 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                     <Store className="w-6 h-6" />
                   </div>
-                  <h4 className="text-sm font-black text-stone-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
+                  <h4 className="text-sm font-black text-stone-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">
                     I want to sell (entrepreneur)
                   </h4>
                   <p className="text-xs text-stone-600 dark:text-stone-300 mt-1.5 leading-relaxed">
                     Open your store, showcase your products, and build your brand.
                   </p>
-                  <div className="mt-4 pt-3 border-t border-stone-200 dark:border-[#262e3d] w-full flex items-center justify-between text-[11px] font-bold text-amber-700 dark:text-amber-400">
+                  <div className="mt-4 pt-3 border-t border-stone-200 dark:border-[#262e3d] w-full flex items-center justify-between text-[11px] font-bold text-brand-700 dark:text-brand-400">
                     <span>Continue to Store Setup</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -378,7 +378,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       setMode('login');
                       setError(null);
                     }}
-                    className="font-bold text-amber-700 dark:text-amber-400 hover:underline"
+                    className="font-bold text-brand-700 dark:text-brand-400 hover:underline"
                   >
                     Sign In
                   </button>
@@ -423,7 +423,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       required
-                      className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                      className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                     />
                   </div>
 
@@ -438,7 +438,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         value={studentId}
                         onChange={(e) => setStudentId(e.target.value)}
                         required
-                        className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                        className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                       />
                     </div>
 
@@ -455,7 +455,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                           }
                         }}
                         required
-                        className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400 cursor-pointer"
+                        className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400 cursor-pointer"
                       >
                         {EKITI_CAMPUSES.map((c) => (
                           <option key={c.id} value={c.name}>
@@ -479,14 +479,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         required
-                        className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                        className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                       />
                     </div>
                   </div>
 
                   {/* ENTREPRENEUR-ONLY: Campuses I sell to (Multi-select) */}
                   {intent === 'sell' && (
-                    <div className="p-3.5 bg-amber-50/50 dark:bg-[#181e28] rounded-xl border border-amber-200/80 dark:border-amber-800/40 space-y-2">
+                    <div className="p-3.5 bg-brand-50/50 dark:bg-[#181e28] rounded-xl border border-brand-200/80 dark:border-brand-800/40 space-y-2">
                       <div className="flex items-center justify-between">
                         <label className="block font-bold text-stone-900 dark:text-white text-xs">
                           Campuses I sell to
@@ -495,7 +495,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                           <button
                             type="button"
                             onClick={handleSelectAllCampuses}
-                            className="text-amber-700 dark:text-amber-400 hover:underline font-semibold"
+                            className="text-brand-700 dark:text-brand-400 hover:underline font-semibold"
                           >
                             Select All (5)
                           </button>
@@ -513,7 +513,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                               key={c.id}
                               className={`flex items-start gap-2.5 p-2 rounded-lg border transition-colors cursor-pointer text-xs ${
                                 isSelected
-                                  ? 'bg-white dark:bg-[#202838] border-amber-400 dark:border-amber-500 text-stone-900 dark:text-white font-medium shadow-2xs'
+                                  ? 'bg-white dark:bg-[#202838] border-brand-400 dark:border-brand-500 text-stone-900 dark:text-white font-medium shadow-2xs'
                                   : 'bg-stone-50/80 dark:bg-[#131720] border-stone-200 dark:border-[#262e3d] text-stone-600 dark:text-stone-400 hover:bg-stone-100'
                               }`}
                             >
@@ -521,7 +521,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                                 type="checkbox"
                                 checked={isSelected}
                                 onChange={() => handleToggleServedCampus(c.name)}
-                                className="mt-0.5 rounded accent-amber-500"
+                                className="mt-0.5 rounded accent-brand-500"
                               />
                               <div className="min-w-0 flex-1">
                                 <span className="font-semibold">{c.name}</span>
@@ -555,7 +555,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
               </div>
@@ -567,7 +567,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <button
                       type="button"
                       onClick={() => alert('Password reset link sent: Please check your registered email inbox.')}
-                      className="text-[11px] text-amber-700 dark:text-amber-400 hover:underline cursor-pointer"
+                      className="text-[11px] text-brand-700 dark:text-brand-400 hover:underline cursor-pointer"
                     >
                       Forgot password?
                     </button>
@@ -581,7 +581,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
               </div>
@@ -599,7 +599,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
-                      className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                      className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                     />
                   </div>
                 </div>
@@ -608,7 +608,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-3 py-3 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
+                className="w-full mt-3 py-3 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>
                   {isSubmitting

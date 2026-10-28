@@ -32,7 +32,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
       case 'moderation':
         return <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
       case 'message':
-        return <MessageSquare className="w-4 h-4 text-amber-600 dark:text-amber-400" />;
+        return <MessageSquare className="w-4 h-4 text-brand-600 dark:text-brand-400" />;
       default:
         return <Bell className="w-4 h-4 text-stone-600 dark:text-stone-400" />;
     }
@@ -50,7 +50,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
           {/* Header */}
           <div className="p-4 border-b border-stone-200 dark:border-[#222936] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-stone-900 dark:text-amber-400" />
+              <Bell className="w-4 h-4 text-stone-900 dark:text-brand-400" />
               <h2 className="text-sm font-bold text-stone-900 dark:text-white">Notifications</h2>
               <span className="text-xs text-stone-400 dark:text-stone-500">({userNotifs.length})</span>
             </div>
@@ -58,7 +58,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
               {userNotifs.some((n) => !n.is_read) && (
                 <button
                   onClick={markAllNotificationsAsRead}
-                  className="text-[11px] text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold flex items-center gap-1 transition-colors"
+                  className="text-[11px] text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-semibold flex items-center gap-1 transition-colors"
                 >
                   <Check className="w-3 h-3" />
                   <span>Mark all read</span>

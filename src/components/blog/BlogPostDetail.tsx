@@ -44,7 +44,7 @@ export const BlogPostDetail: React.FC<BlogPostDetailProps> = ({
       {/* Article Header */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-xs">
-          <span className="font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-0.5 rounded border border-amber-200 dark:border-amber-800/40">
+          <span className="font-bold text-brand-800 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/50 px-2.5 py-0.5 rounded border border-brand-200 dark:border-brand-800/40">
             {post.category}
           </span>
           <span className="text-stone-400 dark:text-stone-500">·</span>
@@ -122,9 +122,9 @@ export const BlogPostDetail: React.FC<BlogPostDetailProps> = ({
               <div
                 key={rel.id}
                 onClick={() => onSelectOtherPost(rel)}
-                className="p-4 bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-xl hover:shadow-xs dark:hover:border-amber-400/50 transition-all cursor-pointer space-y-2 text-xs"
+                className="p-4 bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-xl hover:shadow-xs dark:hover:border-brand-400/50 transition-all cursor-pointer space-y-2 text-xs"
               >
-                <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/40">
+                <span className="text-[10px] font-bold text-brand-800 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/50 px-2 py-0.5 rounded border border-brand-200 dark:border-brand-800/40">
                   {rel.category}
                 </span>
                 <h4 className="font-bold text-stone-900 dark:text-white line-clamp-1">{rel.title}</h4>

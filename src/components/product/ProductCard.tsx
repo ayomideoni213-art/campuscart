@@ -45,7 +45,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect, onS
             Out of Stock
           </div>
         ) : product.discount_price ? (
-          <div className="absolute top-2.5 left-2.5 bg-amber-500 text-stone-950 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
+          <div className="absolute top-2.5 left-2.5 bg-brand-500 text-stone-950 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
             Sale
           </div>
         ) : null}
@@ -79,7 +79,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect, onS
         {/* Product Title */}
         <h3
           onClick={() => onSelect(product)}
-          className="text-sm font-semibold text-stone-900 dark:text-stone-100 line-clamp-1 hover:text-amber-700 dark:hover:text-amber-400 cursor-pointer transition-colors"
+          className="text-sm font-semibold text-stone-900 dark:text-stone-100 line-clamp-1 hover:text-brand-700 dark:hover:text-brand-400 cursor-pointer transition-colors"
         >
           {product.name}
         </h3>
@@ -102,7 +102,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect, onS
 
         {/* Rating */}
         <div className="mt-2 flex items-center gap-1 text-xs text-stone-600 dark:text-stone-400">
-          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+          <Star className="w-3.5 h-3.5 fill-brand-400 text-brand-400" />
           <span className="font-semibold text-stone-800 dark:text-stone-200">{product.rating.toFixed(1)}</span>
           <span className="text-stone-400 dark:text-stone-500">({product.reviews_count})</span>
           <span aria-hidden="true" className="text-stone-300 dark:text-stone-600">·</span>
@@ -128,7 +128,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect, onS
             className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               isOutOfStock
                 ? 'bg-stone-100 dark:bg-[#1c222e] text-stone-400 dark:text-stone-500 cursor-not-allowed'
-                : 'bg-stone-900 hover:bg-stone-800 text-white dark:bg-amber-400 dark:hover:bg-amber-300 dark:text-stone-950 font-bold shadow-xs'
+                : 'bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold shadow-xs'
             }`}
           >
             <ShoppingBag className="w-3.5 h-3.5" />

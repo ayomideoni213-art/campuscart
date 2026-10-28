@@ -187,7 +187,7 @@ function CampusMartApp() {
 
       {/* 2. Top Promotional / Campus Notification Bar */}
       {bannerVisible && (
-        <div className="bg-amber-400 dark:bg-amber-500 text-stone-950 text-xs py-2 px-4 border-b border-amber-500/30 dark:border-amber-600/30 flex items-center justify-between">
+        <div className="bg-brand-400 dark:bg-brand-500 text-stone-950 text-xs py-2 px-4 border-b border-brand-500/30 dark:border-brand-600/30 flex items-center justify-between">
           <div className="max-w-7xl mx-auto flex items-center gap-2 text-center w-full justify-center font-medium">
             <span className="font-bold">🎒 2025/2026 Academic Session:</span>
             <span>Free zero-fee physical handoff points active across EKSU, FUOYE, ABUAD, BOUESTI & Venite University campuses.</span>
@@ -239,14 +239,14 @@ function CampusMartApp() {
 
               <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 space-y-6">
                 <div className="max-w-3xl space-y-4">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-brand-400 bg-brand-400/10 px-3 py-1 rounded-full border border-brand-400/20">
                     <Sparkles className="w-3.5 h-3.5" />
                     Verified Student Marketplace & Entrepreneurship
                   </span>
 
                   <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
                     Your Campus. <br />
-                    <span className="text-amber-400">Your Marketplace.</span>
+                    <span className="text-brand-400">Your Marketplace.</span>
                   </h1>
 
                   <p className="text-stone-300 text-sm sm:text-base leading-relaxed max-w-xl">
@@ -259,7 +259,7 @@ function CampusMartApp() {
                         const el = document.getElementById('marketplace-discovery');
                         el?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center gap-2"
+                      className="px-6 py-3 bg-brand-400 hover:bg-brand-300 text-stone-950 font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center gap-2"
                     >
                       <ShoppingBag className="w-4 h-4" />
                       <span>Explore Campus Finds</span>
@@ -275,7 +275,7 @@ function CampusMartApp() {
                       }}
                       className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm rounded-xl backdrop-blur-sm border border-white/20 transition-all flex items-center gap-2"
                     >
-                      <Store className="w-4 h-4 text-amber-300" />
+                      <Store className="w-4 h-4 text-brand-300" />
                       <span>{currentRole === 'seller' ? 'Open Seller Studio' : 'Open a Student Store'}</span>
                     </button>
                   </div>
@@ -288,7 +288,7 @@ function CampusMartApp() {
                     <span>Active Student Verified</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Truck className="w-4 h-4 text-amber-400 shrink-0" />
+                    <Truck className="w-4 h-4 text-brand-400 shrink-0" />
                     <span>Free Campus & Hostel Handoffs</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -312,7 +312,7 @@ function CampusMartApp() {
                 </div>
                 <button
                   onClick={() => handleNavigate('stores')}
-                  className="text-xs font-semibold text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-amber-400 flex items-center gap-1 group cursor-pointer"
+                  className="text-xs font-semibold text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-brand-400 flex items-center gap-1 group cursor-pointer"
                 >
                   <span>View All Stores</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -324,7 +324,7 @@ function CampusMartApp() {
                   <div
                     key={store.id}
                     onClick={() => handleOpenStore(store.id)}
-                    className="group cursor-pointer bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] p-4 hover:shadow-md dark:hover:border-amber-400/40 transition-all space-y-3"
+                    className="group cursor-pointer bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] p-4 hover:shadow-md dark:hover:border-brand-400/40 transition-all space-y-3"
                   >
                     <div className="flex items-center gap-3">
                       <img
@@ -335,7 +335,7 @@ function CampusMartApp() {
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1">
-                          <h3 className="text-sm font-bold text-stone-900 dark:text-white truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                          <h3 className="text-sm font-bold text-stone-900 dark:text-white truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                             {store.name}
                           </h3>
                           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
@@ -346,7 +346,7 @@ function CampusMartApp() {
 
                     <div className="pt-2 border-t border-stone-100 dark:border-[#262e3d] flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
                       <div className="flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        <Star className="w-3.5 h-3.5 fill-brand-400 text-brand-400" />
                         <span className="font-semibold text-stone-800 dark:text-stone-200">{store.rating.toFixed(1)}</span>
                         <span className="text-stone-400 dark:text-stone-500">({store.reviews_count})</span>
                       </div>
@@ -366,7 +366,7 @@ function CampusMartApp() {
                   onClick={() => setSelectedCategory('all')}
                   className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-2 cursor-pointer ${
                     selectedCategory === 'all'
-                      ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 shadow-xs'
+                      ? 'bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 shadow-xs'
                       : 'bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#1c222e]'
                   }`}
                 >
@@ -379,7 +379,7 @@ function CampusMartApp() {
                     onClick={() => setSelectedCategory(cat.id)}
                     className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
                       selectedCategory === cat.id
-                        ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 shadow-xs'
+                        ? 'bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 shadow-xs'
                         : 'bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-[#1c222e]'
                     }`}
                   >
@@ -444,7 +444,7 @@ function CampusMartApp() {
                       </p>
                       <button
                         onClick={resetFilters}
-                        className="px-4 py-2 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 rounded-lg text-xs font-semibold hover:bg-stone-800 dark:hover:bg-amber-300 cursor-pointer"
+                        className="px-4 py-2 bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 rounded-lg text-xs font-semibold hover:bg-brand-700 dark:hover:bg-brand-300 cursor-pointer"
                       >
                         Reset All Filters
                       </button>
@@ -469,7 +469,7 @@ function CampusMartApp() {
             <section className="bg-stone-100 dark:bg-[#13171f] py-16 border-y border-stone-200 dark:border-[#262e3d]">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                 <div className="text-center max-w-2xl mx-auto space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-400">
                     Simple & Safe
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-white tracking-tight">
@@ -512,7 +512,7 @@ function CampusMartApp() {
                   </div>
 
                   <div className="bg-white dark:bg-[#181e28] p-5 rounded-2xl border border-stone-200 dark:border-[#262e3d] space-y-2 shadow-2xs">
-                    <span className="w-7 h-7 rounded-full bg-amber-400 text-stone-950 flex items-center justify-center font-bold text-xs">
+                    <span className="w-7 h-7 rounded-full bg-brand-400 text-stone-950 flex items-center justify-center font-bold text-xs">
                       4
                     </span>
                     <h3 className="text-sm font-bold text-stone-900 dark:text-white">Build Your Brand</h3>

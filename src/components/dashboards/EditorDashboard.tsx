@@ -39,7 +39,7 @@ export const EditorDashboard: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-stone-900 dark:text-white">CampusMart Editor Center</h1>
-            <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[11px] font-bold rounded border border-amber-200 dark:border-amber-800/40">
+            <span className="px-2 py-0.5 bg-brand-50 dark:bg-brand-950/50 text-brand-800 dark:text-brand-300 text-[11px] font-bold rounded border border-brand-200 dark:border-brand-800/40">
               Content & Listing Moderation
             </span>
           </div>
@@ -66,7 +66,7 @@ export const EditorDashboard: React.FC = () => {
           onClick={() => setActiveTab('moderation')}
           className={`pb-3 px-3 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'moderation'
-              ? 'border-stone-900 dark:border-amber-400 text-stone-900 dark:text-amber-400'
+              ? 'border-stone-900 dark:border-brand-400 text-stone-900 dark:text-brand-400'
               : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
@@ -76,7 +76,7 @@ export const EditorDashboard: React.FC = () => {
           onClick={() => setActiveTab('reports')}
           className={`pb-3 px-3 transition-colors border-b-2 flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'reports'
-              ? 'border-stone-900 dark:border-amber-400 text-stone-900 dark:text-amber-400'
+              ? 'border-stone-900 dark:border-brand-400 text-stone-900 dark:text-brand-400'
               : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
@@ -91,7 +91,7 @@ export const EditorDashboard: React.FC = () => {
           onClick={() => setActiveTab('featured')}
           className={`pb-3 px-3 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'featured'
-              ? 'border-stone-900 dark:border-amber-400 text-stone-900 dark:text-amber-400'
+              ? 'border-stone-900 dark:border-brand-400 text-stone-900 dark:text-brand-400'
               : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
@@ -101,7 +101,7 @@ export const EditorDashboard: React.FC = () => {
           onClick={() => setActiveTab('reviews')}
           className={`pb-3 px-3 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'reviews'
-              ? 'border-stone-900 dark:border-amber-400 text-stone-900 dark:text-amber-400'
+              ? 'border-stone-900 dark:border-brand-400 text-stone-900 dark:text-brand-400'
               : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
@@ -198,7 +198,7 @@ export const EditorDashboard: React.FC = () => {
                   <span
                     className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                       rep.status === 'pending'
-                        ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                        ? 'bg-brand-100 dark:bg-brand-950/60 text-brand-800 dark:text-brand-300'
                         : rep.status === 'resolved'
                         ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
                         : 'bg-stone-100 dark:bg-[#1c222e] text-stone-600 dark:text-stone-400'
@@ -250,7 +250,7 @@ export const EditorDashboard: React.FC = () => {
                 key={p.id}
                 className={`p-3 border rounded-xl flex items-center justify-between gap-3 ${
                   p.is_featured
-                    ? 'border-amber-400 bg-amber-50/40 dark:bg-amber-950/20'
+                    ? 'border-brand-400 bg-brand-50/40 dark:bg-brand-950/20'
                     : 'border-stone-200 dark:border-[#262e3d]'
                 }`}
               >
@@ -266,7 +266,7 @@ export const EditorDashboard: React.FC = () => {
                   onClick={() => updateProduct(p.id, { is_featured: !p.is_featured })}
                   className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-colors shrink-0 cursor-pointer ${
                     p.is_featured
-                      ? 'bg-amber-500 text-stone-950 hover:bg-amber-600'
+                      ? 'bg-brand-500 text-stone-950 hover:bg-brand-600'
                       : 'bg-stone-100 dark:bg-[#1c222e] text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-[#252c3b]'
                   }`}
                 >
@@ -285,14 +285,14 @@ export const EditorDashboard: React.FC = () => {
             <div key={rev.id} className="p-4 bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-xl space-y-1.5 shadow-2xs">
               <div className="flex justify-between items-center">
                 <span className="font-bold text-stone-900 dark:text-white">
-                  {rev.user_name} on <span className="text-amber-800 dark:text-amber-400">{rev.product_name}</span>
+                  {rev.user_name} on <span className="text-brand-800 dark:text-brand-400">{rev.product_name}</span>
                 </span>
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       className={`w-3.5 h-3.5 ${
-                        i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-200 dark:text-stone-700'
+                        i < rev.rating ? 'fill-brand-400 text-brand-400' : 'text-stone-200 dark:text-stone-700'
                       }`}
                     />
                   ))}

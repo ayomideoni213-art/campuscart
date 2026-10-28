@@ -76,10 +76,10 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-6">
             <button
               onClick={() => onNavigate('home')}
-              className="text-2xl font-black tracking-tight text-stone-900 dark:text-white flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-amber-400 rounded-lg"
+              className="text-2xl font-black tracking-tight text-stone-900 dark:text-white flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-brand-400 rounded-lg"
               aria-label="CampusMart Home"
             >
-              <span className="w-8 h-8 rounded-lg bg-stone-900 dark:bg-amber-400 text-amber-400 dark:text-stone-950 flex items-center justify-center text-lg font-black shadow-sm transition-colors">
+              <span className="w-8 h-8 rounded-lg bg-brand-600 dark:bg-brand-400 text-brand-400 dark:text-stone-950 flex items-center justify-center text-lg font-black shadow-sm transition-colors">
                 C
               </span>
               <span>CampusMart</span>
@@ -120,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onNavigate('become-seller');
                 }
               }}
-              className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors whitespace-nowrap text-stone-700 dark:text-stone-300 font-medium"
+              className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors whitespace-nowrap text-stone-700 dark:text-stone-300 font-medium"
             >
               {currentRole === 'seller' ? 'My Store' : 'Sell on Campus'}
             </button>
@@ -134,7 +134,7 @@ export const Header: React.FC<HeaderProps> = ({
               placeholder="Search products, textbooks, dorm gear..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400 focus:bg-white dark:focus:bg-[#1a202c] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400 focus:bg-white dark:focus:bg-[#1a202c] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 transition-all"
             />
             {searchQuery && (
               <button
@@ -177,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <MessageSquare className="w-5 h-5" />
                 {unreadMessagesCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-brand-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {unreadMessagesCount}
                   </span>
                 )}
@@ -204,12 +204,12 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Cart Button */}
             <button
               onClick={onOpenCart}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white dark:bg-amber-400 dark:hover:bg-amber-300 dark:text-stone-950 font-bold rounded-lg text-xs shadow-sm transition-all whitespace-nowrap ml-1"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold rounded-lg text-xs shadow-sm transition-all whitespace-nowrap ml-1"
               aria-label="Shopping Cart"
             >
               <ShoppingBag className="w-4 h-4" />
               <span className="hidden sm:inline">Bag</span>
-              <span className="bg-amber-400 text-stone-950 dark:bg-stone-900 dark:text-amber-300 font-bold px-1.5 py-0.2 rounded text-[11px]">
+              <span className="bg-brand-400 text-stone-950 dark:bg-stone-900 dark:text-brand-300 font-bold px-1.5 py-0.2 rounded text-[11px]">
                 {cartCount}
               </span>
             </button>
@@ -219,7 +219,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  className="flex items-center gap-2 p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors focus:outline-none focus:ring-2 focus:ring-brand-400"
                   aria-label="User Account Menu"
                 >
                   <img
@@ -260,9 +260,9 @@ export const Header: React.FC<HeaderProps> = ({
                     {currentRole === 'customer' && (
                       <button
                         onClick={() => onNavigate('become-seller')}
-                        className="w-full text-left px-4 py-2 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-[#232015] flex items-center gap-2 transition-colors"
+                        className="w-full text-left px-4 py-2 text-xs font-medium text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-[#232015] flex items-center gap-2 transition-colors"
                       >
-                        <Store className="w-4 h-4 text-amber-500" />
+                        <Store className="w-4 h-4 text-brand-500" />
                         Open a Student Store
                       </button>
                     )}
@@ -352,7 +352,7 @@ export const Header: React.FC<HeaderProps> = ({
               onNavigate(currentRole === 'seller' ? 'seller-dashboard' : 'become-seller');
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 text-sm font-medium text-amber-700 dark:text-amber-400"
+            className="w-full text-left py-2 text-sm font-medium text-brand-700 dark:text-brand-400"
           >
             {currentRole === 'seller' ? 'Seller Studio' : 'Open a Store'}
           </button>

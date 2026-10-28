@@ -47,7 +47,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         <p className="text-xs text-stone-500 dark:text-stone-400 mt-2">The requested student store does not exist.</p>
         <button
           onClick={onBack}
-          className="mt-4 px-4 py-2 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 font-bold rounded-lg text-xs cursor-pointer"
+          className="mt-4 px-4 py-2 bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 font-bold rounded-lg text-xs cursor-pointer"
         >
           Return to Home
         </button>
@@ -162,12 +162,12 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                 <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-medium">{store.tagline}</p>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-stone-500 dark:text-stone-400 pt-1">
                   <span className="flex items-center gap-1 font-medium">
-                    <MapPin className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <MapPin className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
                     {store.campus_location}
                   </span>
                   <span>·</span>
                   <span className="flex items-center gap-1">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    <Star className="w-3.5 h-3.5 fill-brand-400 text-brand-400" />
                     <span className="font-semibold text-stone-800 dark:text-stone-200">{store.rating.toFixed(1)}</span>
                     <span className="text-stone-400 dark:text-stone-500">({store.reviews_count} reviews)</span>
                   </span>
@@ -182,7 +182,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
               {/* Internal Message */}
               <button
                 onClick={() => onOpenMessage(store.seller_id, store.id)}
-                className="px-3.5 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                className="px-3.5 py-2 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
                 <span>Message</span>
@@ -252,14 +252,14 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
               {store.campuses_served && store.campuses_served.length > 0 && (
                 <div>
                   <h4 className="font-bold text-stone-900 dark:text-white uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1">
-                    <Building className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <Building className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
                     <span>Universities Served in Ekiti State</span>
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {store.campuses_served.map((c, i) => (
                       <span
                         key={i}
-                        className="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40 rounded-lg text-xs font-medium"
+                        className="px-2.5 py-1 bg-brand-50 dark:bg-brand-950/40 text-brand-900 dark:text-brand-300 border border-brand-200 dark:border-brand-800/40 rounded-lg text-xs font-medium"
                       >
                         {c}
                       </span>
@@ -271,7 +271,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
 
             <div className="p-4 bg-stone-50 dark:bg-[#1c222e] rounded-xl border border-stone-200/80 dark:border-[#262e3d] space-y-2.5 self-start">
               <h4 className="font-bold text-stone-900 dark:text-white uppercase tracking-wider text-[11px] flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                <MapPin className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
                 <span>Primary Pickup Point</span>
               </h4>
               <p className="text-stone-800 dark:text-stone-200 font-semibold">{store.pickup_point}</p>
@@ -300,7 +300,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                 onClick={() => setActiveCategory('all')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   activeCategory === 'all'
-                    ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950'
+                    ? 'bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950'
                     : 'bg-stone-100 dark:bg-[#1c222e] text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-[#252c3b]'
                 }`}
               >
@@ -312,7 +312,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                   onClick={() => setActiveCategory(c.id)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                     activeCategory === c.id
-                      ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950'
+                      ? 'bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950'
                       : 'bg-stone-100 dark:bg-[#1c222e] text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-[#252c3b]'
                   }`}
                 >
@@ -362,7 +362,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                       <Star
                         key={i}
                         className={`w-3 h-3 ${
-                          i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-200 dark:text-stone-700'
+                          i < rev.rating ? 'fill-brand-400 text-brand-400' : 'text-stone-200 dark:text-stone-700'
                         }`}
                       />
                     ))}

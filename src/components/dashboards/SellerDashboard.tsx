@@ -281,7 +281,7 @@ export const SellerDashboard: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold text-stone-900 dark:text-white">{myStore.name}</h1>
-              <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-[11px] font-bold rounded border border-transparent dark:border-amber-800/40">
+              <span className="px-2 py-0.5 bg-brand-50 dark:bg-brand-950/40 text-brand-800 dark:text-brand-300 text-[11px] font-bold rounded border border-transparent dark:border-brand-800/40">
                 Seller Studio
               </span>
             </div>
@@ -293,7 +293,7 @@ export const SellerDashboard: React.FC = () => {
 
         <button
           onClick={handleOpenAddProduct}
-          className="px-4 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+          className="px-4 py-2 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Product</span>
@@ -306,7 +306,7 @@ export const SellerDashboard: React.FC = () => {
           onClick={() => setActiveTab('overview')}
           className={`pb-3 px-3 transition-colors border-b-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'overview'
-              ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
+              ? 'border-stone-900 text-stone-900 dark:border-brand-400 dark:text-brand-400 font-bold'
               : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
@@ -316,7 +316,7 @@ export const SellerDashboard: React.FC = () => {
           onClick={() => setActiveTab('products')}
           className={`pb-3 px-3 transition-colors border-b-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'products'
-              ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
+              ? 'border-stone-900 text-stone-900 dark:border-brand-400 dark:text-brand-400 font-bold'
               : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
@@ -326,7 +326,7 @@ export const SellerDashboard: React.FC = () => {
           onClick={() => setActiveTab('orders')}
           className={`pb-3 px-3 transition-colors border-b-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'orders'
-              ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
+              ? 'border-stone-900 text-stone-900 dark:border-brand-400 dark:text-brand-400 font-bold'
               : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
@@ -336,7 +336,7 @@ export const SellerDashboard: React.FC = () => {
           onClick={() => setActiveTab('store')}
           className={`pb-3 px-3 transition-colors border-b-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'store'
-              ? 'border-stone-900 text-stone-900 dark:border-amber-400 dark:text-amber-400 font-bold'
+              ? 'border-stone-900 text-stone-900 dark:border-brand-400 dark:text-brand-400 font-bold'
               : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
           }`}
         >
@@ -350,7 +350,7 @@ export const SellerDashboard: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
               <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Total Revenue</span>
-              <p className="text-xl font-bold text-stone-900 dark:text-amber-400 font-mono mt-1">
+              <p className="text-xl font-bold text-stone-900 dark:text-brand-400 font-mono mt-1">
                 {formatNaira(totalRevenue)}
               </p>
               <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Ekiti peer sales</span>
@@ -359,7 +359,7 @@ export const SellerDashboard: React.FC = () => {
             <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
               <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Pending Orders</span>
               <p className="text-xl font-bold text-stone-900 dark:text-white font-mono mt-1">{pendingOrdersCount}</p>
-              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">Handoffs pending</span>
+              <span className="text-[10px] text-brand-600 dark:text-brand-400 font-medium">Handoffs pending</span>
             </div>
 
             <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
@@ -371,7 +371,7 @@ export const SellerDashboard: React.FC = () => {
             <div className="p-4 bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] shadow-2xs">
               <span className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold uppercase">Store Rating</span>
               <p className="text-xl font-bold text-stone-900 dark:text-white font-mono mt-1 flex items-center gap-1">
-                <Star className="w-4 h-4 fill-amber-400 text-amber-400 inline" />
+                <Star className="w-4 h-4 fill-brand-400 text-brand-400 inline" />
                 <span>{myStore.rating.toFixed(1)}</span>
               </p>
               <span className="text-[10px] text-stone-500 dark:text-stone-400 font-medium">({myStore.reviews_count} reviews)</span>
@@ -387,7 +387,7 @@ export const SellerDashboard: React.FC = () => {
             <h3 className="text-sm font-bold text-stone-900 dark:text-white">Store Catalog Listings</h3>
             <button
               onClick={handleOpenAddProduct}
-              className="px-3 py-1.5 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 font-semibold rounded-lg text-xs"
+              className="px-3 py-1.5 bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 font-semibold rounded-lg text-xs"
             >
               + Add Product
             </button>
@@ -414,7 +414,7 @@ export const SellerDashboard: React.FC = () => {
                         <p className="text-[10px] text-stone-400 dark:text-stone-500">{p.category_name} · {p.condition}</p>
                       </div>
                     </td>
-                    <td className="p-3 font-mono font-bold text-stone-900 dark:text-amber-400">
+                    <td className="p-3 font-mono font-bold text-stone-900 dark:text-brand-400">
                       {formatNaira(p.discount_price ?? p.price)}
                     </td>
                     <td className="p-3 font-mono">{p.stock} units</td>
@@ -426,7 +426,7 @@ export const SellerDashboard: React.FC = () => {
                     <td className="p-3 text-right space-x-2">
                       <button
                         onClick={() => handleOpenEditProduct(p)}
-                        className="p-1 hover:text-amber-600 dark:hover:text-amber-400"
+                        className="p-1 hover:text-brand-600 dark:hover:text-brand-400"
                         title="Edit product"
                       >
                         <Edit className="w-4 h-4 inline" />
@@ -464,7 +464,7 @@ export const SellerDashboard: React.FC = () => {
                     <span className="text-stone-400 ml-2">by {ord.customer_name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="capitalize px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">
+                    <span className="capitalize px-2 py-0.5 rounded text-[10px] font-bold bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-400 border border-brand-200 dark:border-brand-800/40">
                       {ord.order_status}
                     </span>
                     <select
@@ -488,7 +488,7 @@ export const SellerDashboard: React.FC = () => {
                     .map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center text-stone-700 dark:text-stone-300">
                         <span>{item.quantity}x {item.product_name}</span>
-                        <span className="font-mono font-bold text-stone-900 dark:text-amber-400">
+                        <span className="font-mono font-bold text-stone-900 dark:text-brand-400">
                           {formatNaira(item.price * item.quantity)}
                         </span>
                       </div>
@@ -535,7 +535,7 @@ export const SellerDashboard: React.FC = () => {
             {/* 1. BRAND IMAGES & PROFILE THUMBNAIL */}
             <div className="space-y-4 p-4 bg-stone-50 dark:bg-[#181e2a] rounded-xl border border-stone-200 dark:border-[#262e3d]">
               <h4 className="font-bold text-stone-900 dark:text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
-                <ImageIcon className="w-4 h-4 text-amber-500" />
+                <ImageIcon className="w-4 h-4 text-brand-500" />
                 <span>Brand Images & Profile Avatars</span>
               </h4>
 
@@ -668,7 +668,7 @@ export const SellerDashboard: React.FC = () => {
                     value={storeName}
                     onChange={(e) => setStoreName(e.target.value)}
                     required
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
 
@@ -681,7 +681,7 @@ export const SellerDashboard: React.FC = () => {
                     value={storeTagline}
                     onChange={(e) => setStoreTagline(e.target.value)}
                     placeholder="Short memorable motto"
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
               </div>
@@ -695,7 +695,7 @@ export const SellerDashboard: React.FC = () => {
                   value={storeDescription}
                   onChange={(e) => setStoreDescription(e.target.value)}
                   placeholder="Share what makes your campus store unique..."
-                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                  className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                 />
               </div>
             </div>
@@ -703,7 +703,7 @@ export const SellerDashboard: React.FC = () => {
             {/* 3. CAMPUS LOCATIONS & SERVED UNIVERSITIES */}
             <div className="space-y-3 pt-2">
               <h4 className="font-bold text-stone-900 dark:text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
-                <Building className="w-4 h-4 text-amber-500" />
+                <Building className="w-4 h-4 text-brand-500" />
                 <span>Campus Location & Universities Served</span>
               </h4>
 
@@ -720,7 +720,7 @@ export const SellerDashboard: React.FC = () => {
                         setCampusesServed((prev) => [...prev, e.target.value]);
                       }
                     }}
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400 cursor-pointer"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400 cursor-pointer"
                   >
                     {EKITI_CAMPUSES.map((c) => (
                       <option key={c.id} value={c.name}>
@@ -740,7 +740,7 @@ export const SellerDashboard: React.FC = () => {
                     onChange={(e) => setPickupPoint(e.target.value)}
                     placeholder="e.g. Student Union Building (SUB) Walkway"
                     required
-                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
               </div>
@@ -754,7 +754,7 @@ export const SellerDashboard: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setCampusesServed(EKITI_CAMPUSES.map((c) => c.name))}
-                    className="text-amber-700 dark:text-amber-400 hover:underline font-semibold text-[11px]"
+                    className="text-brand-700 dark:text-brand-400 hover:underline font-semibold text-[11px]"
                   >
                     Select All (5)
                   </button>
@@ -767,7 +767,7 @@ export const SellerDashboard: React.FC = () => {
                         key={c.id}
                         className={`flex items-start gap-2 p-2 rounded-lg border text-xs cursor-pointer transition-colors ${
                           isChecked
-                            ? 'bg-white dark:bg-[#202838] border-amber-400 dark:border-amber-500 font-medium text-stone-900 dark:text-white'
+                            ? 'bg-white dark:bg-[#202838] border-brand-400 dark:border-brand-500 font-medium text-stone-900 dark:text-white'
                             : 'bg-stone-50/50 dark:bg-[#131720] border-stone-200 dark:border-[#262e3d] text-stone-600 dark:text-stone-400'
                         }`}
                       >
@@ -775,7 +775,7 @@ export const SellerDashboard: React.FC = () => {
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => handleToggleServedCampus(c.name)}
-                          className="mt-0.5 accent-amber-500"
+                          className="mt-0.5 accent-brand-500"
                         />
                         <span className="truncate">{c.name}</span>
                       </label>
@@ -816,7 +816,7 @@ export const SellerDashboard: React.FC = () => {
                     value={whatsAppUrl}
                     onChange={(e) => setWhatsAppUrl(e.target.value)}
                     placeholder="https://wa.me/2348012345678 or 08012345678"
-                    className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
                 <p className="text-[10px] text-stone-500 dark:text-stone-400 mt-1">
@@ -836,7 +836,7 @@ export const SellerDashboard: React.FC = () => {
                     value={instagramUrl}
                     onChange={(e) => setInstagramUrl(e.target.value)}
                     placeholder="https://instagram.com/your_brand or @your_brand"
-                    className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
               </div>
@@ -846,7 +846,7 @@ export const SellerDashboard: React.FC = () => {
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-200 dark:border-[#222936]">
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors cursor-pointer shadow-sm"
+                className="px-6 py-2.5 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors cursor-pointer shadow-sm"
               >
                 Save Brand & Profile Changes
               </button>
@@ -872,7 +872,7 @@ export const SellerDashboard: React.FC = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. 65W GaN Fast Charger"
                   required
-                  className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                  className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                 />
               </div>
 
@@ -885,7 +885,7 @@ export const SellerDashboard: React.FC = () => {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     required
-                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg font-mono focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg font-mono focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
                 <div>
@@ -895,7 +895,7 @@ export const SellerDashboard: React.FC = () => {
                     step="100"
                     value={discountPrice}
                     onChange={(e) => setDiscountPrice(e.target.value)}
-                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg font-mono focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400"
+                    className="w-full p-2 bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 rounded-lg font-mono focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400"
                   />
                 </div>
               </div>
@@ -1006,7 +1006,7 @@ export const SellerDashboard: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-stone-900 dark:bg-amber-400 hover:bg-stone-800 dark:hover:bg-amber-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors cursor-pointer"
+                  className="px-5 py-2 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors cursor-pointer"
                 >
                   {editingProductId ? 'Save Changes' : 'Create Listing'}
                 </button>

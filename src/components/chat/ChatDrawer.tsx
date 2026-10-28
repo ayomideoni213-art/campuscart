@@ -88,7 +88,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
           <div className="w-full md:w-64 border-r border-stone-200 dark:border-[#262e3d] flex flex-col bg-stone-50 dark:bg-[#11151c]">
             <div className="p-4 border-b border-stone-200 dark:border-[#222936] flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-bold text-sm text-stone-900 dark:text-white">
-                <MessageSquare className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <MessageSquare className="w-4 h-4 text-brand-600 dark:text-brand-400" />
                 <span>Student Messages</span>
               </div>
               <button
@@ -131,7 +131,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
                             {otherPartyName}
                           </p>
                           {isUnread && (
-                            <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                            <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0" />
                           )}
                         </div>
                         <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate mt-0.5">
@@ -180,12 +180,12 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
 
             {/* Product Reference Banner */}
             {activeConversation?.product_name && (
-              <div className="p-2.5 bg-amber-50/70 dark:bg-amber-950/30 border-b border-amber-100 dark:border-amber-800/40 flex items-center gap-2.5 text-xs text-amber-950 dark:text-amber-200">
+              <div className="p-2.5 bg-brand-50/70 dark:bg-brand-950/30 border-b border-brand-100 dark:border-brand-800/40 flex items-center gap-2.5 text-xs text-brand-950 dark:text-brand-200">
                 {activeConversation.product_image && (
                   <img
                     src={activeConversation.product_image}
                     alt={activeConversation.product_name}
-                    className="w-8 h-8 rounded object-cover border border-amber-200 dark:border-amber-700/50"
+                    className="w-8 h-8 rounded object-cover border border-brand-200 dark:border-brand-700/50"
                   />
                 )}
                 <div className="truncate flex-1">
@@ -219,7 +219,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
                       <div
                         className={`max-w-[75%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed ${
                           isMe
-                            ? 'bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 font-medium rounded-br-xs'
+                            ? 'bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 font-medium rounded-br-xs'
                             : 'bg-white dark:bg-[#1a202c] border border-stone-200 dark:border-[#262e3d] text-stone-800 dark:text-stone-100 rounded-bl-xs shadow-2xs'
                         }`}
                       >
@@ -255,12 +255,12 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
                   placeholder="Type a message to student..."
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  className="flex-1 px-3 py-2 text-xs bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-xl focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-amber-400 focus:bg-white dark:focus:bg-[#1f2735]"
+                  className="flex-1 px-3 py-2 text-xs bg-stone-50 dark:bg-[#181e2a] border border-stone-300 dark:border-[#2b3545] text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 rounded-xl focus:outline-none focus:ring-1 focus:ring-brand-600 dark:focus:ring-brand-400 focus:bg-white dark:focus:bg-[#1f2735]"
                 />
                 <button
                   type="submit"
                   disabled={!inputText.trim()}
-                  className="px-4 py-2 bg-stone-900 dark:bg-amber-400 text-white dark:text-stone-950 rounded-xl text-xs font-semibold hover:bg-stone-800 dark:hover:bg-amber-300 disabled:opacity-40 transition-colors flex items-center gap-1"
+                  className="px-4 py-2 bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 rounded-xl text-xs font-semibold hover:bg-brand-700 dark:hover:bg-brand-300 disabled:opacity-40 transition-colors flex items-center gap-1"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Send</span>

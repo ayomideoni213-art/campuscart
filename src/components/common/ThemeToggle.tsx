@@ -48,13 +48,13 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ variant = 'icon', clas
               role="radio"
               aria-checked={isSelected}
               onClick={() => setTheme(opt.mode)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-400 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-brand-400 ${
                 isSelected
                   ? 'bg-white dark:bg-[#262e3d] text-stone-900 dark:text-stone-100 shadow-xs font-semibold'
                   : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
-              <span className={isSelected ? 'text-amber-500 dark:text-amber-400' : ''}>
+              <span className={isSelected ? 'text-brand-500 dark:text-brand-400' : ''}>
                 {opt.icon}
               </span>
               <span>{opt.label}</span>
@@ -83,11 +83,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ variant = 'icon', clas
             onClick={() => setTheme('light')}
             className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium border transition-all ${
               theme === 'light'
-                ? 'bg-amber-400/10 border-amber-500 text-stone-900 dark:text-stone-100 font-semibold'
+                ? 'bg-brand-400/10 border-brand-500 text-stone-900 dark:text-stone-100 font-semibold'
                 : 'bg-stone-50 dark:bg-[#161c26] border-stone-200 dark:border-[#262e3d] text-stone-600 dark:text-stone-400'
             }`}
           >
-            <Sun className="w-3.5 h-3.5 text-amber-500" />
+            <Sun className="w-3.5 h-3.5 text-brand-500" />
             <span>Light</span>
           </button>
           <button
@@ -95,11 +95,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ variant = 'icon', clas
             onClick={() => setTheme('dark')}
             className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium border transition-all ${
               theme === 'dark'
-                ? 'bg-amber-400/10 border-amber-500 text-stone-900 dark:text-stone-100 font-semibold'
+                ? 'bg-brand-400/10 border-brand-500 text-stone-900 dark:text-stone-100 font-semibold'
                 : 'bg-stone-50 dark:bg-[#161c26] border-stone-200 dark:border-[#262e3d] text-stone-600 dark:text-stone-400'
             }`}
           >
-            <Moon className="w-3.5 h-3.5 text-amber-400" />
+            <Moon className="w-3.5 h-3.5 text-brand-400" />
             <span>Dark</span>
           </button>
           <button
@@ -107,7 +107,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ variant = 'icon', clas
             onClick={() => setTheme('system')}
             className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium border transition-all ${
               theme === 'system'
-                ? 'bg-amber-400/10 border-amber-500 text-stone-900 dark:text-stone-100 font-semibold'
+                ? 'bg-brand-400/10 border-brand-500 text-stone-900 dark:text-stone-100 font-semibold'
                 : 'bg-stone-50 dark:bg-[#161c26] border-stone-200 dark:border-[#262e3d] text-stone-600 dark:text-stone-400'
             }`}
           >
@@ -129,7 +129,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ variant = 'icon', clas
           e.preventDefault();
           setDropdownOpen((prev) => !prev);
         }}
-        className="p-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400/60"
+        className="p-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors focus:outline-none focus:ring-2 focus:ring-brand-400/60"
         title={
           isDark
             ? 'Dark Mode active. Click to switch to Light (Right-click for options)'
@@ -138,9 +138,9 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ variant = 'icon', clas
         aria-label={`Current theme: ${theme} mode. Toggle theme`}
       >
         {isDark ? (
-          <Moon className="w-5 h-5 text-amber-300 transition-transform hover:-rotate-12" />
+          <Moon className="w-5 h-5 text-brand-300 transition-transform hover:-rotate-12" />
         ) : (
-          <Sun className="w-5 h-5 text-amber-500 transition-transform hover:rotate-45" />
+          <Sun className="w-5 h-5 text-brand-500 transition-transform hover:rotate-45" />
         )}
       </button>
 
@@ -157,7 +157,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ variant = 'icon', clas
             }}
             className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-stone-50 dark:hover:bg-[#1f2735] transition-colors ${
               theme === 'light'
-                ? 'font-bold text-amber-600 dark:text-amber-400'
+                ? 'font-bold text-brand-600 dark:text-brand-400'
                 : 'text-stone-700 dark:text-stone-300'
             }`}
           >
@@ -175,7 +175,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ variant = 'icon', clas
             }}
             className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-stone-50 dark:hover:bg-[#1f2735] transition-colors ${
               theme === 'dark'
-                ? 'font-bold text-amber-600 dark:text-amber-400'
+                ? 'font-bold text-brand-600 dark:text-brand-400'
                 : 'text-stone-700 dark:text-stone-300'
             }`}
           >
@@ -193,7 +193,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ variant = 'icon', clas
             }}
             className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-stone-50 dark:hover:bg-[#1f2735] transition-colors ${
               theme === 'system'
-                ? 'font-bold text-amber-600 dark:text-amber-400'
+                ? 'font-bold text-brand-600 dark:text-brand-400'
                 : 'text-stone-700 dark:text-stone-300'
             }`}
           >

@@ -31,6 +31,7 @@ import { EditorDashboard } from './components/dashboards/EditorDashboard';
 import { AuthorDashboard } from './components/dashboards/AuthorDashboard';
 import { AdminDashboard } from './components/dashboards/AdminDashboard';
 
+import heroCampusImage from './assets/images/hero_campus_students.jpg';
 import { Product, BlogPost } from './types';
 import {
   Sparkles,
@@ -52,6 +53,7 @@ function CampusMartApp() {
   const { products, stores, categories, startConversation } = useMarketplace();
 
   // Navigation State
+  const [heroImageFailed, setHeroImageFailed] = useState(false);
   const [currentView, setCurrentView] = useState<string>('home');
   const [viewParam, setViewParam] = useState<string | undefined>(undefined);
 
@@ -227,14 +229,24 @@ function CampusMartApp() {
           <div className="space-y-16 pb-12">
             {/* Hero Section */}
             <section className="relative overflow-hidden bg-stone-900 text-white">
-              <div className="absolute inset-0 z-0">
-                <img
-                  src="/src/assets/images/hero_campus_marketplace_1791134300857.jpg"
-                  alt="Vibrant Campus Quad"
-                  className="w-full h-full object-cover opacity-25 filter brightness-90"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/60 to-transparent" />
+              {/* Decorative campus backdrop (hidden from assistive tech) */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 z-0 bg-gradient-to-br from-brand-950 via-stone-900 to-stone-950"
+              >
+                {!heroImageFailed && (
+                  <img
+                    src={heroCampusImage}
+                    alt=""
+                    role="presentation"
+                    draggable={false}
+                    onError={() => setHeroImageFailed(true)}
+                    className="absolute inset-y-0 right-0 h-full w-full md:w-[75%] lg:w-[65%] object-cover object-[70%_center] opacity-45 sm:opacity-60 lg:opacity-75 select-none pointer-events-none [mask-image:linear-gradient(to_right,transparent_0%,transparent_30%,black_58%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,transparent_30%,black_58%)]"
+                  />
+                )}
+                {/* Blend into the dark background and protect text contrast */}
+                <div className="absolute inset-0 bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
               </div>
 
               <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 space-y-6">

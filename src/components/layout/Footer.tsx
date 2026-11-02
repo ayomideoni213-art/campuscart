@@ -60,7 +60,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             Your Campus. Your Marketplace. Buy from peers, sell what you build, and grow student businesses.
           </p>
           <div className="mt-4 text-[11px] text-stone-500">
-            Current Term: 2025/2026 Academic Session
+            Serving students across Ekiti State universities
           </div>
         </div>
 
@@ -137,7 +137,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
       {/* Copyright */}
       <div className="border-t border-stone-800 dark:border-[#1a202c] py-6 text-center text-stone-500 text-[11px]">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>&copy; 2026 CampusMart. Built for undergraduate student entrepreneurs.</span>
+          <span>&copy; {new Date().getFullYear()} CampusMart. Built for undergraduate student entrepreneurs.</span>
           <span className="flex items-center gap-1">
             Student-founded with <Heart className="w-3 h-3 text-rose-500 inline fill-rose-500" /> on campus
           </span>

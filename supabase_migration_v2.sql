@@ -9,9 +9,9 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS signup_intent text DEFAULT 'shop' CHECK (signup_intent IN ('shop', 'sell')),
   ADD COLUMN IF NOT EXISTS campuses_served text[] DEFAULT '{}';
 
--- Update default campus on profiles to Ekiti State University
+-- Update default campus on profiles to Ekiti State University (EKSU)
 ALTER TABLE public.profiles 
-  ALTER COLUMN campus_name SET DEFAULT 'Ekiti State University';
+  ALTER COLUMN campus_name SET DEFAULT 'Ekiti State University (EKSU)';
 
 -- 2. STORES ENHANCEMENT
 -- Add WhatsApp, Instagram, campuses served, and profile thumbnail
@@ -23,7 +23,7 @@ ALTER TABLE public.stores
 
 -- Update default campus location on stores
 ALTER TABLE public.stores
-  ALTER COLUMN campus_location SET DEFAULT 'Ekiti State University';
+  ALTER COLUMN campus_location SET DEFAULT 'Ekiti State University (EKSU)';
 
 -- 3. ROW LEVEL SECURITY (RLS) POLICIES FOR STORES
 -- Ensure sellers can update their own store profiles

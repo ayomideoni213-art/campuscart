@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { DEMO_USERS } from '../../services/storage';
 import { EKITI_CAMPUSES, DEFAULT_CAMPUS } from '../../data/campuses';
@@ -36,7 +36,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   defaultRole = 'customer',
   initialMode = 'login'
 }) => {
-  const { loginWithEmail, registerUser, loginAsDemoUser } = useAuth();
+  const { loginWithEmail, registerUser, loginAsDemoUser, resetPassword } = useAuth();
 
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
   // Registration step: 'intent' (the two cards) or 'form' (the specific form)
@@ -59,7 +59,69 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [notice, setNotice] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
+  const firstIntentRef = useRef<HTMLButtonElement>(null);
+  const formStartRef = useRef<HTMLInputElement>(null);
+
+  // Reset to a clean state each time the dialog opens, and restore focus when it closes.
+  useEffect(() => {
+    if (!isOpen) return;
+    previouslyFocused.current = document.activeElement as HTMLElement | null;
+    setMode(initialMode);
+    setRegisterStep('intent');
+    setError(null);
+    setNotice(null);
+    return () => previouslyFocused.current?.focus?.();
+  }, [isOpen, initialMode]);
+
+  // Escape closes; Tab stays inside the dialog.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
+  // Move focus to the start of whichever step is showing.
+  useEffect(() => {
+    if (!isOpen) return;
+    const id = window.setTimeout(() => {
+      if (mode === 'register' && registerStep === 'intent') firstIntentRef.current?.focus();
+      else formStartRef.current?.focus();
+    }, 30);
+    return () => window.clearTimeout(id);
+  }, [isOpen, mode, registerStep]);
+
   if (!isOpen) return null;
+
+  const handleForgotPassword = async () => {
+    setError(null);
+    setNotice(null);
+    const res = await resetPassword(email);
+    if (res.success) setNotice(res.message || 'Password reset email sent.');
+    else setError(res.error || 'Could not send the reset email.');
+  };
 
   const handleSelectIntent = (selectedIntent: 'shop' | 'sell') => {
     setIntent(selectedIntent);
@@ -173,30 +235,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-6 transition-all duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" className="relative w-full max-w-lg bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-6 transition-all duration-200">
         
         {/* Header Bar */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-[#222936]">
           <div className="flex items-center gap-2">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-stone-900 dark:text-white">
+                <h3 id="auth-modal-title" className="text-base font-bold text-stone-900 dark:text-white">
                   {mode === 'login'
-                    ? 'CampusMart Student Sign In'
+                    ? 'Sign in to CampusMart'
                     : registerStep === 'intent'
                     ? 'How do you want to use CampusMart?'
                     : intent === 'shop'
-                    ? 'Student Shopper Registration'
-                    : 'Campus Entrepreneur Registration'}
+                    ? 'Create your shopper account'
+                    : 'Create your seller account'}
                 </h3>
               </div>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                 {mode === 'login'
                   ? 'Sign in to access your student marketplace'
                   : registerStep === 'intent'
-                  ? 'Select how you want to experience CampusMart'
-                  : 'Ekiti State Universities Network'}
+                  ? 'Step 1 of 2 · Choose how you want to use CampusMart'
+                  : intent === 'shop' ? 'Step 2 of 2 · Your shopper details' : 'Step 2 of 2 · Your store owner details'}
               </p>
             </div>
           </div>
@@ -228,7 +290,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               onClick={onClose}
               className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors"
-              aria-label="Close modal"
+              type="button"
+              aria-label="Close dialog"
             >
               <X className="w-5 h-5" />
             </button>
@@ -269,9 +332,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {/* Main Mode Toggle: Sign In vs Create Account */}
           <div className="flex bg-stone-100 dark:bg-[#11151c] p-1 rounded-xl mb-5 text-xs font-semibold">
             <button
+              type="button"
+              aria-pressed={mode === 'login'}
               onClick={() => {
                 setMode('login');
                 setError(null);
+                setNotice(null);
               }}
               className={`flex-1 py-2 rounded-lg transition-colors cursor-pointer ${
                 mode === 'login'
@@ -282,9 +348,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               Sign In
             </button>
             <button
+              type="button"
+              aria-pressed={mode === 'register'}
               onClick={() => {
                 setMode('register');
+                setRegisterStep('intent');
                 setError(null);
+                setNotice(null);
               }}
               className={`flex-1 py-2 rounded-lg transition-colors cursor-pointer ${
                 mode === 'register'
@@ -297,14 +367,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs rounded-xl flex items-start gap-2">
+            <div role="alert" className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs rounded-xl flex items-start gap-2">
               <span className="font-bold">Error:</span>
               <span>{error}</span>
             </div>
           )}
 
           {notice && (
-            <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs rounded-xl flex items-start gap-2">
+            <div role="status" className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs rounded-xl flex items-start gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <span>{notice}</span>
             </div>
@@ -317,10 +387,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="text-center mb-4">
                 <h4 className="text-base font-extrabold text-stone-900 dark:text-white">
-                  Join CampusMart in Ekiti State
+                  How will you use CampusMart?
                 </h4>
                 <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  Choose how you want to get started. You can always start selling later from your dashboard!
+                  Pick one to get started. Shoppers can open a store later from their account.
                 </p>
               </div>
 
@@ -329,6 +399,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 {/* Card 1: I want to shop (student) */}
                 <button
                   type="button"
+                  ref={firstIntentRef}
+                  aria-pressed={intent === 'shop'}
                   onClick={() => handleSelectIntent('shop')}
                   className="group relative flex flex-col items-start p-5 bg-stone-50 hover:bg-emerald-50/50 dark:bg-[#181e28] dark:hover:bg-[#1a2624] border-2 border-stone-200 hover:border-emerald-500 dark:border-[#262e3d] dark:hover:border-emerald-500 rounded-2xl text-left transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
@@ -339,10 +411,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     I want to shop (student)
                   </h4>
                   <p className="text-xs text-stone-600 dark:text-stone-300 mt-1.5 leading-relaxed">
-                    Discover products, shop from student brands, and connect with sellers.
+                    Browse products from student brands on your campus and message sellers directly.
                   </p>
                   <div className="mt-4 pt-3 border-t border-stone-200 dark:border-[#262e3d] w-full flex items-center justify-between text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
-                    <span>Continue to Shopper Setup</span>
+                    <span>Continue as a shopper</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </button>
@@ -350,6 +422,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 {/* Card 2: I want to sell (entrepreneur) */}
                 <button
                   type="button"
+                  aria-pressed={intent === 'sell'}
                   onClick={() => handleSelectIntent('sell')}
                   className="group relative flex flex-col items-start p-5 bg-stone-50 hover:bg-brand-50/50 dark:bg-[#181e28] dark:hover:bg-[#282216] border-2 border-stone-200 hover:border-brand-500 dark:border-[#262e3d] dark:hover:border-brand-500 rounded-2xl text-left transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
@@ -360,10 +433,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     I want to sell (entrepreneur)
                   </h4>
                   <p className="text-xs text-stone-600 dark:text-stone-300 mt-1.5 leading-relaxed">
-                    Open your store, showcase your products, and build your brand.
+                    Open your own store, list products and reach buyers across Ekiti campuses.
                   </p>
                   <div className="mt-4 pt-3 border-t border-stone-200 dark:border-[#262e3d] w-full flex items-center justify-between text-[11px] font-bold text-brand-700 dark:text-brand-400">
-                    <span>Continue to Store Setup</span>
+                    <span>Continue as a seller</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </button>
@@ -404,11 +477,34 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     className="flex items-center gap-1.5 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white font-semibold transition-colors cursor-pointer"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Change Selection</span>
+                    <span>Change my choice</span>
                   </button>
-                  <span className="text-[11px] text-stone-400 dark:text-stone-500 font-medium">
-                    {intent === 'shop' ? 'Shopper Account' : 'Entrepreneur Account'}
-                  </span>
+                </div>
+              )}
+
+              {mode === 'register' && (
+                <div
+                  className={`flex items-center gap-3 p-3 rounded-xl border ${
+                    intent === 'shop'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/40'
+                      : 'bg-brand-50 dark:bg-brand-950/30 border-brand-200 dark:border-brand-800/40'
+                  }`}
+                >
+                  {intent === 'shop' ? (
+                    <ShoppingBag className="w-5 h-5 text-emerald-700 dark:text-emerald-300 shrink-0" />
+                  ) : (
+                    <Store className="w-5 h-5 text-brand-700 dark:text-brand-300 shrink-0" />
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-bold text-stone-900 dark:text-white">
+                      {intent === 'shop' ? 'I want to shop (student)' : 'I want to sell (entrepreneur)'}
+                    </p>
+                    <p className="text-[11px] text-stone-600 dark:text-stone-300">
+                      {intent === 'shop'
+                        ? 'Tell us your campus so we can show you nearby finds.'
+                        : 'Tell us your campus and every campus you sell to.'}
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -419,6 +515,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Full Name</label>
                     <input
                       type="text"
+                      ref={formStartRef}
+                      aria-label="Full name"
+                      autoComplete="name"
                       placeholder="e.g. Babatunde Adeleke"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
@@ -434,6 +533,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       </label>
                       <input
                         type="text"
+                        aria-label="Student ID or matric number"
+                        autoComplete="off"
                         placeholder="e.g. EKSU/2024/..."
                         value={studentId}
                         onChange={(e) => setStudentId(e.target.value)}
@@ -447,6 +548,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         Campus
                       </label>
                       <select
+                        aria-label="Your campus"
                         value={campusName}
                         onChange={(e) => {
                           setCampusName(e.target.value);
@@ -475,6 +577,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       <Phone className="w-4 h-4 text-stone-400 dark:text-stone-500 absolute left-3 top-3 pointer-events-none" />
                       <input
                         type="tel"
+                        aria-label="Nigerian phone number"
+                        autoComplete="tel"
+                        inputMode="tel"
                         placeholder="e.g. 08012345678 or +234..."
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
@@ -488,9 +593,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   {intent === 'sell' && (
                     <div className="p-3.5 bg-brand-50/50 dark:bg-[#181e28] rounded-xl border border-brand-200/80 dark:border-brand-800/40 space-y-2">
                       <div className="flex items-center justify-between">
-                        <label className="block font-bold text-stone-900 dark:text-white text-xs">
+                        <span id="served-campuses-label" className="block font-bold text-stone-900 dark:text-white text-xs">
                           Campuses I sell to
-                        </label>
+                        </span>
                         <div className="flex items-center gap-2 text-[11px]">
                           <button
                             type="button"
@@ -505,7 +610,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         Choose the Ekiti universities where you can deliver or meet buyers.
                       </p>
 
-                      <div className="space-y-1.5 pt-1">
+                      <div role="group" aria-labelledby="served-campuses-label" className="space-y-1.5 pt-1">
                         {EKITI_CAMPUSES.map((c) => {
                           const isSelected = campusesServed.includes(c.name);
                           return (
@@ -551,6 +656,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <Mail className="w-4 h-4 text-stone-400 dark:text-stone-500 absolute left-3 top-3 pointer-events-none" />
                   <input
                     type="email"
+                    ref={mode === 'login' ? formStartRef : undefined}
+                    aria-label="Email address"
+                    autoComplete="email"
                     placeholder="student@university.edu.ng or your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -566,7 +674,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   {mode === 'login' && (
                     <button
                       type="button"
-                      onClick={() => alert('Password reset link sent: Please check your registered email inbox.')}
+                      onClick={handleForgotPassword}
                       className="text-[11px] text-brand-700 dark:text-brand-400 hover:underline cursor-pointer"
                     >
                       Forgot password?
@@ -577,6 +685,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <Lock className="w-4 h-4 text-stone-400 dark:text-stone-500 absolute left-3 top-3 pointer-events-none" />
                   <input
                     type="password"
+                    aria-label="Password"
+                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -595,6 +705,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <Lock className="w-4 h-4 text-stone-400 dark:text-stone-500 absolute left-3 top-3 pointer-events-none" />
                     <input
                       type="password"
+                      aria-label="Confirm password"
+                      autoComplete="new-password"
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -616,8 +728,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     : mode === 'login'
                     ? 'Sign In to CampusMart'
                     : intent === 'shop'
-                    ? 'Create Student Shopper Account'
-                    : 'Create Entrepreneur Account'}
+                    ? 'Create my shopper account'
+                    : 'Create my seller account'}
                 </span>
                 <ArrowRight className="w-4 h-4" />
               </button>

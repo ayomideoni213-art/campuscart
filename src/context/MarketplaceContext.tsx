@@ -16,8 +16,39 @@ import {
   UserRole
 } from '../types';
 import { StorageService } from '../services/storage';
-import { getPublishedProducts } from '../services/supabasecatalog';
+import { getPublishedProducts, getActiveStores, insertStore, updateStoreRow } from '../services/supabasecatalog';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from './AuthContext';
+
+/** Result of saving a store: always saved locally; `synced` is true once Supabase has it too. */
+export interface StoreSaveResult {
+  success: boolean;
+  synced: boolean;
+  error?: string;
+}
+
+/** Returns the Supabase user id when a real (non-demo) session exists. */
+async function getCloudUserId(): Promise<string | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.user.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function newStoreId(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `store-${Date.now()}`;
+}
+
+function ensureUniqueSlug(base: string, existing: Store[], ownId?: string): string {
+  const clean = base.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'store';
+  let slug = clean;
+  let n = 2;
+  while (existing.some((s) => s.slug === slug && s.id !== ownId)) slug = `${clean}-${n++}`;
+  return slug;
+}
 
 interface MarketplaceContextType {
   products: Product[];
@@ -37,7 +68,7 @@ interface MarketplaceContextType {
   moderateProduct: (id: string, status: Product['status']) => void;
 
   // Store actions
-  updateStore: (id: string, data: Partial<Store>) => void;
+  updateStore: (id: string, data: Partial<Store>) => Promise<StoreSaveResult>;
   createStore: (storeData: Omit<Store, 'id' | 'created_at' | 'rating' | 'reviews_count' | 'total_sales'>) => Store;
 
   // Order actions
@@ -95,12 +126,34 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   // Save to persistent storage
   useEffect(() => {
-  getPublishedProducts()
-    .then((data) => setProducts(data))
-    .catch((error) => {
-      console.error('Could not load products from Supabase:', error);
-    });
-}, []);
+    getPublishedProducts()
+      .then((data) => setProducts(data))
+      .catch((error) => {
+        console.error('Could not load products from Supabase:', error);
+      });
+  }, []);
+
+  // Load shared stores from Supabase. In production the database is the source of truth
+  // (so fake local demo stores never show to real users); in dev they are merged with the demo data.
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    let cancelled = false;
+    getActiveStores()
+      .then((remote) => {
+        if (cancelled) return;
+        setStores((prev) => {
+          if (!import.meta.env.DEV) return remote;
+          const remoteIds = new Set(remote.map((s) => s.id));
+          return [...remote, ...prev.filter((s) => !remoteIds.has(s.id))];
+        });
+      })
+      .catch((error) => {
+        console.error('Could not load stores from Supabase:', error);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser?.id]);
 
   useEffect(() => {
     StorageService.setProducts(products);
@@ -188,22 +241,71 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   // Store Methods
-  const updateStore = (id: string, data: Partial<Store>) => {
-    setStores((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, ...data } : s))
-    );
+  const updateStore = async (id: string, data: Partial<Store>): Promise<StoreSaveResult> => {
+    const existing = stores.find((s) => s.id === id);
+    if (!existing) return { success: false, synced: false, error: 'Store not found.' };
+
+    // Authorization: a signed-in user may only edit their own store (admins aside).
+    if (currentUser && existing.seller_id !== currentUser.id && currentUser.role !== 'admin') {
+      return { success: false, synced: false, error: 'You can only edit your own store.' };
+    }
+
+    const patch: Partial<Store> = { ...data };
+    if (patch.name !== undefined && patch.name !== existing.name) {
+      patch.slug = ensureUniqueSlug(patch.name, stores, id);
+    }
+    // Rating, sales and verification are server-controlled and never edited from the client.
+    delete patch.rating;
+    delete patch.reviews_count;
+    delete patch.total_sales;
+    delete patch.verified_student;
+    delete patch.seller_id;
+
+    setStores((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
+
+    const cloudUser = await getCloudUserId();
+    if (!cloudUser || cloudUser !== existing.seller_id) return { success: true, synced: false };
+
+    try {
+      const saved = await updateStoreRow(id, patch);
+      setStores((prev) => prev.map((s) => (s.id === id ? { ...s, ...saved } : s)));
+      return { success: true, synced: true };
+    } catch (error) {
+      console.error('Could not save the store to Supabase:', error);
+      return {
+        success: false,
+        synced: false,
+        error:
+          error instanceof Error
+            ? `Saved on this device only. ${error.message}`
+            : 'Saved on this device only. Please try again.'
+      };
+    }
   };
 
   const createStore = (storeData: Omit<Store, 'id' | 'created_at' | 'rating' | 'reviews_count' | 'total_sales'>): Store => {
     const newStore: Store = {
       ...storeData,
-      id: `store-${Date.now()}`,
+      slug: ensureUniqueSlug(storeData.slug || storeData.name, stores),
+      id: newStoreId(),
       rating: 5.0,
       reviews_count: 0,
       total_sales: 0,
       created_at: new Date().toISOString()
     };
     setStores((prev) => [newStore, ...prev]);
+
+    void (async () => {
+      const cloudUser = await getCloudUserId();
+      if (!cloudUser || cloudUser !== newStore.seller_id) return;
+      try {
+        const saved = await insertStore(newStore);
+        setStores((prev) => prev.map((s) => (s.id === newStore.id ? { ...s, ...saved } : s)));
+      } catch (error) {
+        console.error('Could not save the new store to Supabase:', error);
+      }
+    })();
+
     return newStore;
   };
 

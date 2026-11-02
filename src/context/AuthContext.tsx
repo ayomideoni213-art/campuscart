@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserProfile, UserRole } from '../types';
 import { StorageService, DEMO_USERS } from '../services/storage';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { sanitizeCampus, EKITI_CAMPUSES } from '../data/campuses';
 
 interface AuthContextType {
   currentUser: UserProfile | null;
@@ -23,11 +24,31 @@ interface AuthContextType {
     campuses_served?: string[];
     signup_intent?: 'shop' | 'sell';
   }) => Promise<{ success: boolean; error?: string; message?: string }>;
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: string; message?: string }>;
   logout: () => void;
   updateProfile: (updatedData: Partial<UserProfile>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const DEFAULT_AVATAR_URL =
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
+
+/** Fills gaps in database rows (nullable columns, legacy campus names) so the UI can rely on them. */
+function normalizeProfile(profile: UserProfile): UserProfile {
+  const campus = sanitizeCampus(profile.campus_name);
+  const validNames = new Set(EKITI_CAMPUSES.map((c) => c.name));
+  const served = (profile.campuses_served ?? []).filter((c) => validNames.has(c));
+  return {
+    ...profile,
+    avatar_url: profile.avatar_url || DEFAULT_AVATAR_URL,
+    campus_name: campus,
+    student_id: profile.student_id ?? '',
+    phone: profile.phone ?? '',
+    signup_intent: profile.signup_intent ?? (profile.role === 'seller' ? 'sell' : 'shop'),
+    campuses_served: served.length > 0 ? served : [campus],
+  };
+}
 
 async function applyAdminAuthorization(profile: UserProfile): Promise<UserProfile> {
   const { data: isAdmin, error } = await supabase.rpc('is_admin');
@@ -63,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const profile = data as UserProfile | null;
-      const authorizedProfile = profile ? await applyAdminAuthorization(profile) : null;
+      const authorizedProfile = profile ? normalizeProfile(await applyAdminAuthorization(profile)) : null;
       if (profile?.is_suspended) {
         setCurrentUser(null);
         void supabase.auth.signOut();
@@ -110,7 +131,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const switchUserRole = (role: UserRole) => {
-    if (!import.meta.env.DEV && (role === 'admin' || role === 'editor' || role === 'author')) return;
+    // Role switching is a development-only testing aid; real accounts never swap identities.
+    if (!import.meta.env.DEV) return;
     const matchingDemo = DEMO_USERS.find((u) => u.role === role);
     if (matchingDemo) {
       setCurrentUser(matchingDemo);
@@ -148,7 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
 
-    const userProfile = await applyAdminAuthorization(profile as UserProfile);
+    const userProfile = normalizeProfile(await applyAdminAuthorization(profile as UserProfile));
     if (userProfile.is_suspended) {
       await supabase.auth.signOut();
       return { success: false, error: 'This student account has been suspended by campus moderators.' };
@@ -192,13 +214,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (error) return { success: false, error: error.message };
 
-    // Also update local storage demo users if offline/local dev
-    const newLocalUser: UserProfile = {
+    const newLocalUser: UserProfile = normalizeProfile({
       id: result.user?.id || `user-${Date.now()}`,
       email: data.email.trim(),
       full_name: data.full_name.trim(),
       role,
-      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+      avatar_url: DEFAULT_AVATAR_URL,
       campus_name: data.campus_name || selectedCampus,
       student_id: data.student_id.trim(),
       phone: data.phone?.trim() || '',
@@ -206,21 +227,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       created_at: new Date().toISOString(),
       signup_intent: intent,
       campuses_served: data.campuses_served
-    };
-    const currentUsers = StorageService.getUsers();
-    StorageService.setUsers([newLocalUser, ...currentUsers]);
+    });
 
-    if (!result.session) {
-      // In development or if session is already established
-      setCurrentUser(newLocalUser);
+    // Keep the local demo list in sync (used by dashboards that read local users).
+    const currentUsers = StorageService.getUsers();
+    StorageService.setUsers([newLocalUser, ...currentUsers.filter((u) => u.id !== newLocalUser.id)]);
+
+    // With email confirmation enabled Supabase returns a user but no session:
+    // the visitor is NOT signed in yet and must confirm their email first.
+    if (isSupabaseConfigured && result.user && !result.session) {
       return {
         success: true,
-        message: 'Account created successfully! Welcome to CampusMart.',
+        message: 'Account created! Check your email to confirm your address, then sign in.',
       };
     }
 
     setCurrentUser(newLocalUser);
     return { success: true };
+  };
+
+  const resetPassword = async (
+    email: string
+  ): Promise<{ success: boolean; error?: string; message?: string }> => {
+    if (!email.trim() || !email.includes('@')) {
+      return { success: false, error: 'Enter your account email above first, then choose "Forgot password?".' };
+    }
+    if (!isSupabaseConfigured) {
+      return { success: false, error: 'Password reset is unavailable in offline demo mode.' };
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: window.location.origin,
+    });
+    if (error) return { success: false, error: error.message };
+    return {
+      success: true,
+      message: 'If an account exists for that email, a password reset link is on its way.',
+    };
   };
 
   const logout = () => {
@@ -235,6 +277,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const allUsers = StorageService.getUsers().map((u) => (u.id === currentUser.id ? updated : u));
     StorageService.setUsers(allUsers);
+
+    // Persist owner-editable fields for real Supabase accounts (RLS limits this to the user's own row;
+    // the role guard only allows the customer -> seller upgrade).
+    if (!isSupabaseConfigured) return;
+    void (async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData.session?.user.id !== currentUser.id) return;
+
+      const row: Record<string, unknown> = {};
+      for (const key of ['full_name', 'bio', 'avatar_url', 'campus_name', 'campuses_served', 'phone', 'signup_intent'] as const) {
+        if (key in updatedData) row[key] = updatedData[key];
+      }
+      if (currentUser.role === 'customer' && updatedData.role === 'seller') row.role = 'seller';
+      if (Object.keys(row).length === 0) return;
+
+      const { error } = await supabase.from('profiles').update(row).eq('id', currentUser.id);
+      if (error) console.error('Could not save profile changes to Supabase:', error);
+    })();
   };
 
   return (
@@ -248,6 +308,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loginAsDemoUser,
         loginWithEmail,
         registerUser,
+        resetPassword,
         logout,
         updateProfile
       }}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -87,8 +87,29 @@ function CampusMartApp() {
 
     setCurrentView(view);
     setViewParam(param);
+
+    // Keep the address bar in sync so a store page can be shared or bookmarked.
+    if (view === 'store-detail' && param) {
+      const target = stores.find((s) => s.id === param || s.slug === param);
+      window.history.replaceState(null, '', `#store-${encodeURIComponent(target?.slug || param)}`);
+    } else if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Open a shared store link such as /#store-ays-tech-hub (also on later hash changes).
+  useEffect(() => {
+    const openFromHash = () => {
+      const match = window.location.hash.match(/^#store-(.+)$/);
+      if (!match) return;
+      setCurrentView('store-detail');
+      setViewParam(decodeURIComponent(match[1]));
+    };
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+    return () => window.removeEventListener('hashchange', openFromHash);
+  }, []);
 
   const handleOpenStore = (storeId: string) => {
     handleNavigate('store-detail', storeId);
@@ -191,8 +212,8 @@ function CampusMartApp() {
       {bannerVisible && (
         <div className="bg-brand-400 dark:bg-brand-500 text-stone-950 text-xs py-2 px-4 border-b border-brand-500/30 dark:border-brand-600/30 flex items-center justify-between">
           <div className="max-w-7xl mx-auto flex items-center gap-2 text-center w-full justify-center font-medium">
-            <span className="font-bold">🎒 2025/2026 Academic Session:</span>
-            <span>Free zero-fee physical handoff points active across EKSU, FUOYE, ABUAD, BOUESTI & Venite University campuses.</span>
+            <span className="font-bold">🎒 Zero-fee campus handoffs:</span>
+            <span>Meet-up points are open at EKSU, FUOYE, ABUAD, BOUESTI & Venite University.</span>
             <button
               onClick={() => handleNavigate('blog')}
               className="underline font-bold hover:text-stone-800 ml-1 hidden sm:inline"
@@ -245,7 +266,7 @@ function CampusMartApp() {
                   />
                 )}
                 {/* Blend into the dark background and protect text contrast */}
-                <div className="absolute inset-0 bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-stone-950/90 via-stone-950/75 to-stone-950/55 lg:via-stone-950/55 lg:to-stone-950/10" />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
               </div>
 
@@ -595,7 +616,7 @@ function CampusMartApp() {
         )}
 
         {/* VIEW: SELLER DASHBOARD */}
-        {currentView === 'seller-dashboard' && <SellerDashboard />}
+        {currentView === 'seller-dashboard' && <SellerDashboard onCreateStore={() => handleNavigate('become-seller')} />}
 
         {/* VIEW: EDITOR DASHBOARD */}
         {currentView === 'editor-dashboard' && <EditorDashboard />}

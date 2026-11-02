@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
-import { EKITI_CAMPUSES, DEFAULT_CAMPUS } from '../../data/campuses';
+import { EKITI_CAMPUSES, DEFAULT_CAMPUS, sanitizeCampus } from '../../data/campuses';
+import { uploadBrandImage } from '../../services/imageStorage';
 import { normalizeWhatsAppUrl, normalizeInstagramUrl } from '../../lib/formatters';
 import {
   Store,
@@ -11,7 +12,9 @@ import {
   ArrowRight,
   Phone,
   Instagram,
-  Building
+  Building,
+  Upload,
+  AlertCircle
 } from 'lucide-react';
 
 interface BecomeSellerViewProps {
@@ -20,25 +23,50 @@ interface BecomeSellerViewProps {
 }
 
 export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, onOpenAuth }) => {
-  const { currentUser, switchUserRole, updateProfile } = useAuth();
-  const { createStore } = useMarketplace();
+  const { currentUser, updateProfile } = useAuth();
+  const { createStore, stores } = useMarketplace();
+  const existingStore = currentUser ? stores.find((s) => s.seller_id === currentUser.id) : undefined;
+  const ownCampus = sanitizeCampus(currentUser?.campus_name);
 
   const [storeName, setStoreName] = useState('');
   const [tagline, setTagline] = useState('');
   const [description, setDescription] = useState('');
   const [pickupPoint, setPickupPoint] = useState('Student Union Building (SUB) Forecourt');
-  const [campusLocation, setCampusLocation] = useState(
-    currentUser?.campus_name || DEFAULT_CAMPUS
+  const [campusLocation, setCampusLocation] = useState(ownCampus);
+  const [campusesServed, setCampusesServed] = useState<string[]>(
+    currentUser?.campuses_served && currentUser.campuses_served.length > 0
+      ? Array.from(new Set([ownCampus, ...currentUser.campuses_served]))
+      : [ownCampus]
   );
-  const [campusesServed, setCampusesServed] = useState<string[]>([
-    currentUser?.campus_name || DEFAULT_CAMPUS
-  ]);
   const [whatsAppUrl, setWhatsAppUrl] = useState(currentUser?.phone ? `https://wa.me/${currentUser.phone.replace(/[^0-9]/g, '')}` : '');
   const [instagramUrl, setInstagramUrl] = useState('');
   const [logoUrl, setLogoUrl] = useState(
     'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=300&q=80'
   );
+  const [bannerUrl, setBannerUrl] = useState(
+    'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80'
+  );
+  const [uploading, setUploading] = useState<'logo' | 'banner' | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleImagePick = async (file: File | undefined, target: 'logo' | 'banner') => {
+    if (!file) return;
+    setUploading(target);
+    setUploadProgress(0);
+    setUploadError(null);
+    const res = await uploadBrandImage(file, target === 'logo' ? 'logos' : 'banners', currentUser?.id, setUploadProgress);
+    setUploading(null);
+    if (res.success && res.url) {
+      if (target === 'logo') setLogoUrl(res.url);
+      else setBannerUrl(res.url);
+    } else {
+      setUploadError(res.error || 'Image upload failed. Please try again.');
+    }
+  };
 
   const handleToggleServedCampus = (campus: string) => {
     setCampusesServed((prev) => {
@@ -72,8 +100,7 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
         tagline: tagline.trim(),
         description: description.trim(),
         logo_url: logoUrl,
-        banner_url:
-          'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80',
+        banner_url: bannerUrl,
         profile_thumbnail: currentUser.avatar_url,
         campus_location: campusLocation,
         campuses_served: campusesServed,
@@ -84,19 +111,36 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
         verified_student: true
       });
 
-      // 2. Promote current user to seller role
+      // 2. Promote the signed-in user to seller (stays the same account; never swaps to a demo user)
       updateProfile({
         role: 'seller',
         campus_name: campusLocation,
         campuses_served: campusesServed,
         signup_intent: 'sell'
       });
-      switchUserRole('seller');
 
       setIsSubmitting(false);
       onSuccess();
     }, 800);
   };
+
+  if (existingStore) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-16 text-center space-y-3">
+        <h1 className="text-2xl font-black text-stone-900 dark:text-white">You already have a store</h1>
+        <p className="text-sm text-stone-600 dark:text-stone-300">
+          <strong>{existingStore.name}</strong> is live on CampusMart. Manage its profile, images and products from Seller Studio.
+        </p>
+        <button
+          type="button"
+          onClick={onSuccess}
+          className="mt-2 px-5 py-2.5 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 rounded-xl font-bold text-sm cursor-pointer"
+        >
+          Open Seller Studio
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
@@ -292,9 +336,60 @@ export const BecomeSellerView: React.FC<BecomeSellerViewProps> = ({ onSuccess, o
             />
           </div>
 
+          {/* Brand images (optional - can be changed later from Seller Studio) */}
+          <div className="p-3 bg-stone-50 dark:bg-[#181e28] rounded-xl border border-stone-200 dark:border-[#262e3d] space-y-3">
+            <p className="font-semibold text-stone-800 dark:text-stone-200">
+              Brand images <span className="font-normal text-stone-500 dark:text-stone-400">(optional, JPEG/PNG/WebP/GIF up to 5MB)</span>
+            </p>
+            {uploadError && (
+              <div role="alert" className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 rounded-lg flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{uploadError}</span>
+              </div>
+            )}
+            <div className="flex flex-wrap items-center gap-4">
+              <img src={logoUrl} alt="Store logo preview" className="w-16 h-16 rounded-xl object-cover border border-stone-300 dark:border-[#2b3545]" />
+              <button
+                type="button"
+                disabled={uploading !== null}
+                onClick={() => logoInputRef.current?.click()}
+                className="px-3 py-1.5 bg-white dark:bg-[#202738] hover:bg-stone-100 dark:hover:bg-[#2b3548] border border-stone-300 dark:border-[#2b3545] text-stone-800 dark:text-stone-200 rounded-lg font-semibold flex items-center gap-1 cursor-pointer disabled:opacity-60"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>{uploading === 'logo' ? `Uploading ${uploadProgress}%` : 'Upload logo'}</span>
+              </button>
+              <input
+                ref={logoInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; void handleImagePick(f, 'logo'); }}
+              />
+            </div>
+            <div className="space-y-2">
+              <img src={bannerUrl} alt="Store banner preview" className="w-full h-24 rounded-xl object-cover border border-stone-300 dark:border-[#2b3545]" />
+              <button
+                type="button"
+                disabled={uploading !== null}
+                onClick={() => bannerInputRef.current?.click()}
+                className="px-3 py-1.5 bg-white dark:bg-[#202738] hover:bg-stone-100 dark:hover:bg-[#2b3548] border border-stone-300 dark:border-[#2b3545] text-stone-800 dark:text-stone-200 rounded-lg font-semibold flex items-center gap-1 cursor-pointer disabled:opacity-60"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>{uploading === 'banner' ? `Uploading ${uploadProgress}%` : 'Upload banner'}</span>
+              </button>
+              <input
+                ref={bannerInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; void handleImagePick(f, 'banner'); }}
+              />
+            </div>
+          </div>
+
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || uploading !== null}
             className="w-full py-3 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 rounded-xl font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
           >
             <span>{isSubmitting ? 'Launching Store...' : 'Launch Student Storefront'}</span>

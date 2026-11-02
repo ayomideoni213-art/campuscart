@@ -41,7 +41,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   // Step 1: Customer details
   const [studentName, setStudentName] = useState(currentUser?.full_name || 'Bolanle Adeleke');
   const [studentEmail, setStudentEmail] = useState(currentUser?.email || 'bolanle.adeleke@eksu.edu.ng');
-  const [studentId, setStudentId] = useState(currentUser?.student_id || 'EKSU/2023/4821');
+  const [studentId, setStudentId] = useState(currentUser?.student_id || '');
   const [phone, setPhone] = useState(currentUser?.phone || '+234 803 123 4567');
 
   // Step 2: Delivery / Pickup info

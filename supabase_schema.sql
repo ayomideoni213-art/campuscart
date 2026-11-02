@@ -1,5 +1,6 @@
 -- =========================================================================
 -- CAMPUSMART - SUPABASE POSTGRESQL SCHEMA WITH ROW LEVEL SECURITY (RLS)
+-- After this file run: supabase_admin_security.sql, supabase_migration_v2.sql, supabase_migration_v3.sql
 -- "Your Campus. Your Marketplace. Buy. Sell. Build."
 -- =========================================================================
 
@@ -13,10 +14,12 @@ create table public.profiles (
   full_name text not null,
   role text not null default 'customer' check (role in ('customer', 'seller', 'editor', 'author', 'admin')),
   avatar_url text,
-  campus_name text not null default 'Metropolitan Central University',
+  campus_name text not null default 'Ekiti State University (EKSU)',
   student_id text,
   phone text,
   bio text,
+  signup_intent text default 'shop' check (signup_intent in ('shop', 'sell')),
+  campuses_served text[] default '{}',
   is_suspended boolean default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -31,7 +34,11 @@ create table public.stores (
   description text,
   logo_url text,
   banner_url text,
-  campus_location text not null,
+  campus_location text not null default 'Ekiti State University (EKSU)',
+  campuses_served text[] default '{}',
+  profile_thumbnail text,
+  whatsapp_url text,
+  instagram_url text,
   pickup_point text not null,
   rating numeric(3,2) default 5.00,
   reviews_count integer default 0,

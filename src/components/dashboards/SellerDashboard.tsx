@@ -23,7 +23,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-export const SellerDashboard: React.FC = () => {
+const SellerDashboardInner: React.FC<{ myStore: Store }> = ({ myStore }) => {
   const { currentUser, updateProfile } = useAuth();
   const {
     stores,
@@ -54,9 +54,6 @@ export const SellerDashboard: React.FC = () => {
   const [condition, setCondition] = useState<Product['condition']>('Brand New');
   const [isFeatured, setIsFeatured] = useState(false);
   const [status, setStatus] = useState<Product['status']>('published');
-
-  // Find seller's store (or fallback to first store in list)
-  const myStore = stores.find((s) => s.seller_id === currentUser?.id) || stores[0];
 
   // Seller's products
   const myProducts = products.filter(
@@ -106,6 +103,10 @@ export const SellerDashboard: React.FC = () => {
   const [sellerBio, setSellerBio] = useState(currentUser?.bio || '');
 
   const [storeSaved, setStoreSaved] = useState(false);
+  const [storeSaveNotice, setStoreSaveNotice] = useState<string | null>(null);
+  const [storeSaveError, setStoreSaveError] = useState<string | null>(null);
+  const [isSavingStore, setIsSavingStore] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadLoading, setUploadLoading] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -190,6 +191,7 @@ export const SellerDashboard: React.FC = () => {
     target: 'logo' | 'banner' | 'thumbnail' | 'product'
   ) => {
     setUploadLoading(target);
+    setUploadProgress(0);
     setUploadError(null);
 
     const folderMap = {
@@ -199,7 +201,7 @@ export const SellerDashboard: React.FC = () => {
       product: 'products'
     } as const;
 
-    const res = await uploadBrandImage(file, folderMap[target], currentUser?.id);
+    const res = await uploadBrandImage(file, folderMap[target], currentUser?.id, setUploadProgress);
     setUploadLoading(null);
 
     if (res.success && res.url) {
@@ -232,14 +234,18 @@ export const SellerDashboard: React.FC = () => {
     }
   };
 
-  const handleSaveStore = (e: React.FormEvent) => {
+  const handleSaveStore = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSavingStore) return;
     setUploadError(null);
+    setStoreSaveError(null);
+    setStoreSaveNotice(null);
+    setIsSavingStore(true);
 
     const normalizedWA = whatsAppUrl ? normalizeWhatsAppUrl(whatsAppUrl) : '';
     const normalizedIG = instagramUrl ? normalizeInstagramUrl(instagramUrl) : '';
 
-    updateStore(myStore.id, {
+    const result = await updateStore(myStore.id, {
       name: storeName.trim(),
       tagline: storeTagline.trim(),
       description: storeDescription.trim(),
@@ -263,8 +269,18 @@ export const SellerDashboard: React.FC = () => {
       });
     }
 
+    setIsSavingStore(false);
+    if (!result.success) {
+      setStoreSaveError(result.error || 'Could not save your store. Please try again.');
+      return;
+    }
+    setStoreSaveNotice(
+      result.synced
+        ? 'Store profile saved. Your public storefront now shows these changes.'
+        : 'Store profile saved on this device. Sign in with a CampusMart account to publish it to other students.'
+    );
     setStoreSaved(true);
-    setTimeout(() => setStoreSaved(false), 2500);
+    setTimeout(() => setStoreSaved(false), 4000);
   };
 
   return (
@@ -520,12 +536,19 @@ export const SellerDashboard: React.FC = () => {
           {storeSaved && (
             <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300 rounded-xl flex items-center gap-2 font-medium">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Store profile and brand settings saved successfully!</span>
+              <span role="status">{storeSaveNotice || 'Store profile and brand settings saved successfully!'}</span>
+            </div>
+          )}
+
+          {storeSaveError && (
+            <div role="alert" className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 rounded-xl flex items-center gap-2 font-medium">
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+              <span>{storeSaveError}</span>
             </div>
           )}
 
           {uploadError && (
-            <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 rounded-xl flex items-center gap-2 font-medium">
+            <div role="alert" className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 rounded-xl flex items-center gap-2 font-medium">
               <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
               <span>{uploadError}</span>
             </div>
@@ -557,7 +580,7 @@ export const SellerDashboard: React.FC = () => {
                       className="px-3 py-1.5 bg-stone-900/85 hover:bg-stone-900 text-white rounded-lg text-xs font-semibold backdrop-blur-sm flex items-center gap-1 cursor-pointer"
                     >
                       <Upload className="w-3.5 h-3.5" />
-                      <span>{uploadLoading === 'banner' ? 'Uploading...' : 'Upload Banner'}</span>
+                      <span>{uploadLoading === 'banner' ? `Uploading ${uploadProgress}%` : 'Upload Banner'}</span>
                     </button>
                     {storeBanner && (
                       <button
@@ -573,10 +596,10 @@ export const SellerDashboard: React.FC = () => {
                   <input
                     ref={bannerInputRef}
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
                     className="hidden"
                     onChange={(e) => {
-                      if (e.target.files?.[0]) handleFileUpload(e.target.files[0], 'banner');
+                      const picked = e.target.files?.[0]; e.target.value = ''; if (picked) handleFileUpload(picked, 'banner');
                     }}
                   />
                 </div>
@@ -602,15 +625,15 @@ export const SellerDashboard: React.FC = () => {
                         className="px-3 py-1.5 bg-stone-100 dark:bg-[#202738] hover:bg-stone-200 dark:hover:bg-[#2b3548] border border-stone-300 dark:border-[#2b3545] text-stone-800 dark:text-stone-200 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
                       >
                         <Upload className="w-3 h-3" />
-                        <span>{uploadLoading === 'logo' ? 'Uploading...' : 'Change Logo'}</span>
+                        <span>{uploadLoading === 'logo' ? `Uploading ${uploadProgress}%` : 'Change Logo'}</span>
                       </button>
                       <input
                         ref={logoInputRef}
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
                         className="hidden"
                         onChange={(e) => {
-                          if (e.target.files?.[0]) handleFileUpload(e.target.files[0], 'logo');
+                          const picked = e.target.files?.[0]; e.target.value = ''; if (picked) handleFileUpload(picked, 'logo');
                         }}
                       />
                     </div>
@@ -635,15 +658,15 @@ export const SellerDashboard: React.FC = () => {
                         className="px-3 py-1.5 bg-stone-100 dark:bg-[#202738] hover:bg-stone-200 dark:hover:bg-[#2b3548] border border-stone-300 dark:border-[#2b3545] text-stone-800 dark:text-stone-200 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
                       >
                         <Upload className="w-3 h-3" />
-                        <span>{uploadLoading === 'thumbnail' ? 'Uploading...' : 'Change Thumbnail'}</span>
+                        <span>{uploadLoading === 'thumbnail' ? `Uploading ${uploadProgress}%` : 'Change Thumbnail'}</span>
                       </button>
                       <input
                         ref={thumbnailInputRef}
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
                         className="hidden"
                         onChange={(e) => {
-                          if (e.target.files?.[0]) handleFileUpload(e.target.files[0], 'thumbnail');
+                          const picked = e.target.files?.[0]; e.target.value = ''; if (picked) handleFileUpload(picked, 'thumbnail');
                         }}
                       />
                     </div>
@@ -846,9 +869,10 @@ export const SellerDashboard: React.FC = () => {
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-200 dark:border-[#222936]">
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl transition-colors cursor-pointer shadow-sm"
+                disabled={isSavingStore || uploadLoading !== null}
+                className="px-6 py-2.5 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 disabled:opacity-60 disabled:cursor-not-allowed text-white dark:text-stone-950 font-bold rounded-xl transition-colors cursor-pointer shadow-sm"
               >
-                Save Brand & Profile Changes
+                {isSavingStore ? 'Saving...' : uploadLoading ? 'Waiting for upload...' : 'Save Brand & Profile Changes'}
               </button>
             </div>
           </form>
@@ -975,10 +999,10 @@ export const SellerDashboard: React.FC = () => {
                   <input
                     ref={productImgInputRef}
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
                     className="hidden"
                     onChange={(e) => {
-                      if (e.target.files?.[0]) handleFileUpload(e.target.files[0], 'product');
+                      const picked = e.target.files?.[0]; e.target.value = ''; if (picked) handleFileUpload(picked, 'product');
                     }}
                   />
                 </div>
@@ -1017,4 +1041,42 @@ export const SellerDashboard: React.FC = () => {
       )}
     </div>
   );
+};
+
+export const SellerDashboard: React.FC<{ onCreateStore?: () => void }> = ({ onCreateStore }) => {
+  const { currentUser } = useAuth();
+  const { stores } = useMarketplace();
+
+  const myStore = currentUser ? stores.find((s) => s.seller_id === currentUser.id) : undefined;
+
+  if (!currentUser) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-16 text-center space-y-2">
+        <h2 className="text-xl font-bold text-stone-900 dark:text-white">Sign in to open Seller Studio</h2>
+        <p className="text-xs text-stone-500 dark:text-stone-400">Your store tools are available once you are signed in.</p>
+      </div>
+    );
+  }
+
+  if (!myStore) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-16 text-center space-y-3">
+        <h2 className="text-xl font-bold text-stone-900 dark:text-white">You have not set up a store yet</h2>
+        <p className="text-xs text-stone-500 dark:text-stone-400">
+          Create your student storefront to list products and receive orders from your campus.
+        </p>
+        {onCreateStore && (
+          <button
+            type="button"
+            onClick={onCreateStore}
+            className="mt-2 px-5 py-2.5 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl text-xs cursor-pointer"
+          >
+            Set up my store
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return <SellerDashboardInner key={myStore.id} myStore={myStore} />;
 };

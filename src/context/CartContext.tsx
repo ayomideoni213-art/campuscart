@@ -89,7 +89,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           live.status === item.product.status &&
           live.name === item.product.name &&
           live.store_name === item.product.store_name &&
-          live.images[0] === item.product.images[0];
+          live.images?.[0] === item.product.images?.[0];
         if (same) return item;
         changed = true;
         return { ...item, product: live };

@@ -527,7 +527,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       store_name: store ? store.name : 'Campus Store',
       product_id: productId,
       product_name: product?.name,
-      product_image: product?.images[0],
+      product_image: product?.images?.[0] || '',
       last_message: 'Conversation started',
       last_updated: new Date().toISOString(),
       messages: [],

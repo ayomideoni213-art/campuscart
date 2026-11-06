@@ -40,10 +40,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [orderError, setOrderError] = useState<string | null>(null);
   const [placedTotal, setPlacedTotal] = useState(0);
 
-  // Live problems with the bag for the chosen campus (stock, unpublished items, campus coverage).
-  const issues = getCartIssues(cart, products, stores, campus);
-  const hasIssues = issues.length > 0;
-
   // Step 1: Customer details
   const [studentName, setStudentName] = useState(currentUser?.full_name || '');
   const [studentEmail, setStudentEmail] = useState(currentUser?.email || '');
@@ -58,6 +54,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   // Step 4: Payment method
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash_on_pickup');
+
+
+  // Live problems with the bag for the chosen campus (stock, unpublished items, campus coverage).
+  const issues = getCartIssues(cart, products, stores, campus);
+  const hasIssues = issues.length > 0;
 
   if (!isOpen) return null;
 
@@ -107,7 +108,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         product_name: item.product.name,
         price: item.product.discount_price ?? item.product.price,
         quantity: item.quantity,
-        image_url: item.product.images[0]
+        image_url: item.product.images?.[0] || ''
       }));
 
       let newOrder;
@@ -386,7 +387,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <div key={item.product_id} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <img
-                        src={item.product.images[0]}
+                        src={item.product.images?.[0] || ''}
                         alt={item.product.name}
                         className="w-10 h-10 rounded object-cover bg-stone-200 dark:bg-[#1c222e]"
                       />

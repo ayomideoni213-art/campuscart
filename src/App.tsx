@@ -755,16 +755,68 @@ function CampusMartApp() {
   );
 }
 
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('CampusMart render error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center p-6 bg-stone-50 dark:bg-[#0d1117] text-stone-900 dark:text-stone-100 font-sans">
+          <div className="max-w-md w-full bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-2xl p-6 text-center shadow-lg space-y-4">
+            <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto text-xl font-bold">
+              !
+            </div>
+            <h1 className="text-lg font-bold">Something went wrong</h1>
+            <p className="text-xs text-stone-600 dark:text-stone-400">
+              CampusMart encountered an unexpected issue while rendering. Please reload the page to continue.
+            </p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
+            >
+              Refresh CampusMart
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <CartProvider>
-          <MarketplaceProvider>
-            <CampusMartApp />
-          </MarketplaceProvider>
-        </CartProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <CartProvider>
+            <MarketplaceProvider>
+              <CampusMartApp />
+            </MarketplaceProvider>
+          </CartProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

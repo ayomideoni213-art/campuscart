@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Product, Store, Review } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { formatNaira } from '../../lib/formatters';
+import { getAvailability, getServedCampuses, isPurchasable, isServedOnCampus, availabilityLabel, shortCampus } from '../../lib/shopping';
 import {
   X,
   Star,
@@ -32,7 +33,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   onOpenMessage
 }) => {
   const { addToCart, isInWishlist, toggleWishlist } = useCart();
-  const { currentUser } = useAuth();
+  const { currentUser, selectedCampus, setSelectedCampus } = useAuth();
   const { stores, reviews, addReview, submitReport } = useMarketplace();
 
   const [selectedImage, setSelectedImage] = useState(0);
@@ -54,6 +55,46 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   );
   const wishlisted = isInWishlist(product.id);
   const isOutOfStock = product.stock <= 0;
+  const availability = getAvailability(product);
+  const purchasable = isPurchasable(product);
+  const onSelectedCampus = isServedOnCampus(product, store, selectedCampus);
+  const canBuy = purchasable && onSelectedCampus;
+  const servedCampuses = getServedCampuses(product, store);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
+  const images = product.images ?? [];
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+
+  // Focus management: focus the dialog, trap Tab, close on Escape, restore focus on close.
+  useEffect(() => {
+    previouslyFocused.current = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !reportModalOpen) {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+      const f = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (f.length === 0) return;
+      const first = f[0];
+      const last = f[f.length - 1];
+      if (e.shiftKey && (document.activeElement === dialogRef.current || document.activeElement === first)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      previouslyFocused.current?.focus?.();
+    };
+  }, [onClose, reportModalOpen]);
 
   const handleAddReview = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,8 +119,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-8 max-h-[90vh] flex flex-col transition-colors">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="product-title" className="relative w-full max-w-4xl focus:outline-none bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-8 max-h-[90vh] flex flex-col transition-colors">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-[#222936]">
           <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
@@ -90,7 +131,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           <button
             onClick={onClose}
             className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors"
-            aria-label="Close modal"
+            aria-label="Close product details"
           >
             <X className="w-5 h-5" />
           </button>
@@ -102,27 +143,36 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             {/* Gallery Column */}
             <div className="space-y-3">
               <div className="aspect-4/3 w-full bg-stone-100 dark:bg-[#1c222e] rounded-xl overflow-hidden border border-stone-200 dark:border-[#262e3d]">
-                <img
-                  src={product.images[selectedImage] || product.images[0]}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+                {images[selectedImage] && !failedImages[images[selectedImage]] ? (
+                  <img
+                    src={images[selectedImage]}
+                    alt={product.name}
+                    className={`w-full h-full object-cover ${purchasable ? "" : "opacity-60 grayscale"}`}
+                    referrerPolicy="no-referrer"
+                    onError={() => setFailedImages((f) => ({ ...f, [images[selectedImage]]: true }))}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs text-stone-500 dark:text-stone-400">
+                    No photo available
+                  </div>
+                )}
               </div>
 
-              {product.images.length > 1 && (
+              {images.length > 1 && (
                 <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                  {product.images.map((img, idx) => (
+                  {images.map((img, idx) => (
                     <button
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
+                      aria-label={`Show photo ${idx + 1} of ${images.length}`}
+                      aria-pressed={selectedImage === idx}
                       className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
                         selectedImage === idx
                           ? 'border-stone-900 dark:border-brand-400 shadow-xs'
                           : 'border-stone-200 dark:border-[#262e3d] opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
+                      <img src={img} alt="" className="w-full h-full object-cover" onError={() => setFailedImages((f) => ({ ...f, [img]: true }))} />
                     </button>
                   ))}
                 </div>
@@ -132,14 +182,14 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               <div className="p-3.5 bg-stone-50 dark:bg-[#1a202c] rounded-xl border border-stone-200/80 dark:border-[#2b3545] text-xs space-y-2">
                 <div className="flex items-center gap-2 font-semibold text-stone-800 dark:text-stone-200">
                   <MapPin className="w-4 h-4 text-brand-600 dark:text-brand-400 shrink-0" />
-                  <span>Verified Campus Pickup Point</span>
+                  <span>Campus handoff</span>
                 </div>
                 <p className="text-stone-600 dark:text-stone-300 pl-6 leading-relaxed">
-                  {store?.pickup_point || 'Student Union Lobby / Library Central Quad'}
+                  {store?.pickup_point ? `Seller's pickup point: ${store.pickup_point}` : 'The seller will confirm a pickup point with you in chat.'}
                 </p>
                 <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400 pl-6 pt-1 text-[11px]">
                   <Truck className="w-3.5 h-3.5" />
-                  <span>Free zero-fee student handoff between classes</span>
+                  <span>Collect on: {servedCampuses.map(shortCampus).join(", ")}. Pay the seller at handoff; no online payment.</span>
                 </div>
               </div>
             </div>
@@ -147,7 +197,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             {/* Product Details & Purchase Module */}
             <div className="flex flex-col justify-between">
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white">{product.name}</h1>
+                <h1 id="product-title" className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white">{product.name}</h1>
 
                 {/* Rating & Reviews */}
                 <div className="mt-2 flex items-center gap-3 text-xs text-stone-600 dark:text-stone-400">
@@ -162,7 +212,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   </span>
                   <span>·</span>
                   <span className="text-stone-500 dark:text-stone-400 font-mono tabular-nums">
-                    {product.stock} units available
+                    {availabilityLabel(product)}
                   </span>
                 </div>
 
@@ -223,23 +273,42 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
               {/* Purchase Actions */}
               <div className="mt-6 pt-5 border-t border-stone-200 dark:border-[#222936] space-y-3">
+                {!purchasable && (
+                  <p role="status" className="p-3 text-xs rounded-lg bg-stone-100 dark:bg-[#1c222e] text-stone-700 dark:text-stone-300">
+                    {availability === "out_of_stock"
+                      ? "This item is out of stock. You can still message the seller to ask about restocking."
+                      : "This listing is no longer available to buy."}
+                  </p>
+                )}
+                {purchasable && !onSelectedCampus && (
+                  <div role="status" className="p-3 text-xs rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800/50 text-amber-900 dark:text-amber-200 space-y-2">
+                    <p>This seller does not serve {selectedCampus}. Available on: {servedCampuses.map(shortCampus).join(", ")}.</p>
+                    <button type="button" onClick={() => setSelectedCampus(servedCampuses[0])} className="px-2.5 py-1 rounded bg-amber-200 dark:bg-amber-900/60 font-semibold cursor-pointer">
+                      Switch to {shortCampus(servedCampuses[0])}
+                    </button>
+                  </div>
+                )}
                 <div className="flex items-center gap-3">
                   {/* Quantity Stepper */}
                   <div className="flex items-center border border-stone-300 dark:border-[#2b3545] bg-white dark:bg-[#1a202c] rounded-lg">
                     <button
+                      type="button"
                       disabled={quantity <= 1}
+                      aria-label="Decrease quantity"
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      className="px-3 py-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white disabled:opacity-30"
+                      className="px-3 py-2.5 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white disabled:opacity-30"
                     >
                       -
                     </button>
-                    <span className="px-3 py-2 text-xs font-semibold font-mono tabular-nums text-stone-900 dark:text-stone-100">
+                    <span aria-live="polite" className="px-3 py-2 text-xs font-semibold font-mono tabular-nums text-stone-900 dark:text-stone-100">
                       {quantity}
                     </span>
                     <button
+                      type="button"
                       disabled={quantity >= product.stock}
+                      aria-label="Increase quantity"
                       onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                      className="px-3 py-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white disabled:opacity-30"
+                      className="px-3 py-2.5 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white disabled:opacity-30"
                     >
                       +
                     </button>
@@ -247,26 +316,29 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
                   {/* Add to Bag Button */}
                   <button
-                    disabled={isOutOfStock}
+                    type="button"
+                    disabled={!canBuy}
                     onClick={() => {
                       addToCart(product, quantity);
                       onClose();
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                      isOutOfStock
+                      !canBuy
                         ? 'bg-stone-200 dark:bg-[#1c222e] text-stone-400 dark:text-stone-500 cursor-not-allowed'
                         : 'bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold shadow-sm'
                     }`}
                   >
                     <ShoppingBag className="w-4 h-4" />
-                    <span>{isOutOfStock ? 'Currently Out of Stock' : 'Add to Bag'}</span>
+                    <span>{!purchasable ? (isOutOfStock ? 'Out of stock' : 'Unavailable') : !onSelectedCampus ? 'Not available on your campus' : 'Add to bag'}</span>
                   </button>
 
                   {/* Wishlist Button */}
                   <button
+                    type="button"
                     onClick={() => toggleWishlist(product.id)}
-                    className="p-2.5 rounded-xl border border-stone-300 dark:border-[#2b3545] hover:bg-stone-50 dark:hover:bg-[#1c222e] text-stone-700 dark:text-stone-300 transition-colors"
-                    aria-label="Wishlist"
+                    aria-pressed={wishlisted}
+                    className="p-3 rounded-xl border border-stone-300 dark:border-[#2b3545] hover:bg-stone-50 dark:hover:bg-[#1c222e] text-stone-700 dark:text-stone-300 transition-colors"
+                    aria-label={wishlisted ? "Remove from saved items" : "Save item"}
                   >
                     <Heart
                       className={`w-5 h-5 ${
@@ -279,14 +351,15 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 {/* Secondary Actions: Message Seller & Report */}
                 <div className="flex items-center justify-between pt-2 text-xs">
                   <button
+                    type="button"
                     onClick={() => {
                       onClose();
-                      onOpenMessage(product.seller_id, product.store_id, product.id);
+                      onOpenMessage(store?.seller_id ?? product.seller_id, store?.id ?? product.store_id, product.id);
                     }}
-                    className="text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white font-medium flex items-center gap-1.5 underline"
+                    className="py-2 text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white font-medium flex items-center gap-1.5 underline"
                   >
                     <MessageSquare className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
-                    <span>Message Student Seller</span>
+                    <span>Message {store?.name ?? product.store_name}</span>
                   </button>
 
                   <button

@@ -8,6 +8,8 @@ interface CartContextType {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, delta: number) => void;
   clearCart: () => void;
+  /** Refresh saved bag lines (price, stock, name, images) from the live catalogue. */
+  syncCartProducts: (liveProducts: Product[]) => void;
   toggleWishlist: (productId: string) => void;
   isInWishlist: (productId: string) => boolean;
   moveToCartFromWishlist: (product: Product) => void;
@@ -59,7 +61,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [wishlist]);
 
   const addToCart = (product: Product, quantity: number = 1) => {
-    if (product.stock <= 0) return;
+    if (product.stock <= 0 || product.status !== 'published') return;
 
     setCart((prev) => {
       const existing = prev.find((item) => item.product_id === product.id);
@@ -72,6 +74,28 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return [...prev, { product_id: product.id, product, quantity: Math.min(quantity, product.stock) }];
     });
     setIsCartOpen(true);
+  };
+
+  const syncCartProducts = (liveProducts: Product[]) => {
+    setCart((prev) => {
+      let changed = false;
+      const next = prev.map((item) => {
+        const live = liveProducts.find((p) => p.id === item.product_id);
+        if (!live) return item;
+        const same =
+          live.price === item.product.price &&
+          live.discount_price === item.product.discount_price &&
+          live.stock === item.product.stock &&
+          live.status === item.product.status &&
+          live.name === item.product.name &&
+          live.store_name === item.product.store_name &&
+          live.images[0] === item.product.images[0];
+        if (same) return item;
+        changed = true;
+        return { ...item, product: live };
+      });
+      return changed ? next : prev;
+    });
   };
 
   const removeFromCart = (productId: string) => {
@@ -132,7 +156,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setDiscountPercent(0.2);
       return { success: true, message: '20% Freshman Welcome discount applied!' };
     }
-    return { success: false, message: 'Invalid promo code. Try "CAMPUS10".' };
+    return { success: false, message: 'That promo code is not valid.' };
   };
 
   const removePromoCode = () => {
@@ -158,6 +182,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         removeFromCart,
         updateQuantity,
         clearCart,
+        syncCartProducts,
         toggleWishlist,
         isInWishlist,
         moveToCartFromWishlist,

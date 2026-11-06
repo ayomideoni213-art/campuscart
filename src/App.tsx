@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
+import { CartProvider, useCart } from './context/CartContext';
 import { MarketplaceProvider, useMarketplace } from './context/MarketplaceContext';
 
 import { RoleSwitcherBar } from './components/layout/RoleSwitcherBar';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
+import { CampusBar } from './components/layout/CampusBar';
+import { isServedOnCampus, isPurchasable, shortCampus } from './lib/shopping';
 
 import { ProductCard } from './components/product/ProductCard';
 import { ProductFilters } from './components/product/ProductFilters';
@@ -50,7 +52,8 @@ import {
 
 function CampusMartApp() {
   const { currentUser, currentRole, selectedCampus, setSelectedCampus } = useAuth();
-  const { products, stores, categories, startConversation } = useMarketplace();
+  const { products, productsStatus, reloadProducts, stores, categories, startConversation } = useMarketplace();
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Navigation State
   const [heroImageFailed, setHeroImageFailed] = useState(false);
@@ -67,7 +70,7 @@ function CampusMartApp() {
   // Modals & Drawers
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | null>(null);
-  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const { isCartOpen, setIsCartOpen } = useCart();
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [activeConvId, setActiveConvId] = useState<string | undefined>(undefined);
@@ -136,13 +139,12 @@ function CampusMartApp() {
     if (p.status !== 'published') return false;
 
     // Search query filter
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      const matchName = p.name.toLowerCase().includes(q);
-      const matchStore = p.store_name.toLowerCase().includes(q);
-      const matchDesc = p.description.toLowerCase().includes(q);
-      const matchCategory = p.category_name.toLowerCase().includes(q);
-      if (!matchName && !matchStore && !matchDesc && !matchCategory) return false;
+    const terms = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+    if (terms.length > 0) {
+      const haystack = [p.name, p.store_name, p.description, p.category_name, p.condition, p.campus_name]
+        .join(' ')
+        .toLowerCase();
+      if (!terms.every((term) => haystack.includes(term))) return false;
     }
 
     // Category filter
@@ -156,7 +158,8 @@ function CampusMartApp() {
     }
 
     // Campus filter (if not "All")
-    if (selectedCampus !== 'All' && p.campus_name !== selectedCampus) {
+    const productStore = stores.find((s) => s.id === p.store_id);
+    if (!isServedOnCampus(p, productStore, selectedCampus)) {
       return false;
     }
 
@@ -174,6 +177,10 @@ function CampusMartApp() {
     const priceA = a.discount_price ?? a.price;
     const priceB = b.discount_price ?? b.price;
 
+    const buyableA = isPurchasable(a);
+    const buyableB = isPurchasable(b);
+    if (buyableA !== buyableB) return buyableA ? -1 : 1;
+
     switch (sortBy) {
       case 'price-asc':
         return priceA - priceB;
@@ -190,6 +197,12 @@ function CampusMartApp() {
         return b.reviews_count - a.reviews_count;
     }
   });
+
+  const activeFilterCount =
+    (selectedCategory !== 'all' ? 1 : 0) +
+    (selectedCondition !== 'All' ? 1 : 0) +
+    (maxPrice < 150000 ? 1 : 0) +
+    (searchQuery.trim() ? 1 : 0);
 
   const resetFilters = () => {
     setSelectedCategory('all');
@@ -242,6 +255,8 @@ function CampusMartApp() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
+
+      {(currentView === 'home' || currentView === 'stores' || currentView === 'store-detail') && <CampusBar />}
 
       {/* 4. Main Body Content Based on Active View */}
       <main className="flex-1">
@@ -434,6 +449,17 @@ function CampusMartApp() {
               <div className="flex flex-col lg:flex-row gap-8 items-start">
                 {/* Left: Filters Sidebar */}
                 <div className="w-full lg:w-64 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setFiltersOpen((o) => !o)}
+                    aria-expanded={filtersOpen}
+                    aria-controls="product-filters-panel"
+                    className="lg:hidden w-full mb-3 flex items-center justify-between px-4 py-3 bg-white dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-xl text-sm font-semibold text-stone-800 dark:text-stone-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  >
+                    <span>Filters &amp; sorting{activeFilterCount > 0 ? ` (${activeFilterCount} active)` : ''}</span>
+                    <span aria-hidden="true">{filtersOpen ? 'âˆ’' : '+'}</span>
+                  </button>
+                  <div id="product-filters-panel" className={filtersOpen ? 'block' : 'hidden lg:block'}>
                   <ProductFilters
                     categories={categories}
                     selectedCategory={selectedCategory}
@@ -448,39 +474,81 @@ function CampusMartApp() {
                     onPriceChange={setMaxPrice}
                     onResetFilters={resetFilters}
                   />
+                  </div>
                 </div>
 
                 {/* Right: Product Grid */}
                 <div className="flex-1 w-full space-y-4">
                   <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 pb-2 border-b border-stone-200 dark:border-[#262e3d]">
-                    <div>
-                      Showing <span className="font-bold text-stone-900 dark:text-white">{sortedProducts.length}</span> campus listings
+                    <div aria-live="polite">
+                      Showing <span className="font-bold text-stone-900 dark:text-white">{sortedProducts.length}</span> {sortedProducts.length === 1 ? 'listing' : 'listings'}{selectedCampus === 'All' ? '' : ` for ${shortCampus(selectedCampus)}`}
                       {searchQuery && (
                         <span> matching "<strong className="text-stone-800 dark:text-stone-200">{searchQuery}</strong>"</span>
                       )}
                     </div>
-                    {sortedProducts.length > 0 && (
-                      <span className="font-mono text-stone-400 dark:text-stone-500">
-                        {selectedCampus.split(' ')[0]} Hub
-                      </span>
+                    {activeFilterCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={resetFilters}
+                        className="font-semibold text-brand-700 dark:text-brand-400 hover:underline cursor-pointer"
+                      >
+                        Clear filters
+                      </button>
                     )}
                   </div>
 
-                  {sortedProducts.length === 0 ? (
+                  {productsStatus === 'error' && (
+                    <div role="alert" className="p-4 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 rounded-xl text-xs text-rose-800 dark:text-rose-300 flex items-center justify-between gap-3">
+                      <span>We could not load the latest listings. {products.length > 0 ? 'Showing the last saved items.' : 'Please check your connection.'}</span>
+                      <button type="button" onClick={reloadProducts} className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold cursor-pointer">
+                        Try again
+                      </button>
+                    </div>
+                  )}
+
+                  {productsStatus === 'loading' && products.length === 0 ? (
+                    <div role="status" aria-label="Loading listings" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {[0, 1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="h-80 rounded-xl bg-stone-200/70 dark:bg-[#1c222e] animate-pulse" />
+                      ))}
+                    </div>
+                  ) : sortedProducts.length === 0 ? (
                     <div className="py-20 text-center bg-white dark:bg-[#151921] rounded-2xl border border-stone-200 dark:border-[#262e3d] p-8 space-y-3">
                       <div className="w-12 h-12 bg-stone-100 dark:bg-[#1c222e] rounded-full flex items-center justify-center mx-auto text-stone-400 dark:text-stone-500">
                         <ShoppingBag className="w-6 h-6" />
                       </div>
-                      <h3 className="text-base font-bold text-stone-900 dark:text-white">No matching campus products</h3>
+                      <h3 className="text-base font-bold text-stone-900 dark:text-white">
+                        {products.filter((p) => p.status === 'published').length === 0
+                          ? 'No listings yet'
+                          : 'No matching listings'}
+                      </h3>
                       <p className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto">
-                        Try adjusting your filters, selecting a different category, or resetting your price range.
+                        {products.filter((p) => p.status === 'published').length === 0
+                          ? 'Student sellers have not posted anything yet. Check back soon, or open your own store.'
+                          : selectedCampus === 'All'
+                          ? 'Try different keywords or clear your filters.'
+                          : `Nothing matches for ${shortCampus(selectedCampus)}. Clear your filters or look across all campuses.`}
                       </p>
-                      <button
-                        onClick={resetFilters}
-                        className="px-4 py-2 bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 rounded-lg text-xs font-semibold hover:bg-brand-700 dark:hover:bg-brand-300 cursor-pointer"
-                      >
-                        Reset All Filters
-                      </button>
+                      <div className="flex flex-wrap items-center justify-center gap-2">
+                        {activeFilterCount > 0 && (
+                          <button
+                            type="button"
+                            onClick={resetFilters}
+                            className="px-4 py-2 bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 rounded-lg text-xs font-semibold hover:bg-brand-700 dark:hover:bg-brand-300 cursor-pointer"
+                          >
+                            Clear filters
+                          </button>
+                        )}
+                        {selectedCampus !== 'All' && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCampus('All')}
+                            className="px-4 py-2 border border-stone-300 dark:border-[#2b3545] text-stone-800 dark:text-stone-200 rounded-lg text-xs font-semibold hover:bg-stone-100 dark:hover:bg-[#1c222e] cursor-pointer"
+                          >
+                            Show all campuses
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -633,7 +701,13 @@ function CampusMartApp() {
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
-        onProceedCheckout={() => setIsCheckoutOpen(true)}
+        onProceedCheckout={() => {
+          if (!currentUser) {
+            setIsAuthOpen(true);
+            return;
+          }
+          setIsCheckoutOpen(true);
+        }}
       />
 
       {/* Multi-Step Checkout Modal */}

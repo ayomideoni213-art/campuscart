@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
-import { EKITI_CAMPUSES } from '../../data/campuses';
+import { EKITI_CAMPUSES, sanitizeCampus } from '../../data/campuses';
+import { getCartIssues, shortCampus } from '../../lib/shopping';
+import { isValidNigerianPhone, normalizeNigerianPhone } from '../../lib/formatters';
 import { formatNaira } from '../../lib/formatters';
 import { DeliveryDetails, PaymentMethod } from '../../types';
 import confetti from 'canvas-confetti';
 import {
   X,
   CheckCircle,
-  CreditCard,
-  Wallet,
   Coins,
   Building,
   ArrowRight,
@@ -30,33 +30,48 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onClose,
   onOrderComplete
 }) => {
-  const { cart, subtotal, discount, total, clearCart } = useCart();
+  const { cart, subtotal, discount, total, clearCart, removeFromCart, updateQuantity } = useCart();
   const { currentUser, selectedCampus } = useAuth();
-  const { placeOrder } = useMarketplace();
+  const { placeOrder, products, stores } = useMarketplace();
 
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [createdOrderNumber, setCreatedOrderNumber] = useState('');
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [placedTotal, setPlacedTotal] = useState(0);
+
+  // Live problems with the bag for the chosen campus (stock, unpublished items, campus coverage).
+  const issues = getCartIssues(cart, products, stores, campus);
+  const hasIssues = issues.length > 0;
 
   // Step 1: Customer details
-  const [studentName, setStudentName] = useState(currentUser?.full_name || 'Bolanle Adeleke');
-  const [studentEmail, setStudentEmail] = useState(currentUser?.email || 'bolanle.adeleke@eksu.edu.ng');
+  const [studentName, setStudentName] = useState(currentUser?.full_name || '');
+  const [studentEmail, setStudentEmail] = useState(currentUser?.email || '');
   const [studentId, setStudentId] = useState(currentUser?.student_id || '');
-  const [phone, setPhone] = useState(currentUser?.phone || '+234 803 123 4567');
+  const [phone, setPhone] = useState(currentUser?.phone || '');
 
   // Step 2: Delivery / Pickup info
-  const [campus, setCampus] = useState(selectedCampus || EKITI_CAMPUSES[0].name);
+  const [campus, setCampus] = useState(selectedCampus !== 'All' ? sanitizeCampus(selectedCampus) : sanitizeCampus(currentUser?.campus_name));
   const [deliveryType, setDeliveryType] = useState<DeliveryDetails['delivery_type']>('campus_dorm');
-  const [locationDetail, setLocationDetail] = useState('Hall 2, Room B12');
-  const [notes, setNotes] = useState('Call me when you reach the hostel gate.');
+  const [locationDetail, setLocationDetail] = useState('');
+  const [notes, setNotes] = useState('');
 
   // Step 4: Payment method
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('campus_pay');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash_on_pickup');
 
   if (!isOpen) return null;
 
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
+    setOrderError(null);
+    if (step === 1 && !isValidNigerianPhone(phone.trim())) {
+      setOrderError('Enter a valid Nigerian phone number, e.g. 08012345678 or +2348012345678.');
+      return;
+    }
+    if (step === 2 && hasIssues) {
+      setStep(3);
+      return;
+    }
     if (step < 4) {
       setStep((s) => (s + 1) as 2 | 3 | 4);
     } else {
@@ -65,6 +80,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   const executeOrder = () => {
+    if (isProcessing) return;
+    setOrderError(null);
+    if (hasIssues) {
+      setStep(3);
+      return;
+    }
     setIsProcessing(true);
 
     setTimeout(() => {
@@ -72,7 +93,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         student_name: studentName,
         student_email: studentEmail,
         student_id: studentId,
-        phone,
+        phone: normalizeNigerianPhone(phone.trim()),
         campus,
         delivery_type: deliveryType,
         location_detail: locationDetail,
@@ -89,8 +110,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         image_url: item.product.images[0]
       }));
 
-      const newOrder = placeOrder(orderItems, deliveryInfo, paymentMethod, subtotal, discount);
+      let newOrder;
+      try {
+        newOrder = placeOrder(orderItems, deliveryInfo, paymentMethod, subtotal, discount);
+      } catch (err) {
+        setIsProcessing(false);
+        setOrderError(err instanceof Error ? err.message : 'We could not place your order. Please try again.');
+        setStep(3);
+        return;
+      }
       setCreatedOrderNumber(newOrder.order_number);
+      setPlacedTotal(newOrder.total_amount);
       clearCart();
       setIsProcessing(false);
       setStep(5);
@@ -105,17 +135,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       } catch (err) {
         console.error(err);
       }
-    }, 1200);
+    }, 400);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-6 transition-colors">
+      <div role="dialog" aria-modal="true" aria-labelledby="checkout-title" className="relative w-full max-w-2xl bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-6 transition-colors">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-[#222936]">
           <div>
-            <h2 className="text-base font-bold text-stone-900 dark:text-white">Campus Express Checkout</h2>
-            <p className="text-xs text-stone-500 dark:text-stone-400">Fast, zero-fee student marketplace handoff</p>
+            <h2 id="checkout-title" className="text-base font-bold text-stone-900 dark:text-white">Campus Checkout</h2>
+            <p className="text-xs text-stone-500 dark:text-stone-400">Reserve your items and pay the seller at the campus handoff</p>
           </div>
           {step !== 5 && (
             <button
@@ -166,6 +196,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
         {/* Step Contents */}
         <div className="p-6">
+          {orderError && (
+            <div role="alert" className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-800 dark:text-rose-300 text-xs rounded-xl">
+              {orderError}
+            </div>
+          )}
           {step === 1 && (
             <form onSubmit={handleNextStep} className="space-y-4 text-xs">
               <h3 className="text-sm font-bold text-stone-900 dark:text-white">1. Student Contact Information</h3>
@@ -248,7 +283,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   >
                     {EKITI_CAMPUSES.map((c) => (
                       <option key={c.id} value={c.name}>
-                        {c.name} ({c.shortName})
+                        {c.name}
                       </option>
                     ))}
                   </select>
@@ -327,6 +362,24 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <div className="space-y-4 text-xs">
               <h3 className="text-sm font-bold text-stone-900 dark:text-white">3. Order Summary & Item Review</h3>
 
+              {hasIssues && (
+                <div role="alert" className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800/50 rounded-xl space-y-2 text-amber-900 dark:text-amber-200">
+                  <p className="font-semibold">Fix these before you can place your order:</p>
+                  <ul className="space-y-1.5">
+                    {issues.map((issue) => (
+                      <li key={issue.productId + issue.kind} className="flex items-center justify-between gap-2">
+                        <span>{issue.message}</span>
+                        {issue.kind === "insufficient_stock" ? (
+                          <button type="button" onClick={() => updateQuantity(issue.productId, issue.maxQuantity - (cart.find((c) => c.product_id === issue.productId)?.quantity ?? 0))} className="shrink-0 px-2 py-1 rounded bg-amber-200 dark:bg-amber-900/60 font-semibold cursor-pointer">Reduce to {issue.maxQuantity}</button>
+                        ) : (
+                          <button type="button" onClick={() => removeFromCart(issue.productId)} className="shrink-0 px-2 py-1 rounded bg-amber-200 dark:bg-amber-900/60 font-semibold cursor-pointer">Remove</button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               {/* Items List */}
               <div className="max-h-52 overflow-y-auto space-y-2 border border-stone-200 dark:border-[#262e3d] rounded-xl p-3 bg-stone-50 dark:bg-[#11151c]">
                 {cart.map((item) => (
@@ -369,7 +422,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </div>
                 )}
                 <div className="flex justify-between text-stone-600 dark:text-stone-400">
-                  <span>Campus Handoff Fee</span>
+                  <span>Campus handoff fee</span>
                   <span className="text-emerald-700 dark:text-emerald-400 font-semibold">Free (₦0)</span>
                 </div>
                 <div className="flex justify-between font-bold text-sm text-stone-900 dark:text-white pt-2 border-t border-stone-200 dark:border-[#222936]">
@@ -388,10 +441,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <span>Back</span>
                 </button>
                 <button
+                  disabled={hasIssues || cart.length === 0}
                   onClick={() => setStep(4)}
-                  className="px-5 py-2.5 bg-stone-900 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
+                  className="px-5 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed bg-stone-900 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
                 >
-                  <span>Select Payment Method</span>
+                  <span>Choose how you will pay</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -402,33 +456,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <div className="space-y-4 text-xs">
               <h3 className="text-sm font-bold text-stone-900 dark:text-white">4. Select Payment Method</h3>
               <p className="text-stone-500 dark:text-stone-400">
-                Supports campus balance, card, or physical cash upon verified peer meetup.
+                CampusMart does not process online payments. You pay the seller directly when you meet on campus.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {[
                   {
-                    id: 'campus_pay',
-                    title: 'CampusPay Student Card',
-                    desc: 'Instant escrow deduction from your university ID balance',
-                    icon: <Wallet className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  },
-                  {
-                    id: 'card',
-                    title: 'Credit / Debit Card',
-                    desc: 'Secured via standard student merchant gateway',
-                    icon: <CreditCard className="w-5 h-5 text-brand-600 dark:text-brand-400" />
-                  },
-                  {
                     id: 'cash_on_pickup',
-                    title: 'Cash on Campus Pickup',
-                    desc: 'Pay seller in person once you inspect the item',
+                    title: 'Cash at handoff',
+                    desc: 'Pay the seller in cash after you inspect the item',
                     icon: <Coins className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   },
                   {
                     id: 'bank_transfer',
-                    title: 'Direct Campus Bank Wire',
-                    desc: 'Direct peer-to-peer wire transfer via student app',
+                    title: 'Bank transfer at handoff',
+                    desc: 'Transfer to the seller when you meet; confirm details in chat first',
                     icon: <Building className="w-5 h-5 text-stone-600 dark:text-stone-400" />
                   }
                 ].map((m) => (
@@ -454,7 +496,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <div className="p-3 bg-brand-50 dark:bg-brand-950/30 border border-brand-200/80 dark:border-brand-800/40 rounded-xl flex items-center gap-2 text-brand-900 dark:text-brand-200">
                 <ShieldCheck className="w-5 h-5 text-brand-700 dark:text-brand-400 shrink-0" />
                 <p className="text-[11px]">
-                  Funds are held in CampusMart Escrow and only released when both buyer and seller confirm physical meetup and item condition.
+                  What happens next: each seller is notified, agrees a meeting time with you in chat, and you pay at the handoff on {shortCampus(campus)}. Nothing is charged online.
                 </p>
               </div>
 
@@ -468,12 +510,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <span>Back</span>
                 </button>
                 <button
-                  disabled={isProcessing}
+                  disabled={isProcessing || hasIssues}
                   onClick={executeOrder}
                   className="px-6 py-2.5 bg-stone-900 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 rounded-xl font-bold flex items-center gap-2 shadow-sm disabled:opacity-50 transition-colors"
                 >
                   {isProcessing ? (
-                    <span>Authorizing Escrow...</span>
+                    <span>Placing order...</span>
                   ) : (
                     <>
                       <span>Confirm & Place Order ({formatNaira(total)})</span>
@@ -512,11 +554,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
                 <div className="flex justify-between">
                   <span>Payment Status:</span>
-                  <span className="text-emerald-700 dark:text-emerald-400 font-semibold uppercase">{paymentMethod === 'cash_on_pickup' ? 'Cash Pending' : 'Paid / Escrow Locked'}</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-semibold uppercase">{paymentMethod === 'cash_on_pickup' ? 'Pay cash at handoff' : 'Pay by transfer at handoff'}</span>
                 </div>
                 <div className="flex justify-between font-bold text-stone-900 dark:text-white pt-1 border-t border-stone-200 dark:border-[#222936]">
-                  <span>Total Paid:</span>
-                  <span className="font-mono tabular-nums text-stone-900 dark:text-brand-400">{formatNaira(total)}</span>
+                  <span>Total to pay at handoff:</span>
+                  <span className="font-mono tabular-nums text-stone-900 dark:text-brand-400">{formatNaira(placedTotal)}</span>
                 </div>
               </div>
 

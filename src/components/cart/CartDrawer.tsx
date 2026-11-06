@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { X, Trash2, ShoppingBag, ArrowRight, Tag, ShieldCheck } from 'lucide-react';
 import { formatNaira } from '../../lib/formatters';
+import { useMarketplace } from '../../context/MarketplaceContext';
+import { useAuth } from '../../context/AuthContext';
+import { getCartIssues } from '../../lib/shopping';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -22,6 +25,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
     total
   } = useCart();
 
+  const { products, stores } = useMarketplace();
+  const { selectedCampus, currentUser } = useAuth();
+  const issues = getCartIssues(cart, products, stores, selectedCampus);
+  const issueFor = (id: string) => issues.find((i) => i.productId === id);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   const [inputCode, setInputCode] = useState('');
   const [promoMessage, setPromoMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
@@ -38,7 +55,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true" aria-label="Your bag">
       {/* Backdrop */}
       <div
         onClick={onClose}
@@ -52,7 +69,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-stone-900 dark:text-brand-400" />
               <h2 className="text-base font-bold text-stone-900 dark:text-white">Your Student Bag</h2>
-              <span className="text-xs text-stone-500 dark:text-stone-400 font-mono">({cart.length} items)</span>
+              <span className="text-xs text-stone-500 dark:text-stone-400 font-mono">({cart.length} {cart.length === 1 ? "item" : "items"})</span>
             </div>
             <button
               onClick={onClose}
@@ -93,6 +110,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                       alt={item.product.name}
                       className="w-16 h-16 rounded-lg object-cover bg-stone-200 dark:bg-[#1c222e] shrink-0"
                       referrerPolicy="no-referrer"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }}
                     />
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
@@ -102,15 +120,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                           </h4>
                           <button
                             onClick={() => removeFromCart(item.product_id)}
-                            className="text-stone-400 hover:text-rose-500 dark:hover:text-rose-400 p-0.5 transition-colors"
+                            className="text-stone-500 hover:text-rose-600 dark:hover:text-rose-400 p-1.5 transition-colors"
                             aria-label={`Remove ${item.product.name} from bag`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                         <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate">
-                          {item.product.store_name}
+                          {item.product.store_name} Â· {formatNaira(item.product.discount_price ?? item.product.price)} each
                         </p>
+                        {issueFor(item.product_id) && (
+                          <p role="alert" className="mt-1 text-[11px] font-medium text-amber-800 dark:text-amber-300">
+                            {issueFor(item.product_id)!.message}
+                          </p>
+                        )}
                       </div>
 
                       <div className="flex items-center justify-between pt-2">
@@ -118,7 +141,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                         <div className="flex items-center border border-stone-300 dark:border-[#2b3545] rounded bg-white dark:bg-[#1a202c]">
                           <button
                             onClick={() => updateQuantity(item.product_id, -1)}
-                            className="px-2 py-0.5 text-xs text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white"
+                            aria-label={`Decrease quantity of ${item.product.name}`}
+                            className="px-3 py-1.5 text-xs text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white"
                           >
                             -
                           </button>
@@ -128,7 +152,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                           <button
                             disabled={item.quantity >= item.product.stock}
                             onClick={() => updateQuantity(item.product_id, 1)}
-                            className="px-2 py-0.5 text-xs text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white disabled:opacity-30"
+                            aria-label={`Increase quantity of ${item.product.name}`}
+                            className="px-3 py-1.5 text-xs text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white disabled:opacity-30"
                           >
                             +
                           </button>
@@ -206,30 +231,31 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>Campus Pickup / Delivery</span>
-                  <span className="text-emerald-700 dark:text-emerald-400 font-medium">Free (Quad Handoff)</span>
+                  <span>Campus handoff</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-medium">Free Â· pay seller on pickup</span>
                 </div>
                 <div className="flex justify-between text-sm font-bold text-stone-900 dark:text-white pt-2 border-t border-stone-200 dark:border-[#222936]">
-                  <span>Total Due</span>
+                  <span>Total to pay at handoff</span>
                   <span className="font-mono tabular-nums text-stone-900 dark:text-brand-400">{formatNaira(total)}</span>
                 </div>
               </div>
 
               {/* Checkout Button */}
               <button
+                disabled={issues.length > 0}
                 onClick={() => {
                   onClose();
                   onProceedCheckout();
                 }}
-                className="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
+                className="w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
               >
-                <span>Proceed to Campus Checkout</span>
+                <span>{currentUser ? "Continue to checkout" : "Sign in to check out"}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <div className="flex items-center justify-center gap-1 text-[11px] text-stone-500 dark:text-stone-400">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span>Protected by CampusMart Student Escrow Guarantee</span>
+                <span>No online payment: you pay the seller when you meet on campus.</span>
               </div>
             </div>
           )}

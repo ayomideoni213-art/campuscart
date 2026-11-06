@@ -19,6 +19,10 @@ import { StorageService } from '../services/storage';
 import { getPublishedProducts, getActiveStores, insertStore, updateStoreRow } from '../services/supabasecatalog';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from './AuthContext';
+import { useCart } from './CartContext';
+import { getCartIssues } from '../lib/shopping';
+
+export type CatalogStatus = 'loading' | 'ready' | 'error';
 
 /** Result of saving a store: always saved locally; `synced` is true once Supabase has it too. */
 export interface StoreSaveResult {
@@ -52,6 +56,9 @@ function ensureUniqueSlug(base: string, existing: Store[], ownId?: string): stri
 
 interface MarketplaceContextType {
   products: Product[];
+  /** Loading state of the product catalogue (Supabase when configured). */
+  productsStatus: CatalogStatus;
+  reloadProducts: () => void;
   stores: Store[];
   categories: Category[];
   orders: Order[];
@@ -72,6 +79,7 @@ interface MarketplaceContextType {
   createStore: (storeData: Omit<Store, 'id' | 'created_at' | 'rating' | 'reviews_count' | 'total_sales'>) => Store;
 
   // Order actions
+  /** Throws an Error with a user-readable message when the order cannot be placed. */
   placeOrder: (
     items: OrderItem[],
     deliveryInfo: DeliveryDetails,
@@ -113,7 +121,10 @@ const MarketplaceContext = createContext<MarketplaceContextType | undefined>(und
 
 export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser } = useAuth();
+  const { cart, syncCartProducts } = useCart();
 
+  const [productsStatus, setProductsStatus] = useState<CatalogStatus>(isSupabaseConfigured ? 'loading' : 'ready');
+  const [productsReloadKey, setProductsReloadKey] = useState(0);
   const [products, setProducts] = useState<Product[]>(() => StorageService.getProducts());
   const [stores, setStores] = useState<Store[]>(() => StorageService.getStores());
   const [categories, setCategories] = useState<Category[]>(() => StorageService.getCategories());
@@ -126,12 +137,31 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   // Save to persistent storage
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setProductsStatus('ready');
+      return;
+    }
+    let cancelled = false;
+    setProductsStatus('loading');
     getPublishedProducts()
-      .then((data) => setProducts(data))
+      .then((data) => {
+        if (cancelled) return;
+        setProducts(data);
+        setProductsStatus('ready');
+      })
       .catch((error) => {
         console.error('Could not load products from Supabase:', error);
+        if (!cancelled) setProductsStatus('error');
       });
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [productsReloadKey]);
+
+  // Keep saved bag lines in step with the live catalogue so prices, stock and totals stay accurate.
+  useEffect(() => {
+    if (productsStatus === 'ready') syncCartProducts(products);
+  }, [products, productsStatus]);
 
   // Load shared stores from Supabase. In production the database is the source of truth
   // (so fake local demo stores never show to real users); in dev they are merged with the demo data.
@@ -317,11 +347,27 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     subtotal: number,
     discountAmount: number
   ): Order => {
-    const orderNumber = `CM-${Math.floor(1000 + Math.random() * 9000)}`;
+    if (!currentUser) throw new Error('Please sign in to place an order.');
+    if (items.length === 0) throw new Error('Your bag is empty.');
+
+    // Re-check the live catalogue so stale bags can never oversell a listing.
+    const stale = getCartIssues(
+      items.map((i) => ({
+        product_id: i.product_id,
+        quantity: i.quantity,
+        product: products.find((p) => p.id === i.product_id) ?? ({ name: i.product_name } as Product)
+      })),
+      products,
+      stores,
+      deliveryInfo.campus
+    );
+    if (stale.length > 0) throw new Error(stale[0].message);
+
+    const orderNumber = `CM-${Date.now().toString(36).toUpperCase().slice(-6)}`;
     const newOrder: Order = {
       id: `ord-${Date.now()}`,
       order_number: orderNumber,
-      customer_id: currentUser?.id || 'guest',
+      customer_id: currentUser.id,
       customer_name: deliveryInfo.student_name,
       customer_email: deliveryInfo.student_email,
       delivery_info: deliveryInfo,
@@ -331,7 +377,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       delivery_fee: 0,
       total_amount: Math.max(0, subtotal - discountAmount),
       payment_method: paymentMethod,
-      payment_status: paymentMethod === 'cash_on_pickup' ? 'pending' : 'paid',
+      // No online payment is processed: the buyer pays the seller directly at handoff.
+      payment_status: 'pending',
       order_status: 'confirmed',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -642,6 +689,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     <MarketplaceContext.Provider
       value={{
         products,
+        productsStatus,
+        reloadProducts: () => setProductsReloadKey((k) => k + 1),
         stores,
         categories,
         orders,

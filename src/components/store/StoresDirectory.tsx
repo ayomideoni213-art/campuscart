@@ -1,5 +1,7 @@
 import React from 'react';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import { useAuth } from '../../context/AuthContext';
+import { shortCampus } from '../../lib/shopping';
 import { Store as StoreIcon, ShieldCheck, Star, MapPin, ArrowRight, Building2 } from 'lucide-react';
 
 interface StoresDirectoryProps {
@@ -12,6 +14,15 @@ export const StoresDirectory: React.FC<StoresDirectoryProps> = ({
   onOpenCreateStore
 }) => {
   const { stores } = useMarketplace();
+  const { selectedCampus, setSelectedCampus } = useAuth();
+
+  // A store is shown when it sells on the selected campus (its home campus or any campus it serves).
+  const visibleStores = stores.filter(
+    (s) =>
+      selectedCampus === 'All' ||
+      s.campus_location === selectedCampus ||
+      (s.campuses_served ?? []).includes(selectedCampus)
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -38,16 +49,36 @@ export const StoresDirectory: React.FC<StoresDirectoryProps> = ({
       </div>
 
       {/* Stores Grid / Empty State */}
-      {stores.length === 0 ? (
+      {stores.length > 0 && (
+        <p className="text-xs text-stone-500 dark:text-stone-400" aria-live="polite">
+          {visibleStores.length} {visibleStores.length === 1 ? 'store' : 'stores'}{' '}
+          {selectedCampus === 'All' ? 'across all Ekiti campuses' : `serving ${shortCampus(selectedCampus)}`}
+        </p>
+      )}
+
+      {visibleStores.length === 0 ? (
         <div className="py-20 text-center bg-white dark:bg-[#151921] rounded-2xl border border-stone-200 dark:border-[#262e3d] p-8 space-y-4 max-w-md mx-auto">
           <div className="w-14 h-14 bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center mx-auto">
             <StoreIcon className="w-7 h-7" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-lg font-bold text-stone-900 dark:text-white">No stores yet</h3>
+            <h3 className="text-lg font-bold text-stone-900 dark:text-white">
+              {stores.length === 0 ? 'No stores yet' : `No stores serve ${shortCampus(selectedCampus)} yet`}
+            </h3>
             <p className="text-xs text-stone-500 dark:text-stone-400">
-              Be the first student to create a store on CampusMart.
+              {stores.length === 0
+                ? 'Be the first student to create a store on CampusMart.'
+                : 'Try another campus, or open a store that serves this one.'}
             </p>
+            {stores.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setSelectedCampus('All')}
+                className="text-xs font-semibold text-brand-700 dark:text-brand-400 underline cursor-pointer"
+              >
+                Show stores from all campuses
+              </button>
+            )}
           </div>
           <button
             onClick={onOpenCreateStore}
@@ -58,9 +89,18 @@ export const StoresDirectory: React.FC<StoresDirectoryProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {stores.map((store) => (
+          {visibleStores.map((store) => (
             <div
               key={store.id}
+              role="link"
+              tabIndex={0}
+              aria-label={`Open ${store.name}`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelectStore(store.id);
+                }
+              }}
               onClick={() => onSelectStore(store.id)}
               className="group cursor-pointer bg-white dark:bg-[#151921] rounded-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden hover:shadow-md dark:hover:border-brand-400/50 transition-all flex flex-col justify-between"
             >

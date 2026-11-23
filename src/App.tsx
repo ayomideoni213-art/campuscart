@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MotionConfig, motion } from 'motion/react';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider, useCart } from './context/CartContext';
@@ -290,6 +291,12 @@ function CampusMartApp() {
 
       {/* 4. Main Body Content Based on Active View */}
       <main id="main-content" className="flex-1">
+        <motion.div
+          key={`${currentView}-${viewParam ?? ''}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+        >
         {/* VIEW: HOME MARKETPLACE */}
         {currentView === 'home' && (
           <div className="space-y-16 pb-12">
@@ -936,6 +943,7 @@ function CampusMartApp() {
 
         {/* VIEW: ADMIN DASHBOARD */}
         {currentView === 'admin-dashboard' && currentRole === 'admin' && <AdminDashboard />}
+        </motion.div>
       </main>
 
       {/* 5. Drawers & Modals */}
@@ -1050,15 +1058,17 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 export default function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <AuthProvider>
-          <CartProvider>
-            <MarketplaceProvider>
-              <CampusMartApp />
-            </MarketplaceProvider>
-          </CartProvider>
-        </AuthProvider>
-      </ThemeProvider>
+      <MotionConfig reducedMotion="user">
+        <ThemeProvider>
+          <AuthProvider>
+            <CartProvider>
+              <MarketplaceProvider>
+                <CampusMartApp />
+              </MarketplaceProvider>
+            </CartProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </MotionConfig>
     </ErrorBoundary>
   );
 }

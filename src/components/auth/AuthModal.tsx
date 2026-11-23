@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { backdropVariants, dialogVariants, stepVariants, alertVariants } from '../../lib/motion';
 import { useAuth } from '../../context/AuthContext';
 import { DEMO_USERS } from '../../services/storage';
 import { EKITI_CAMPUSES, DEFAULT_CAMPUS } from '../../data/campuses';
@@ -112,8 +114,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }, 30);
     return () => window.clearTimeout(id);
   }, [isOpen, mode, registerStep]);
-
-  if (!isOpen) return null;
 
   const handleForgotPassword = async () => {
     setError(null);
@@ -235,8 +235,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" className="relative w-full max-w-lg bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-6 transition-all duration-200">
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          variants={backdropVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) onClose();
+          }}
+        >
+          <motion.div
+            ref={dialogRef}
+            variants={dialogVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="auth-modal-title"
+            className="relative w-full max-w-lg bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-6"
+          >
         
         {/* Header Bar */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-[#222936]">
@@ -366,25 +387,49 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </button>
           </div>
 
-          {error && (
-            <div role="alert" className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs rounded-xl flex items-start gap-2">
-              <span className="font-bold">Error:</span>
-              <span>{error}</span>
-            </div>
-          )}
+          <AnimatePresence initial={false}>
+            {error && (
+              <motion.div
+                key="auth-error"
+                variants={alertVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                role="alert"
+                className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs rounded-xl flex items-start gap-2"
+              >
+                <span className="font-bold">Error:</span>
+                <span>{error}</span>
+              </motion.div>
+            )}
 
-          {notice && (
-            <div role="status" className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs rounded-xl flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-              <span>{notice}</span>
-            </div>
-          )}
+            {notice && (
+              <motion.div
+                key="auth-notice"
+                variants={alertVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                role="status"
+                className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs rounded-xl flex items-start gap-2"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" aria-hidden="true" />
+                <span>{notice}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* ======================================================== */}
           {/* STEP 1: REGISTRATION INTENT SELECTION (TWO INTERACTIVE CARDS) */}
           {/* ======================================================== */}
           {mode === 'register' && registerStep === 'intent' && (
-            <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <motion.div
+              key="intent-step"
+              variants={stepVariants}
+              initial="hidden"
+              animate="visible"
+              className="space-y-4"
+            >
               <div className="text-center mb-4">
                 <h4 className="text-base font-extrabold text-stone-900 dark:text-white">
                   How will you use CampusMart?
@@ -402,10 +447,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   ref={firstIntentRef}
                   aria-pressed={intent === 'shop'}
                   onClick={() => handleSelectIntent('shop')}
-                  className="group relative flex flex-col items-start p-5 bg-stone-50 hover:bg-emerald-50/50 dark:bg-[#181e28] dark:hover:bg-[#1a2624] border-2 border-stone-200 hover:border-emerald-500 dark:border-[#262e3d] dark:hover:border-emerald-500 rounded-2xl text-left transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className={`group relative flex flex-col items-start p-5 rounded-2xl text-left transition-all duration-200 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 border-2 ${
+                    intent === 'shop'
+                      ? 'bg-emerald-50/60 dark:bg-[#162420] border-emerald-500 ring-1 ring-emerald-500/30'
+                      : 'bg-stone-50 hover:bg-emerald-50/50 dark:bg-[#181e28] dark:hover:bg-[#1a2624] border-stone-200 hover:border-emerald-500 dark:border-[#262e3d] dark:hover:border-emerald-500'
+                  }`}
                 >
+                  {intent === 'shop' && (
+                    <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">
+                      <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
+                      Selected
+                    </span>
+                  )}
                   <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-                    <ShoppingBag className="w-6 h-6" />
+                    <ShoppingBag className="w-6 h-6" aria-hidden="true" />
                   </div>
                   <h4 className="text-sm font-black text-stone-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                     I want to shop (student)
@@ -415,7 +470,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </p>
                   <div className="mt-4 pt-3 border-t border-stone-200 dark:border-[#262e3d] w-full flex items-center justify-between text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
                     <span>Continue as a shopper</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                   </div>
                 </button>
 
@@ -424,10 +479,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   type="button"
                   aria-pressed={intent === 'sell'}
                   onClick={() => handleSelectIntent('sell')}
-                  className="group relative flex flex-col items-start p-5 bg-stone-50 hover:bg-brand-50/50 dark:bg-[#181e28] dark:hover:bg-[#282216] border-2 border-stone-200 hover:border-brand-500 dark:border-[#262e3d] dark:hover:border-brand-500 rounded-2xl text-left transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className={`group relative flex flex-col items-start p-5 rounded-2xl text-left transition-all duration-200 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 border-2 ${
+                    intent === 'sell'
+                      ? 'bg-brand-50/70 dark:bg-[#17241c] border-brand-500 ring-1 ring-brand-500/30'
+                      : 'bg-stone-50 hover:bg-brand-50/50 dark:bg-[#181e28] dark:hover:bg-[#18261d] border-stone-200 hover:border-brand-500 dark:border-[#262e3d] dark:hover:border-brand-500'
+                  }`}
                 >
+                  {intent === 'sell' && (
+                    <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-600 text-white text-[10px] font-bold">
+                      <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
+                      Selected
+                    </span>
+                  )}
                   <div className="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-950/70 text-brand-700 dark:text-brand-300 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-                    <Store className="w-6 h-6" />
+                    <Store className="w-6 h-6" aria-hidden="true" />
                   </div>
                   <h4 className="text-sm font-black text-stone-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">
                     I want to sell (entrepreneur)
@@ -437,7 +502,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </p>
                   <div className="mt-4 pt-3 border-t border-stone-200 dark:border-[#262e3d] w-full flex items-center justify-between text-[11px] font-bold text-brand-700 dark:text-brand-400">
                     <span>Continue as a seller</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                   </div>
                 </button>
               </div>
@@ -451,13 +516,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       setMode('login');
                       setError(null);
                     }}
-                    className="font-bold text-brand-700 dark:text-brand-400 hover:underline"
+                    className="font-bold text-brand-700 dark:text-brand-400 hover:underline cursor-pointer"
                   >
                     Sign In
                   </button>
                 </p>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* ======================================================== */}
@@ -720,7 +785,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-3 py-3 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
+                className="w-full mt-3 py-3 bg-brand-600 dark:bg-brand-400 hover:bg-brand-700 dark:hover:bg-brand-300 active:scale-[0.98] disabled:opacity-60 text-white dark:text-stone-950 font-bold rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>
                   {isSubmitting
@@ -731,12 +796,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     ? 'Create my shopper account'
                     : 'Create my seller account'}
                 </span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </button>
             </form>
           )}
         </div>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

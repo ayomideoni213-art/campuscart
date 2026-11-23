@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
+import { backdropVariants, FAST_TRANSITION } from '../../lib/motion';
 import { Product, Store, Review } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -119,7 +121,15 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <motion.div
+      variants={backdropVariants}
+      initial="hidden"
+      animate="visible"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="product-title" className="relative w-full max-w-4xl focus:outline-none bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-8 max-h-[90vh] flex flex-col transition-colors">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-[#222936]">
@@ -144,7 +154,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             <div className="space-y-3">
               <div className="aspect-4/3 w-full bg-stone-100 dark:bg-[#1c222e] rounded-xl overflow-hidden border border-stone-200 dark:border-[#262e3d]">
                 {images[selectedImage] && !failedImages[images[selectedImage]] ? (
-                  <img
+                  <motion.img
+                    key={selectedImage}
+                    initial={{ opacity: 0.4 }}
+                    animate={{ opacity: 1 }}
+                    transition={FAST_TRANSITION}
                     src={images[selectedImage]}
                     alt={product.name}
                     className={`w-full h-full object-cover ${purchasable ? "" : "opacity-60 grayscale"}`}
@@ -554,6 +568,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };

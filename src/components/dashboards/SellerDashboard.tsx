@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { alertVariants, FAST_TRANSITION } from '../../lib/motion';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { Product, Store, OrderStatus } from '../../types';
@@ -533,26 +535,83 @@ const SellerDashboardInner: React.FC<{ myStore: Store }> = ({ myStore }) => {
             </p>
           </div>
 
-          {storeSaved && (
-            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300 rounded-xl flex items-center gap-2 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span role="status">{storeSaveNotice || 'Store profile and brand settings saved successfully!'}</span>
-            </div>
-          )}
+          <AnimatePresence initial={false}>
+            {storeSaved && (
+              <motion.div
+                key="store-saved"
+                variants={alertVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300 rounded-xl flex items-center gap-2 font-medium"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+                <span role="status">{storeSaveNotice || 'Store profile and brand settings saved successfully!'}</span>
+              </motion.div>
+            )}
 
-          {storeSaveError && (
-            <div role="alert" className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 rounded-xl flex items-center gap-2 font-medium">
-              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
-              <span>{storeSaveError}</span>
-            </div>
-          )}
+            {storeSaveError && (
+              <motion.div
+                key="store-save-error"
+                variants={alertVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                role="alert"
+                className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 rounded-xl flex items-center gap-2 font-medium"
+              >
+                <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden="true" />
+                <span>{storeSaveError}</span>
+              </motion.div>
+            )}
 
-          {uploadError && (
-            <div role="alert" className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 rounded-xl flex items-center gap-2 font-medium">
-              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
-              <span>{uploadError}</span>
-            </div>
-          )}
+            {uploadError && (
+              <motion.div
+                key="upload-error"
+                variants={alertVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                role="alert"
+                className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 rounded-xl flex items-center gap-2 font-medium"
+              >
+                <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden="true" />
+                <span>{uploadError}</span>
+              </motion.div>
+            )}
+
+            {uploadLoading && (
+              <motion.div
+                key="upload-progress"
+                variants={alertVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                role="status"
+                aria-live="polite"
+                className="p-3 bg-brand-50 dark:bg-brand-950/30 border border-brand-200 dark:border-brand-800/40 rounded-xl space-y-1.5"
+              >
+                <div className="flex items-center justify-between text-xs font-semibold text-brand-800 dark:text-brand-300">
+                  <span className="capitalize">Uploading {uploadLoading} image...</span>
+                  <span className="font-mono tabular-nums">{uploadProgress}%</span>
+                </div>
+                <div
+                  role="progressbar"
+                  aria-valuenow={uploadProgress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  className="h-1.5 w-full rounded-full bg-brand-200/70 dark:bg-brand-900/60 overflow-hidden"
+                >
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: Math.max(0.05, uploadProgress / 100) }}
+                    transition={FAST_TRANSITION}
+                    className="h-full w-full origin-left bg-brand-600 dark:bg-brand-400 rounded-full"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <form onSubmit={handleSaveStore} className="space-y-6">
             {/* 1. BRAND IMAGES & PROFILE THUMBNAIL */}

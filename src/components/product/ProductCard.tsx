@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
-import { Heart, ShoppingBag, Star, ShieldCheck, MapPin, ImageOff } from 'lucide-react';
+import { Heart, ShoppingBag, Star, ShieldCheck, MapPin, ImageOff, Check } from 'lucide-react';
 import { formatNaira } from '../../lib/formatters';
 import {
   getAvailability,
@@ -26,6 +26,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect, onS
   const { selectedCampus } = useAuth();
   const { stores } = useMarketplace();
   const [imageFailed, setImageFailed] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+
+  useEffect(() => {
+    if (!justAdded) return;
+    const t = window.setTimeout(() => setJustAdded(false), 1200);
+    return () => window.clearTimeout(t);
+  }, [justAdded]);
 
   const store = stores.find((s) => s.id === product.store_id);
   const wishlisted = isInWishlist(product.id);
@@ -43,12 +50,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect, onS
       : 'Unavailable'
     : !onSelectedCampus
     ? `Not on ${shortCampus(selectedCampus)}`
+    : justAdded
+    ? 'Added'
     : 'Add';
 
   return (
     <article
       aria-label={product.name}
-      className="group relative flex flex-col bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] hover:border-stone-300 dark:hover:border-[#384358] overflow-hidden hover:shadow-md transition-all duration-200"
+      className="group relative flex flex-col bg-white dark:bg-[#151921] rounded-xl border border-stone-200 dark:border-[#262e3d] hover:border-brand-300 dark:hover:border-brand-500/40 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
     >
       {/* Image */}
       <button
@@ -178,17 +187,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect, onS
           <button
             type="button"
             disabled={!canAdd}
-            onClick={() => addToCart(product, 1)}
+            onClick={() => {
+              addToCart(product, 1);
+              setJustAdded(true);
+            }}
             aria-label={canAdd ? `Add ${product.name} to bag` : `${product.name}: ${addLabel}`}
-            className={`flex items-center gap-1 px-3 py-2 min-h-[40px] rounded-lg text-xs font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${
-              canAdd
-                ? 'bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold shadow-xs cursor-pointer'
-                : 'bg-stone-100 dark:bg-[#1c222e] text-stone-500 dark:text-stone-400 cursor-not-allowed'
+            className={`flex items-center gap-1 px-3 py-2 min-h-[40px] rounded-lg text-xs font-semibold transition-all active:scale-[0.96] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${
+              !canAdd
+                ? 'bg-stone-100 dark:bg-[#1c222e] text-stone-500 dark:text-stone-400 cursor-not-allowed'
+                : justAdded
+                ? 'bg-emerald-600 text-white dark:bg-emerald-400 dark:text-stone-950 font-bold shadow-xs cursor-pointer'
+                : 'bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold shadow-xs cursor-pointer'
             }`}
           >
-            <ShoppingBag className="w-3.5 h-3.5" aria-hidden="true" />
+            {justAdded ? (
+              <Check className="w-3.5 h-3.5" aria-hidden="true" />
+            ) : (
+              <ShoppingBag className="w-3.5 h-3.5" aria-hidden="true" />
+            )}
             <span>{addLabel}</span>
           </button>
+          <span className="sr-only" aria-live="polite">
+            {justAdded ? `${product.name} added to your bag` : ''}
+          </span>
         </div>
       </div>
     </article>

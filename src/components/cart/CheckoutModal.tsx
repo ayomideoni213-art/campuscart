@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { backdropVariants, dialogVariants, stepVariants, NORMAL_TRANSITION } from '../../lib/motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
@@ -76,8 +78,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
     setOrderError(null);
@@ -142,13 +142,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setIsProcessing(false);
       setStep(5);
 
-      // Trigger celebration confetti
+      // Trigger celebration confetti only when the user does not prefer reduced motion
       try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!reduceMotion) {
+          confetti({
+            particleCount: 70,
+            spread: 65,
+            origin: { y: 0.6 }
+          });
+        }
       } catch (err) {
         console.error(err);
       }
@@ -156,8 +159,25 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto">
-      <div role="dialog" aria-modal="true" aria-labelledby="checkout-title" className="relative w-full max-w-2xl bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-6 transition-colors">
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          variants={backdropVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto"
+        >
+          <motion.div
+            variants={dialogVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="checkout-title"
+            className="relative w-full max-w-2xl bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-6 transition-colors"
+          >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-[#222936]">
           <div>
@@ -545,10 +565,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           )}
 
           {step === 5 && (
-            <div className="py-6 text-center space-y-4">
-              <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-xs border border-transparent dark:border-emerald-800/40">
-                <CheckCircle className="w-8 h-8" />
-              </div>
+            <motion.div
+              key="checkout-step-5"
+              variants={stepVariants}
+              initial="hidden"
+              animate="visible"
+              role="status"
+              className="py-6 text-center space-y-4"
+            >
+              <motion.div
+                initial={{ scale: 0.85, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={NORMAL_TRANSITION}
+                className="w-14 h-14 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-xs border border-transparent dark:border-emerald-800/40"
+              >
+                <CheckCircle className="w-8 h-8" aria-hidden="true" />
+              </motion.div>
               <div>
                 <h3 className="text-xl font-bold text-stone-900 dark:text-white">Order Placed Successfully!</h3>
                 <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
@@ -590,16 +622,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   View Order in Buyer Portal
                 </button>
                 <button
+                  type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 bg-stone-100 dark:bg-[#181e2a] text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-[#252c3c] rounded-xl text-xs font-semibold transition-colors"
+                  className="px-5 py-2.5 bg-stone-100 dark:bg-[#181e2a] text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-[#252c3c] active:scale-[0.98] rounded-xl text-xs font-semibold transition-all cursor-pointer"
                 >
                   Continue Shopping
                 </button>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

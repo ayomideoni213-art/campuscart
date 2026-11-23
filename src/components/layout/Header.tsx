@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { dropdownVariants, FAST_TRANSITION } from '../../lib/motion';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
@@ -341,17 +343,21 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onOpenCart}
-              className="flex items-center gap-1.5 px-3 py-2 min-h-[40px] bg-brand-600 hover:bg-brand-700 text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold rounded-lg text-xs shadow-sm transition-colors whitespace-nowrap ml-0.5 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+              className="flex items-center gap-1.5 px-3 py-2 min-h-[40px] bg-brand-600 hover:bg-brand-700 active:scale-[0.97] text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold rounded-lg text-xs shadow-sm transition-all whitespace-nowrap ml-0.5 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
               aria-label={`Shopping bag (${cartCount} ${cartCount === 1 ? 'item' : 'items'})`}
             >
               <ShoppingBag className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">Bag</span>
-              <span
+              <motion.span
+                key={cartCount}
+                initial={{ scale: 0.85, opacity: 0.6 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={FAST_TRANSITION}
                 aria-hidden="true"
                 className="bg-white/20 text-white dark:bg-stone-900 dark:text-brand-300 font-bold px-1.5 py-0.5 rounded text-[11px] leading-none tabular-nums"
               >
                 {cartCount}
-              </span>
+              </motion.span>
             </button>
 
             {/* User Profile / Auth */}
@@ -387,11 +393,16 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                 </button>
 
+                <AnimatePresence>
                 {userMenuOpen && (
-                  <div
+                  <motion.div
+                    variants={dropdownVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
                     role="menu"
                     aria-label="Account options"
-                    className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#171d27] border border-stone-200 dark:border-[#262e3d] rounded-xl shadow-xl py-2 z-50"
+                    className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#171d27] border border-stone-200 dark:border-[#262e3d] rounded-xl shadow-xl py-2 z-50 origin-top-right"
                   >
                     <div className="px-4 py-2 border-b border-stone-100 dark:border-[#222936]">
                       <p className="text-xs font-semibold text-stone-900 dark:text-white truncate">
@@ -457,8 +468,9 @@ export const Header: React.FC<HeaderProps> = ({
                       <LogOut className="w-4 h-4 text-rose-500 dark:text-rose-400" aria-hidden="true" />
                       Sign Out
                     </button>
-                  </div>
+                  </motion.div>
                 )}
+                </AnimatePresence>
               </div>
             ) : (
               <button
@@ -490,9 +502,14 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Tablet Search Bar (md to lg) */}
+      <AnimatePresence>
       {tabletSearchOpen && (
-        <div
+        <motion.div
           id="tablet-search-bar"
+          variants={dropdownVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
           className="hidden md:block lg:hidden border-t border-stone-200 dark:border-[#222936] bg-white dark:bg-[#0f131b] px-6 py-2.5"
         >
           <div className="max-w-xl mx-auto relative flex items-center">
@@ -523,14 +540,20 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Mobile Menu Drawer */}
+      <AnimatePresence>
       {mobileMenuOpen && (
-        <div
+        <motion.div
           id="mobile-menu"
-          className="md:hidden border-t border-stone-200 dark:border-[#222936] bg-white dark:bg-[#0f131b] px-4 pt-2 pb-4 space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto shadow-lg"
+          variants={dropdownVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className="md:hidden border-t border-stone-200 dark:border-[#222936] bg-white dark:bg-[#0f131b] px-4 pt-2 pb-4 space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto shadow-lg origin-top"
         >
           <div className="pt-2 pb-1 relative">
             <label htmlFor="mobile-search" className="sr-only">
@@ -574,8 +597,9 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="pt-1 border-t border-stone-100 dark:border-[#222936]">
             <ThemeToggle variant="mobile" />
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </header>
   );
 };

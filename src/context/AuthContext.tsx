@@ -286,7 +286,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (sessionData.session?.user.id !== currentUser.id) return;
 
       const row: Record<string, unknown> = {};
-      for (const key of ['full_name', 'bio', 'avatar_url', 'campus_name', 'campuses_served', 'phone', 'signup_intent'] as const) {
+      for (const key of ['full_name', 'bio', 'avatar_url', 'campus_name', 'campuses_served', 'phone', 'student_id', 'signup_intent'] as const) {
         if (key in updatedData) row[key] = updatedData[key];
       }
       if (currentUser.role === 'customer' && updatedData.role === 'seller') row.role = 'seller';

@@ -174,7 +174,7 @@ export async function uploadBrandImage(
       return {
         success: false,
         error: /bucket not found/i.test(message)
-          ? 'Image storage is not set up yet (missing "brand-images" bucket). Ask the site admin to run supabase_migration_v3.sql.'
+          ? 'Image storage is not set up yet (missing "brand-images" bucket). Ask the site admin to run supabase_migration_v4.sql.'
           : /row-level security|policy|unauthori[sz]ed|forbidden/i.test(message)
           ? 'You do not have permission to upload this image. Please sign in again and retry.'
           : message
@@ -190,4 +190,30 @@ export async function uploadBrandImage(
   } catch {
     return { success: false, error: 'Failed to read image file. Please try another image.' };
   }
+}
+
+/**
+ * Deletes an owner's image from the `brand-images` bucket when it is replaced or removed.
+ * Safely no-ops for local data URLs, external URLs, or offline/demo sessions.
+ */
+export async function deleteBrandImage(
+  publicUrl: string,
+  userId?: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!isSupabaseConfigured || !userId || !publicUrl || publicUrl.startsWith('data:')) {
+    return { success: true };
+  }
+
+  const marker = `/storage/v1/object/public/${BRAND_IMAGE_BUCKET}/`;
+  const idx = publicUrl.indexOf(marker);
+  if (idx === -1) return { success: true };
+
+  const objectPath = decodeURIComponent(publicUrl.slice(idx + marker.length).split('?')[0]);
+  if (!objectPath.startsWith(`${userId}/`)) {
+    return { success: false, error: 'You can only delete images uploaded by your own account.' };
+  }
+
+  const { error } = await supabase.storage.from(BRAND_IMAGE_BUCKET).remove([objectPath]);
+  if (error) return { success: false, error: error.message };
+  return { success: true };
 }

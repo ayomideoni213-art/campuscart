@@ -47,13 +47,16 @@ import {
   Star,
   Layers,
   CheckCircle2,
-  Bell
+  Bell,
+  BookOpen
 } from 'lucide-react';
 
 function CampusMartApp() {
   const { currentUser, currentRole, selectedCampus, setSelectedCampus } = useAuth();
-  const { products, productsStatus, reloadProducts, stores, categories, startConversation } = useMarketplace();
+  const { products, productsStatus, reloadProducts, stores, categories, blogPosts, startConversation } = useMarketplace();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [failedStoreLogos, setFailedStoreLogos] = useState<Record<string, boolean>>({});
+  const [failedStoryImages, setFailedStoryImages] = useState<Record<string, boolean>>({});
 
   // Navigation State
   const [heroImageFailed, setHeroImageFailed] = useState(false);

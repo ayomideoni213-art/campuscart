@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { dropdownVariants, FAST_TRANSITION } from '../../lib/motion';
+import {
+  backdropVariants,
+  drawerLeftVariants,
+  dropdownVariants,
+  FAST_TRANSITION
+} from '../../lib/motion';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
@@ -15,7 +20,10 @@ import {
   LayoutDashboard,
   Store,
   Menu,
-  X
+  X,
+  Home,
+  BookOpen,
+  User
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -50,33 +58,73 @@ export const Header: React.FC<HeaderProps> = ({
   const headerRef = useRef<HTMLElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const mobileToggleRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
   const tabletSearchRef = useRef<HTMLInputElement>(null);
+  const wasMobileOpenRef = useRef(false);
 
   // Reset avatar fallback when the signed-in user changes.
   useEffect(() => {
     setAvatarFailed(false);
   }, [currentUser?.avatar_url]);
 
-  // Close menus on Escape, outside clicks, or viewport breakpoint changes.
+  // Lock background scrolling while the mobile navigation drawer is open.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [mobileMenuOpen]);
+
+  // Move focus into the drawer when it opens, and restore focus to the menu toggle when it closes.
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      wasMobileOpenRef.current = true;
+      const id = window.setTimeout(() => {
+        drawerCloseRef.current?.focus();
+      }, 30);
+      return () => window.clearTimeout(id);
+    } else if (wasMobileOpenRef.current) {
+      wasMobileOpenRef.current = false;
+      mobileToggleRef.current?.focus();
+    }
+  }, [mobileMenuOpen]);
+
+  // Close menus on Escape, outside clicks, viewport breakpoint changes, and trap Tab inside mobile drawer.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        const wasMobileOpen = mobileMenuOpen;
         setUserMenuOpen(false);
         setMobileMenuOpen(false);
         setTabletSearchOpen(false);
-        if (wasMobileOpen) {
-          mobileToggleRef.current?.focus();
+        return;
+      }
+
+      if (e.key === 'Tab' && mobileMenuOpen && drawerRef.current) {
+        const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
         }
       }
     };
+
     const onPointerDown = (e: MouseEvent) => {
       const target = e.target as Node;
       if (userMenuRef.current && !userMenuRef.current.contains(target)) {
         setUserMenuOpen(false);
       }
       if (headerRef.current && !headerRef.current.contains(target)) {
-        setMobileMenuOpen(false);
         setTabletSearchOpen(false);
       }
     };
@@ -131,22 +179,31 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const navItems = [
-    { key: 'home', label: 'Home', active: currentView === 'home', onSelect: () => go('home') },
+    {
+      key: 'home',
+      label: 'Home',
+      icon: Home,
+      active: currentView === 'home',
+      onSelect: () => go('home')
+    },
     {
       key: 'stores',
       label: 'Student Stores',
+      icon: Store,
       active: currentView === 'stores' || currentView === 'store-detail',
       onSelect: () => go('stores')
     },
     {
       key: 'blog',
       label: 'Campus Stories',
+      icon: BookOpen,
       active: currentView === 'blog' || currentView === 'blog-detail',
       onSelect: () => go('blog')
     },
     {
       key: 'sell',
       label: currentRole === 'seller' ? 'My Store' : 'Sell on Campus',
+      icon: LayoutDashboard,
       active: currentView === 'become-seller' || currentView === 'seller-dashboard',
       onSelect: () => (currentRole === 'seller' ? go('seller-dashboard', 'products') : go('become-seller')),
       highlight: true
@@ -179,427 +236,625 @@ export const Header: React.FC<HeaderProps> = ({
   const userInitial = (currentUser?.full_name?.trim()?.[0] || 'U').toUpperCase();
 
   return (
-    <header
-      ref={headerRef}
-      className="sticky top-0 z-30 bg-white/95 dark:bg-[#0f131b]/95 backdrop-blur-md border-b border-stone-200 dark:border-[#222936] transition-colors"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-3 sm:gap-4">
-          {/* Zone 1: Brand wordmark */}
-          <div className="flex items-center shrink-0">
-            <button
-              type="button"
-              onClick={() => go('home')}
-              className="text-xl sm:text-2xl font-black tracking-tight text-stone-900 dark:text-white flex items-center gap-1.5 min-h-[40px] pr-1 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer"
-              aria-label="CampusMart Home"
-            >
-              <span
-                aria-hidden="true"
-                className="w-8 h-8 rounded-lg bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 flex items-center justify-center text-lg font-black shadow-sm transition-colors"
-              >
-                C
-              </span>
-              <span>CampusMart</span>
-            </button>
-          </div>
-
-          {/* Zone 2: Primary navigation (tablet & desktop) */}
-          <nav aria-label="Primary" className="hidden md:flex items-center gap-1 text-sm font-medium">
-            {navItems.map((item) => (
+    <>
+      <header
+        ref={headerRef}
+        className="sticky top-0 z-30 bg-white/95 dark:bg-[#0f131b]/95 backdrop-blur-md border-b border-stone-200 dark:border-[#222936] transition-colors pt-[env(safe-area-inset-top)]"
+      >
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-15 sm:h-16 gap-2 sm:gap-4">
+            {/* Zone 1: Mobile Drawer Toggle (left) + Brand Wordmark */}
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
               <button
-                key={item.key}
+                ref={mobileToggleRef}
                 type="button"
-                onClick={item.onSelect}
-                aria-current={item.active ? 'page' : undefined}
-                className={`relative px-3 py-2 min-h-[40px] rounded-lg whitespace-nowrap transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                  item.active
-                    ? 'text-brand-700 dark:text-brand-400 font-semibold bg-brand-50/70 dark:bg-brand-950/30 after:absolute after:left-3 after:right-3 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-brand-600 dark:after:bg-brand-400'
-                    : item.highlight
-                    ? 'text-brand-700 dark:text-brand-400 font-semibold hover:bg-brand-50 dark:hover:bg-brand-950/40'
-                    : 'text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-[#1c222e]'
-                }`}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-nav-drawer"
+                onClick={() => {
+                  setMobileMenuOpen((open) => !open);
+                  setUserMenuOpen(false);
+                }}
+                className="md:hidden inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 -ml-1 text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] active:scale-95 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 shrink-0"
+                aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               >
-                {item.label}
+                <Menu className="w-5 h-5" aria-hidden="true" />
               </button>
-            ))}
-          </nav>
 
-          {/* Desktop Search Bar */}
-          <div className="hidden lg:flex items-center flex-1 max-w-xs relative">
-            <label htmlFor="header-search" className="sr-only">
-              Search products, textbooks, and campus gear
-            </label>
-            <Search className="w-4 h-4 text-stone-500 dark:text-stone-400 absolute left-3 pointer-events-none" aria-hidden="true" />
-            <input
-              id="header-search"
-              type="search"
-              placeholder="Search products, textbooks, dorm gear..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSearchSubmit();
-              }}
-              className="w-full pl-9 pr-8 py-2 text-xs bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-[#1a202c] text-stone-900 dark:text-stone-100 placeholder:text-stone-500 dark:placeholder:text-stone-400 transition-colors"
-            />
-            {searchQuery && (
               <button
                 type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                aria-label="Clear search"
+                onClick={() => go('home')}
+                className="text-lg sm:text-2xl font-black tracking-tight text-stone-900 dark:text-white flex items-center gap-1.5 min-h-[40px] pr-1 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer truncate"
+                aria-label="CampusMart Home"
               >
-                &times;
-              </button>
-            )}
-          </div>
-
-          {/* Zone 3: Actions & User controls */}
-          <div className="flex items-center gap-1 sm:gap-1.5">
-            {/* Tablet Search Toggle (bridges md -> lg gap) */}
-            <button
-              type="button"
-              onClick={() => {
-                setTabletSearchOpen((open) => !open);
-                setUserMenuOpen(false);
-              }}
-              aria-expanded={tabletSearchOpen}
-              aria-controls="tablet-search-bar"
-              aria-label={tabletSearchOpen ? 'Close search' : 'Search products'}
-              title="Search products"
-              className="hidden md:inline-flex lg:hidden items-center justify-center min-w-[40px] min-h-[40px] p-2 text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-            >
-              {tabletSearchOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Search className="w-5 h-5" aria-hidden="true" />}
-            </button>
-
-            {/* Theme Toggle Button */}
-            <ThemeToggle variant="icon" />
-
-            {/* Wishlist Button */}
-            <button
-              type="button"
-              onClick={() => go('customer-dashboard', 'wishlist')}
-              className="inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              title="Saved Items"
-              aria-label={wishlist.length > 0 ? `Saved items (${wishlist.length})` : 'Saved items'}
-            >
-              <Heart className="w-5 h-5" aria-hidden="true" />
-              {wishlist.length > 0 && (
                 <span
                   aria-hidden="true"
-                  className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 flex items-center justify-center text-base sm:text-lg font-black shadow-sm transition-colors shrink-0"
                 >
-                  {wishlist.length}
+                  C
                 </span>
-              )}
-            </button>
-
-            {/* Messages Button */}
-            {currentUser && (
-              <button
-                type="button"
-                onClick={onOpenMessages}
-                className="inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                title="Student Messages"
-                aria-label={unreadMessagesCount > 0 ? `Messages (${unreadMessagesCount} unread)` : 'Messages'}
-              >
-                <MessageSquare className="w-5 h-5" aria-hidden="true" />
-                {unreadMessagesCount > 0 && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-brand-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
-                  >
-                    {unreadMessagesCount}
-                  </span>
-                )}
+                <span className="truncate">CampusMart</span>
               </button>
-            )}
+            </div>
 
-            {/* Notifications Button */}
-            {currentUser && (
-              <button
-                type="button"
-                onClick={onOpenNotifications}
-                className="inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                title="Notifications"
-                aria-label={
-                  unreadNotificationsCount > 0
-                    ? `Notifications (${unreadNotificationsCount} unread)`
-                    : 'Notifications'
-                }
-              >
-                <Bell className="w-5 h-5" aria-hidden="true" />
-                {unreadNotificationsCount > 0 && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-indigo-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
-                  >
-                    {unreadNotificationsCount}
-                  </span>
-                )}
-              </button>
-            )}
+            {/* Zone 2: Primary navigation (tablet & desktop) */}
+            <nav aria-label="Primary" className="hidden md:flex items-center gap-1 text-sm font-medium">
+              {navItems.map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={item.onSelect}
+                  aria-current={item.active ? 'page' : undefined}
+                  className={`relative px-3 py-2 min-h-[40px] rounded-lg whitespace-nowrap transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                    item.active
+                      ? 'text-brand-700 dark:text-brand-400 font-semibold bg-brand-50/70 dark:bg-brand-950/30 after:absolute after:left-3 after:right-3 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-brand-600 dark:after:bg-brand-400'
+                      : item.highlight
+                      ? 'text-brand-700 dark:text-brand-400 font-semibold hover:bg-brand-50 dark:hover:bg-brand-950/40'
+                      : 'text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-[#1c222e]'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
 
-            {/* Cart Button */}
-            <button
-              type="button"
-              onClick={onOpenCart}
-              className="flex items-center gap-1.5 px-3 py-2 min-h-[40px] bg-brand-600 hover:bg-brand-700 active:scale-[0.97] text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold rounded-lg text-xs shadow-sm transition-all whitespace-nowrap ml-0.5 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
-              aria-label={`Shopping bag (${cartCount} ${cartCount === 1 ? 'item' : 'items'})`}
-            >
-              <ShoppingBag className="w-4 h-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Bag</span>
-              <motion.span
-                key={cartCount}
-                initial={{ scale: 0.85, opacity: 0.6 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={FAST_TRANSITION}
-                aria-hidden="true"
-                className="bg-white/20 text-white dark:bg-stone-900 dark:text-brand-300 font-bold px-1.5 py-0.5 rounded text-[11px] leading-none tabular-nums"
-              >
-                {cartCount}
-              </motion.span>
-            </button>
-
-            {/* User Profile / Auth */}
-            {currentUser ? (
-              <div className="relative" ref={userMenuRef}>
+            {/* Desktop Search Bar */}
+            <div className="hidden lg:flex items-center flex-1 max-w-xs relative">
+              <label htmlFor="header-search" className="sr-only">
+                Search products, textbooks, and campus gear
+              </label>
+              <Search className="w-4 h-4 text-stone-500 dark:text-stone-400 absolute left-3 pointer-events-none" aria-hidden="true" />
+              <input
+                id="header-search"
+                type="search"
+                placeholder="Search products, textbooks, dorm gear..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearchSubmit();
+                }}
+                className="w-full pl-9 pr-8 py-2 text-xs bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-[#1a202c] text-stone-900 dark:text-stone-100 placeholder:text-stone-500 dark:placeholder:text-stone-400 transition-colors"
+              />
+              {searchQuery && (
                 <button
                   type="button"
-                  aria-haspopup="menu"
-                  aria-expanded={userMenuOpen}
-                  onClick={() => {
-                    setUserMenuOpen((open) => !open);
-                    setMobileMenuOpen(false);
-                    setTabletSearchOpen(false);
-                  }}
-                  className="inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                  aria-label="User account menu"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  aria-label="Clear search"
                 >
-                  {currentUser.avatar_url && !avatarFailed ? (
-                    <img
-                      src={currentUser.avatar_url}
-                      alt=""
-                      onError={() => setAvatarFailed(true)}
-                      className="w-8 h-8 rounded-full object-cover border border-stone-300 dark:border-stone-700"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
+                  &times;
+                </button>
+              )}
+            </div>
+
+            {/* Zone 3: Actions & User controls */}
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              {/* Tablet Search Toggle (bridges md -> lg gap) */}
+              <button
+                type="button"
+                onClick={() => {
+                  setTabletSearchOpen((open) => !open);
+                  setUserMenuOpen(false);
+                }}
+                aria-expanded={tabletSearchOpen}
+                aria-controls="tablet-search-bar"
+                aria-label={tabletSearchOpen ? 'Close search' : 'Search products'}
+                title="Search products"
+                className="hidden md:inline-flex lg:hidden items-center justify-center min-w-[40px] min-h-[40px] p-2 text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              >
+                {tabletSearchOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Search className="w-5 h-5" aria-hidden="true" />}
+              </button>
+
+              {/* Theme Toggle Button (desktop/tablet; on mobile it lives in the left drawer) */}
+              <div className="hidden sm:block">
+                <ThemeToggle variant="icon" />
+              </div>
+
+              {/* Wishlist Button (sm+; on narrow phones it lives in the left drawer) */}
+              <button
+                type="button"
+                onClick={() => go('customer-dashboard', 'wishlist')}
+                className="hidden sm:inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                title="Saved Items"
+                aria-label={wishlist.length > 0 ? `Saved items (${wishlist.length})` : 'Saved items'}
+              >
+                <Heart className="w-5 h-5" aria-hidden="true" />
+                {wishlist.length > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
+                  >
+                    {wishlist.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Messages Button (sm+; on narrow phones it lives in the left drawer) */}
+              {currentUser && (
+                <button
+                  type="button"
+                  onClick={onOpenMessages}
+                  className="hidden sm:inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  title="Student Messages"
+                  aria-label={unreadMessagesCount > 0 ? `Messages (${unreadMessagesCount} unread)` : 'Messages'}
+                >
+                  <MessageSquare className="w-5 h-5" aria-hidden="true" />
+                  {unreadMessagesCount > 0 && (
                     <span
                       aria-hidden="true"
-                      className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-800 dark:text-brand-200 border border-brand-200 dark:border-brand-700 text-xs font-bold flex items-center justify-center"
+                      className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-brand-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
                     >
-                      {userInitial}
+                      {unreadMessagesCount}
                     </span>
                   )}
                 </button>
+              )}
 
-                <AnimatePresence>
-                {userMenuOpen && (
-                  <motion.div
-                    variants={dropdownVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    role="menu"
-                    aria-label="Account options"
-                    className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#171d27] border border-stone-200 dark:border-[#262e3d] rounded-xl shadow-xl py-2 z-50 origin-top-right"
-                  >
-                    <div className="px-4 py-2 border-b border-stone-100 dark:border-[#222936]">
-                      <p className="text-xs font-semibold text-stone-900 dark:text-white truncate">
-                        {currentUser.full_name}
-                      </p>
-                      <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate">{currentUser.email}</p>
-                      <div className="mt-1 flex items-center gap-1.5 text-[10px] font-medium text-stone-600 dark:text-stone-300">
-                        <span className="capitalize px-1.5 py-0.5 bg-stone-100 dark:bg-[#202736] rounded text-stone-700 dark:text-stone-300">
-                          {currentUser.role}
-                        </span>
-                        {currentUser.student_id && (
-                          <>
-                            <span aria-hidden="true">·</span>
-                            <span className="truncate">{currentUser.student_id}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => go(`${currentRole}-dashboard`)}
-                      className="w-full text-left px-4 py-2.5 text-xs font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-[#1f2735] flex items-center gap-2 transition-colors cursor-pointer"
+              {/* Notifications Button (sm+; on narrow phones it lives in the left drawer) */}
+              {currentUser && (
+                <button
+                  type="button"
+                  onClick={onOpenNotifications}
+                  className="hidden sm:inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  title="Notifications"
+                  aria-label={
+                    unreadNotificationsCount > 0
+                      ? `Notifications (${unreadNotificationsCount} unread)`
+                      : 'Notifications'
+                  }
+                >
+                  <Bell className="w-5 h-5" aria-hidden="true" />
+                  {unreadNotificationsCount > 0 && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-indigo-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
                     >
-                      <LayoutDashboard className="w-4 h-4 text-stone-500 dark:text-stone-400" aria-hidden="true" />
-                      {getDashboardLabel()}
-                    </button>
+                      {unreadNotificationsCount}
+                    </span>
+                  )}
+                </button>
+              )}
 
-                    {currentRole === 'customer' && (
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={() => go('become-seller')}
-                        className="w-full text-left px-4 py-2.5 text-xs font-medium text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40 flex items-center gap-2 transition-colors cursor-pointer"
-                      >
-                        <Store className="w-4 h-4 text-brand-600 dark:text-brand-400" aria-hidden="true" />
-                        Open a Student Store
-                      </button>
-                    )}
-
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => go('customer-dashboard', 'orders')}
-                      className="w-full text-left px-4 py-2.5 text-xs font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-[#1f2735] flex items-center gap-2 transition-colors cursor-pointer"
-                    >
-                      <ShoppingBag className="w-4 h-4 text-stone-500 dark:text-stone-400" aria-hidden="true" />
-                      My Orders
-                    </button>
-
-                    <div className="border-t border-stone-100 dark:border-[#222936] my-1" role="separator" />
-
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        setUserMenuOpen(false);
-                        logout();
-                      }}
-                      className="w-full text-left px-4 py-2.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2 transition-colors cursor-pointer"
-                    >
-                      <LogOut className="w-4 h-4 text-rose-500 dark:text-rose-400" aria-hidden="true" />
-                      Sign Out
-                    </button>
-                  </motion.div>
-                )}
-                </AnimatePresence>
-              </div>
-            ) : (
+              {/* Cart Button — always 1 tap away on every screen size */}
               <button
                 type="button"
-                onClick={onOpenAuth}
-                className="px-3.5 py-2 min-h-[40px] text-xs font-semibold text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-stone-700 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors whitespace-nowrap ml-0.5 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                onClick={onOpenCart}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 min-h-[40px] bg-brand-600 hover:bg-brand-700 active:scale-[0.97] text-white dark:bg-brand-400 dark:hover:bg-brand-300 dark:text-stone-950 font-bold rounded-lg text-xs shadow-sm transition-all whitespace-nowrap cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+                aria-label={`Shopping bag (${cartCount} ${cartCount === 1 ? 'item' : 'items'})`}
               >
-                Sign In
+                <ShoppingBag className="w-4 h-4" aria-hidden="true" />
+                <span className="hidden sm:inline">Bag</span>
+                <motion.span
+                  key={cartCount}
+                  initial={{ scale: 0.85, opacity: 0.6 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={FAST_TRANSITION}
+                  aria-hidden="true"
+                  className="bg-white/20 text-white dark:bg-stone-900 dark:text-brand-300 font-bold px-1.5 py-0.5 rounded text-[11px] leading-none tabular-nums"
+                >
+                  {cartCount}
+                </motion.span>
               </button>
-            )}
 
-            {/* Mobile Menu Toggle */}
-            <button
-              ref={mobileToggleRef}
-              type="button"
-              aria-expanded={mobileMenuOpen}
-              aria-controls="mobile-menu"
-              onClick={() => {
-                setMobileMenuOpen((open) => !open);
-                setUserMenuOpen(false);
-              }}
-              className="md:hidden inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-2 text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
-            </button>
+              {/* User Profile / Auth */}
+              {currentUser ? (
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={userMenuOpen}
+                    onClick={() => {
+                      setUserMenuOpen((open) => !open);
+                      setMobileMenuOpen(false);
+                      setTabletSearchOpen(false);
+                    }}
+                    className="inline-flex items-center justify-center min-w-[40px] min-h-[40px] p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    aria-label="User account menu"
+                  >
+                    {currentUser.avatar_url && !avatarFailed ? (
+                      <img
+                        src={currentUser.avatar_url}
+                        alt=""
+                        onError={() => setAvatarFailed(true)}
+                        className="w-8 h-8 rounded-full object-cover border border-stone-300 dark:border-stone-700"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden="true"
+                        className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-800 dark:text-brand-200 border border-brand-200 dark:border-brand-700 text-xs font-bold flex items-center justify-center"
+                      >
+                        {userInitial}
+                      </span>
+                    )}
+                  </button>
+
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        variants={dropdownVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        role="menu"
+                        aria-label="Account options"
+                        className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#171d27] border border-stone-200 dark:border-[#262e3d] rounded-xl shadow-xl py-2 z-50 origin-top-right"
+                      >
+                        <div className="px-4 py-2 border-b border-stone-100 dark:border-[#222936]">
+                          <p className="text-xs font-semibold text-stone-900 dark:text-white truncate">
+                            {currentUser.full_name}
+                          </p>
+                          <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate">{currentUser.email}</p>
+                          <div className="mt-1 flex items-center gap-1.5 text-[10px] font-medium text-stone-600 dark:text-stone-300">
+                            <span className="capitalize px-1.5 py-0.5 bg-stone-100 dark:bg-[#202736] rounded text-stone-700 dark:text-stone-300">
+                              {currentUser.role}
+                            </span>
+                            {currentUser.student_id && (
+                              <>
+                                <span aria-hidden="true">·</span>
+                                <span className="truncate">{currentUser.student_id}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => go(`${currentRole}-dashboard`)}
+                          className="w-full text-left px-4 py-2.5 text-xs font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-[#1f2735] flex items-center gap-2 transition-colors cursor-pointer"
+                        >
+                          <LayoutDashboard className="w-4 h-4 text-stone-500 dark:text-stone-400" aria-hidden="true" />
+                          {getDashboardLabel()}
+                        </button>
+
+                        {currentRole === 'customer' && (
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => go('become-seller')}
+                            className="w-full text-left px-4 py-2.5 text-xs font-medium text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40 flex items-center gap-2 transition-colors cursor-pointer"
+                          >
+                            <Store className="w-4 h-4 text-brand-600 dark:text-brand-400" aria-hidden="true" />
+                            Open a Student Store
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => go('customer-dashboard', 'orders')}
+                          className="w-full text-left px-4 py-2.5 text-xs font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-[#1f2735] flex items-center gap-2 transition-colors cursor-pointer"
+                        >
+                          <ShoppingBag className="w-4 h-4 text-stone-500 dark:text-stone-400" aria-hidden="true" />
+                          My Orders
+                        </button>
+
+                        <div className="border-t border-stone-100 dark:border-[#222936] my-1" role="separator" />
+
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            logout();
+                          }}
+                          className="w-full text-left px-4 py-2.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2 transition-colors cursor-pointer"
+                        >
+                          <LogOut className="w-4 h-4 text-rose-500 dark:text-rose-400" aria-hidden="true" />
+                          Sign Out
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onOpenAuth}
+                  className="px-3 sm:px-3.5 py-2 min-h-[40px] text-xs font-semibold text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-stone-700 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1c222e] active:scale-[0.97] transition-all whitespace-nowrap cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Tablet Search Bar (md to lg) */}
+        {/* Tablet Search Bar (md to lg) */}
+        <AnimatePresence>
+          {tabletSearchOpen && (
+            <motion.div
+              id="tablet-search-bar"
+              variants={dropdownVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="hidden md:block lg:hidden border-t border-stone-200 dark:border-[#222936] bg-white dark:bg-[#0f131b] px-6 py-2.5"
+            >
+              <div className="max-w-xl mx-auto relative flex items-center">
+                <label htmlFor="tablet-search-input" className="sr-only">
+                  Search products, textbooks, and campus gear
+                </label>
+                <Search className="w-4 h-4 text-stone-500 dark:text-stone-400 absolute left-3 pointer-events-none" aria-hidden="true" />
+                <input
+                  ref={tabletSearchRef}
+                  id="tablet-search-input"
+                  type="search"
+                  placeholder="Search products, textbooks, dorm gear..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSearchSubmit();
+                  }}
+                  className="w-full pl-9 pr-8 py-2 text-sm bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-stone-900 dark:text-stone-100 placeholder:text-stone-500 dark:placeholder:text-stone-400"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2 min-w-[28px] min-h-[28px] flex items-center justify-center text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100 cursor-pointer"
+                    aria-label="Clear search"
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* Left-Side Slide-In Mobile Navigation Drawer */}
       <AnimatePresence>
-      {tabletSearchOpen && (
-        <motion.div
-          id="tablet-search-bar"
-          variants={dropdownVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          className="hidden md:block lg:hidden border-t border-stone-200 dark:border-[#222936] bg-white dark:bg-[#0f131b] px-6 py-2.5"
-        >
-          <div className="max-w-xl mx-auto relative flex items-center">
-            <label htmlFor="tablet-search-input" className="sr-only">
-              Search products, textbooks, and campus gear
-            </label>
-            <Search className="w-4 h-4 text-stone-500 dark:text-stone-400 absolute left-3 pointer-events-none" aria-hidden="true" />
-            <input
-              ref={tabletSearchRef}
-              id="tablet-search-input"
-              type="search"
-              placeholder="Search products, textbooks, dorm gear..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSearchSubmit();
-              }}
-              className="w-full pl-9 pr-8 py-2 text-sm bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-stone-900 dark:text-stone-100 placeholder:text-stone-500 dark:placeholder:text-stone-400"
+        {mobileMenuOpen && (
+          <div
+            id="mobile-nav-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            className="fixed inset-0 z-50 md:hidden flex"
+          >
+            {/* Backdrop */}
+            <motion.div
+              variants={backdropVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-stone-950/65 backdrop-blur-xs"
             />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2 min-w-[28px] min-h-[28px] flex items-center justify-center text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100 cursor-pointer"
-                aria-label="Clear search"
-              >
-                &times;
-              </button>
-            )}
+
+            {/* Slide-In Sidebar Panel */}
+            <motion.div
+              ref={drawerRef}
+              variants={drawerLeftVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="relative z-10 w-[min(86vw,20rem)] max-w-full h-[100dvh] bg-white dark:bg-[#0f131b] border-r border-stone-200 dark:border-[#222936] shadow-2xl flex flex-col pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] pl-[env(safe-area-inset-left)]"
+            >
+              {/* Drawer Header */}
+              <div className="px-4 pb-3 border-b border-stone-200 dark:border-[#222936] flex items-center justify-between gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => go('home')}
+                  className="text-lg font-black tracking-tight text-stone-900 dark:text-white flex items-center gap-2 min-h-[40px] rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="w-7 h-7 rounded-lg bg-brand-600 dark:bg-brand-400 text-white dark:text-stone-950 flex items-center justify-center text-base font-black"
+                  >
+                    C
+                  </span>
+                  <span>CampusMart</span>
+                </button>
+                <button
+                  ref={drawerCloseRef}
+                  type="button"
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-label="Close navigation menu"
+                  className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] -mr-2 rounded-lg text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-[#1c222e] active:scale-95 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                >
+                  <X className="w-5 h-5" aria-hidden="true" />
+                </button>
+              </div>
+
+              {/* Scrollable Middle Area (fits short & landscape screens cleanly) */}
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+                {/* Mobile Search */}
+                <div className="relative">
+                  <label htmlFor="mobile-drawer-search" className="sr-only">
+                    Search products
+                  </label>
+                  <Search
+                    className="w-4 h-4 text-stone-500 dark:text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    id="mobile-drawer-search"
+                    type="search"
+                    placeholder="Search products, textbooks..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSearchSubmit();
+                    }}
+                    className="w-full pl-9 pr-8 py-2.5 min-h-[44px] text-base sm:text-sm bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] text-stone-900 dark:text-stone-100 placeholder:text-stone-500 dark:placeholder:text-stone-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      aria-label="Clear search"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[32px] min-h-[32px] flex items-center justify-center text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white cursor-pointer"
+                    >
+                      &times;
+                    </button>
+                  )}
+                </div>
+
+                {/* Primary Navigation Links */}
+                <nav aria-label="Mobile navigation links" className="space-y-1">
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={item.onSelect}
+                        aria-current={item.active ? 'page' : undefined}
+                        className={`w-full flex items-center gap-3 px-3 py-3 min-h-[44px] rounded-xl text-sm font-medium transition-colors cursor-pointer active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                          item.active
+                            ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-800 dark:text-brand-300 font-semibold border-l-3 border-brand-600 dark:border-brand-400'
+                            : item.highlight
+                            ? 'text-brand-700 dark:text-brand-400 font-semibold hover:bg-brand-50 dark:hover:bg-brand-950/40'
+                            : 'text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c222e]'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
+                        <span>{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </nav>
+
+                {/* Quick Actions (Bag, Saved, Messages, Notifications) */}
+                <div className="pt-3 border-t border-stone-200 dark:border-[#222936] space-y-1">
+                  <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    Quick Access
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenCart();
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-xl text-sm font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c222e] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  >
+                    <span className="flex items-center gap-3">
+                      <ShoppingBag className="w-4 h-4 text-brand-600 dark:text-brand-400" aria-hidden="true" />
+                      <span>Shopping Bag</span>
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-brand-100 dark:bg-brand-950/60 text-brand-800 dark:text-brand-300 text-xs font-bold tabular-nums">
+                      {cartCount}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => go('customer-dashboard', 'wishlist')}
+                    className="w-full flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-xl text-sm font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c222e] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  >
+                    <span className="flex items-center gap-3">
+                      <Heart className="w-4 h-4 text-rose-500" aria-hidden="true" />
+                      <span>Saved Items</span>
+                    </span>
+                    {wishlist.length > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-bold tabular-nums">
+                        {wishlist.length}
+                      </span>
+                    )}
+                  </button>
+
+                  {currentUser && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          onOpenMessages();
+                        }}
+                        className="w-full flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-xl text-sm font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c222e] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                      >
+                        <span className="flex items-center gap-3">
+                          <MessageSquare className="w-4 h-4 text-stone-500 dark:text-stone-400" aria-hidden="true" />
+                          <span>Messages</span>
+                        </span>
+                        {unreadMessagesCount > 0 && (
+                          <span className="px-2 py-0.5 rounded-full bg-brand-600 text-white text-xs font-bold tabular-nums">
+                            {unreadMessagesCount}
+                          </span>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          onOpenNotifications();
+                        }}
+                        className="w-full flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-xl text-sm font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c222e] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                      >
+                        <span className="flex items-center gap-3">
+                          <Bell className="w-4 h-4 text-stone-500 dark:text-stone-400" aria-hidden="true" />
+                          <span>Notifications</span>
+                        </span>
+                        {unreadNotificationsCount > 0 && (
+                          <span className="px-2 py-0.5 rounded-full bg-indigo-600 text-white text-xs font-bold tabular-nums">
+                            {unreadNotificationsCount}
+                          </span>
+                        )}
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Account Section */}
+                <div className="pt-3 border-t border-stone-200 dark:border-[#222936] space-y-1">
+                  {currentUser ? (
+                    <>
+                      <div className="px-3 py-1.5">
+                        <p className="text-xs font-bold text-stone-900 dark:text-white truncate">
+                          {currentUser.full_name}
+                        </p>
+                        <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate">
+                          {currentUser.email}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => go(`${currentRole}-dashboard`)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-sm font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c222e] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                      >
+                        <User className="w-4 h-4 text-stone-500 dark:text-stone-400" aria-hidden="true" />
+                        <span>{getDashboardLabel()}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          logout();
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+                      >
+                        <LogOut className="w-4 h-4" aria-hidden="true" />
+                        <span>Sign Out</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        onOpenAuth();
+                      }}
+                      className="w-full py-2.5 px-4 min-h-[44px] bg-brand-600 hover:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 text-white dark:text-stone-950 font-bold text-sm rounded-xl transition-colors cursor-pointer"
+                    >
+                      Sign In or Create Account
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Drawer Footer: Theme Toggle */}
+              <div className="px-4 pt-3 border-t border-stone-200 dark:border-[#222936] shrink-0">
+                <ThemeToggle variant="mobile" />
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
-      )}
+        )}
       </AnimatePresence>
-
-      {/* Mobile Menu Drawer */}
-      <AnimatePresence>
-      {mobileMenuOpen && (
-        <motion.div
-          id="mobile-menu"
-          variants={dropdownVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          className="md:hidden border-t border-stone-200 dark:border-[#222936] bg-white dark:bg-[#0f131b] px-4 pt-2 pb-4 space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto shadow-lg origin-top"
-        >
-          <div className="pt-2 pb-1 relative">
-            <label htmlFor="mobile-search" className="sr-only">
-              Search products
-            </label>
-            <Search className="w-4 h-4 text-stone-500 dark:text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
-            <input
-              id="mobile-search"
-              type="search"
-              placeholder="Search products, textbooks, dorm gear..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSearchSubmit();
-              }}
-              className="w-full pl-9 pr-3 py-2.5 min-h-[44px] text-sm bg-stone-100 dark:bg-[#151921] border border-stone-200 dark:border-[#262e3d] text-stone-900 dark:text-stone-100 placeholder:text-stone-500 dark:placeholder:text-stone-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-          </div>
-
-          <nav aria-label="Mobile" className="space-y-1">
-            {navItems.map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                onClick={item.onSelect}
-                aria-current={item.active ? 'page' : undefined}
-                className={`w-full text-left px-3 py-3 min-h-[44px] rounded-lg text-sm font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                  item.active
-                    ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-800 dark:text-brand-300 font-semibold border-l-2 border-brand-600 dark:border-brand-400'
-                    : item.highlight
-                    ? 'text-brand-700 dark:text-brand-400 font-semibold hover:bg-brand-50 dark:hover:bg-brand-950/40'
-                    : 'text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c222e]'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-
-          {/* Theme switcher integrated naturally into mobile menu */}
-          <div className="pt-1 border-t border-stone-100 dark:border-[#222936]">
-            <ThemeToggle variant="mobile" />
-          </div>
-        </motion.div>
-      )}
-      </AnimatePresence>
-    </header>
+    </>
   );
 };

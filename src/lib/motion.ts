@@ -31,6 +31,12 @@ export const drawerRightVariants: Variants = {
   exit: { x: '100%', transition: { duration: 0.18, ease: EASE_OUT } }
 };
 
+export const drawerLeftVariants: Variants = {
+  hidden: { x: '-100%' },
+  visible: { x: 0, transition: { duration: 0.24, ease: EASE_OUT } },
+  exit: { x: '-100%', transition: { duration: 0.18, ease: EASE_OUT } }
+};
+
 export const dropdownVariants: Variants = {
   hidden: { opacity: 0, y: -6, scale: 0.98 },
   visible: { opacity: 1, y: 0, scale: 1, transition: FAST_TRANSITION },

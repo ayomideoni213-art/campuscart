@@ -35,11 +35,16 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
 
   useEffect(() => {
     if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', onKey);
+    };
   }, [isOpen, onClose]);
 
   const [inputCode, setInputCode] = useState('');
@@ -73,13 +78,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onProce
             className="absolute inset-0 bg-stone-950/70 backdrop-blur-xs"
           />
 
-          <div className="fixed inset-y-0 right-0 max-w-full flex pl-10 pointer-events-none">
+          <div className="fixed inset-y-0 right-0 max-w-full flex pl-4 sm:pl-10 pointer-events-none">
             <motion.div
               variants={drawerRightVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="pointer-events-auto w-screen max-w-md bg-white dark:bg-[#151921] shadow-2xl border-l border-stone-200 dark:border-[#262e3d] flex flex-col transition-colors"
+              className="pointer-events-auto w-screen max-w-md h-[100dvh] bg-white dark:bg-[#151921] shadow-2xl border-l border-stone-200 dark:border-[#262e3d] flex flex-col transition-colors pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
             >
               {/* Header */}
               <div className="p-4 sm:p-6 border-b border-stone-200 dark:border-[#222936] flex items-center justify-between">

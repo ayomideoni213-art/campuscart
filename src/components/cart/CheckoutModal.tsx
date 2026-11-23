@@ -78,6 +78,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
+  // Lock background scroll while checkout is open so mobile keyboard scrolling stays inside the dialog.
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
+
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
     setOrderError(null);
@@ -166,7 +176,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-950/70 backdrop-blur-xs"
         >
           <motion.div
             variants={dialogVariants}
@@ -176,28 +186,29 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             role="dialog"
             aria-modal="true"
             aria-labelledby="checkout-title"
-            className="relative w-full max-w-2xl bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-6 transition-colors"
+            className="relative w-full max-w-2xl max-h-[92dvh] bg-white dark:bg-[#151921] rounded-xl sm:rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden flex flex-col transition-colors"
           >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-[#222936]">
-          <div>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-stone-200 dark:border-[#222936] shrink-0">
+          <div className="min-w-0 pr-2">
             <h2 id="checkout-title" className="text-base font-bold text-stone-900 dark:text-white">Campus Checkout</h2>
             <p className="text-xs text-stone-500 dark:text-stone-400">Reserve your items and pay the seller at the campus handoff</p>
           </div>
           {step !== 5 && (
             <button
+              type="button"
               onClick={onClose}
-              className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors"
+              className="p-2 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-stone-500 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-[#1c222e] transition-colors cursor-pointer shrink-0"
               aria-label="Close checkout"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           )}
         </div>
 
         {/* Progress Tracker (Steps 1-4) */}
         {step !== 5 && (
-          <div className="bg-stone-50 dark:bg-[#11151c] px-6 py-3 border-b border-stone-200 dark:border-[#222936] flex items-center justify-between text-xs">
+          <div className="bg-stone-50 dark:bg-[#11151c] px-4 sm:px-6 py-2.5 sm:py-3 border-b border-stone-200 dark:border-[#222936] flex items-center justify-between gap-2 text-xs shrink-0 overflow-x-auto">
             {[
               { num: 1, label: 'Student Info' },
               { num: 2, label: 'Campus Pickup' },
@@ -232,7 +243,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         )}
 
         {/* Step Contents */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           {orderError && (
             <div role="alert" className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-800 dark:text-rose-300 text-xs rounded-xl">
               {orderError}

@@ -92,7 +92,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
       }
     };
     document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     return () => {
+      document.body.style.overflow = prevOverflow;
       document.removeEventListener('keydown', onKey);
       previouslyFocused.current?.focus?.();
     };
@@ -125,12 +128,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
       variants={backdropVariants}
       initial="hidden"
       animate="visible"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-950/70 backdrop-blur-xs overflow-y-auto"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="product-title" className="relative w-full max-w-4xl focus:outline-none bg-white dark:bg-[#151921] rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-8 max-h-[90vh] flex flex-col transition-colors">
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="product-title" className="relative w-full max-w-4xl focus:outline-none bg-white dark:bg-[#151921] rounded-xl sm:rounded-2xl shadow-2xl border border-stone-200 dark:border-[#262e3d] overflow-hidden my-2 sm:my-8 max-h-[92dvh] flex flex-col transition-colors">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-[#222936]">
           <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">

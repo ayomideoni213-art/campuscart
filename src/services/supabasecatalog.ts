@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { Store } from '../types';
+import type { Product, Store } from '../types';
 
 export async function getPublishedProducts() {
   const { data, error } = await supabase
@@ -9,7 +9,29 @@ export async function getPublishedProducts() {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []).map((row) => toProduct(row as Record<string, unknown>));
+}
+
+/** Fills nullable database columns with safe defaults so the UI never crashes on missing values. */
+function toProduct(row: Record<string, unknown>): Product {
+  const images = Array.isArray(row.images) ? (row.images as unknown[]).filter((u): u is string => typeof u === 'string' && u.length > 0) : [];
+  const discount = row.discount_price == null ? undefined : Number(row.discount_price);
+  return {
+    ...(row as unknown as Product),
+    name: (row.name as string) ?? 'Untitled listing',
+    description: (row.description as string) ?? '',
+    store_name: (row.store_name as string) ?? 'Campus Store',
+    category_name: (row.category_name as string) ?? 'General',
+    campus_name: (row.campus_name as string) ?? '',
+    condition: ((row.condition as Product['condition']) ?? 'Gently Used'),
+    images,
+    price: Number(row.price ?? 0),
+    discount_price: discount != null && Number.isFinite(discount) ? discount : undefined,
+    stock: Number(row.stock ?? 0),
+    rating: Number(row.rating ?? 0),
+    reviews_count: Number(row.reviews_count ?? 0),
+    is_featured: Boolean(row.is_featured)
+  };
 }
 
 export async function getCategories() {
@@ -21,7 +43,6 @@ export async function getCategories() {
   if (error) throw error;
   return data ?? [];
 }
-import type { Store } from '../types';
 
 const STORE_WRITE_FIELDS = [
   'seller_id', 'name', 'slug', 'tagline', 'description', 'logo_url', 'banner_url',

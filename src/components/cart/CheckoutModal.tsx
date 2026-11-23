@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
@@ -59,6 +59,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   // Live problems with the bag for the chosen campus (stock, unpublished items, campus coverage).
   const issues = getCartIssues(cart, products, stores, campus);
   const hasIssues = issues.length > 0;
+
+  // The modal stays mounted while closed, so refresh the form every time it opens:
+  // picks up a newer sign-in or campus choice and never reopens on a finished order.
+  useEffect(() => {
+    if (!isOpen) return;
+    setStep(1);
+    setIsProcessing(false);
+    setOrderError(null);
+    setCreatedOrderNumber('');
+    setStudentName(currentUser?.full_name || '');
+    setStudentEmail(currentUser?.email || '');
+    setStudentId(currentUser?.student_id || '');
+    setPhone(currentUser?.phone || '');
+    setCampus(selectedCampus !== 'All' ? sanitizeCampus(selectedCampus) : sanitizeCampus(currentUser?.campus_name));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
